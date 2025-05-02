@@ -1,0 +1,61 @@
+.magicGridWrapper {
+    width: 100%;
+    height: 100%;
+    border: 1px solid black;
+    touch-action: none;
+    -ms-touch-action: none;
+}
+
+.magicGrid {
+    margin: 0;
+    padding: 0;
+    border: none;
+    touch-action: none;
+    -ms-touch-action: none;
+}
+
+.selectable-element {
+    float: left;
+    font-size: 2em;
+    font-family: "Verdana";
+    padding: 0;
+    margin: 0;
+    border-style: solid;
+    border-color: white;
+    border-width: 2px;
+    text-align: center;
+    color: black;
+    touch-action: none;
+    -ms-touch-action: none;
+}
+
+.selectable-element-wrapper {
+    float: left;
+    font-size: 2em;
+    padding: 0;
+    margin: 0;
+    border-style: solid;
+    border-color: black;
+    border-width: 1px;
+    text-align: center;
+    touch-action: none;
+    -ms-touch-action: none;
+}
+
+.selectable-element-selected {
+    border-color: #65CDE5;
+    background-color: #65CDE5;
+    color: white;
+}
+
+.selectable-element-selected-correct {
+    border-color: green;
+}
+
+.selectable-element-selected-uncorrect {
+    border-color: red;
+}
+
+.selectable-element-show-answers {
+    border-color: blue;
+}

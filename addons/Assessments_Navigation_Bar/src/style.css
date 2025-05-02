@@ -1,0 +1,117 @@
+.assessments-navigation-bar-wrapper .navigation-buttons-first .previous {
+    width: 40px;
+}
+
+.assessments-navigation-bar-wrapper .navigation-buttons-first {
+    display: inline-block;
+    height: 80%;
+}
+
+.assessments-navigation-bar-wrapper .navigation-buttons-last {
+    display: inline-block;
+    height: 80%;
+}
+
+.assessments-navigation-bar-wrapper .inactive {
+    background-color: #80BBC8;
+    color: #C0C0C0;
+}
+
+.assessments-navigation-bar-wrapper {
+    background-color: #F3F3F3;
+}
+
+.assessments-navigation-bar-wrapper .sections {
+    display: inline-block;
+    height: 100%;
+}
+
+.assessments-navigation-bar-wrapper .sections.enable-dropdown {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    gap: 10px;
+}
+
+.assessments-navigation-bar-wrapper .section {
+    display: inline-block;
+    height: 100%;
+}
+
+.assessments-navigation-bar-wrapper .section.expandable-section {
+    position: relative;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.assessments-navigation-bar-wrapper .section_name {
+    text-align: center;
+    text-wrap: nowrap;
+    height: 20%;
+}
+
+.assessments-navigation-bar-wrapper .element {
+    display: inline-block;
+    text-align: center;
+    height: 100%;
+}
+
+.assessments-navigation-bar-wrapper .buttons.dropdown-list .element {
+    display: grid;
+    text-align: center;
+    width: 100%;
+    height: 100%;
+}
+
+.assessments-navigation-bar-wrapper .buttons {
+    height: 80%;
+}
+
+.assessments-navigation-bar-wrapper .buttons.dropdown-list {
+    width: 100%;
+    height: auto !important;
+    top: 40px;
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    background-color: beige;
+}
+
+.assessments-navigation-bar-wrapper .button_text {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.assessments-navigation-bar-wrapper .mouse-over {
+    background-color: #7F7F7F;
+    color: #F3F3F3;
+    cursor: pointer;
+}
+
+.assessments-navigation-bar-wrapper .current_page {
+    background-color: #2091AB;
+    color: white;
+}
+
+.assessments-navigation-bar-wrapper .bookmark {
+    color: red;
+}
+
+@media screen and (max-width: 450px) {
+    .addon_Assessments_Navigation_Bar.enabled-page-list {
+        width: 400px !important;
+        overflow-x: scroll;
+        overflow-y: hidden;
+        background: none;
+        box-shadow: none;
+        scroll-behavior: smooth;
+        z-index: 1;
+    }
+
+    /* hide scroll bar*/
+    .addon_Assessments_Navigation_Bar.enabled-page-list::-webkit-scrollbar {
+        display: none;
+    }
+}
