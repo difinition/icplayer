@@ -111,6 +111,20 @@ public class PageList extends BasicPropertyProvider implements IChapter{
 		return nodes;
 	}
 
+	//kslee 커스텀 추가  ::: getPageByHref(String href) 메소드 추가됨 
+	public Page getPageByHref(String href) {
+
+		for(IContentNode node : nodes){
+			if (node instanceof Page) {
+				Page page = (Page)node;
+				if (page.getHref() == href) {
+					return page;
+				}
+			}
+		}
+		return null;
+	}
+	
 	public void insertBefore(int index, IContentNode node){
 		nodes.add(index, node);
 	}
@@ -305,7 +319,10 @@ public class PageList extends BasicPropertyProvider implements IChapter{
 		return pageIndex;
 	}
 
-	private Page loadPage(Element node) {
+    //kslee 커스텀 변경 ::: ▼▼▼   private >> public
+	public Page loadPage(Element node) {
+	//kslee 커스텀 변경 ::: ▲▲▲   private >> public
+	    
 		final String name = StringUtils.unescapeXML(node.getAttribute("name"));
 		final String href = node.getAttribute("href");
 		final String pageId = node.getAttribute("id");

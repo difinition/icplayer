@@ -74,4 +74,10 @@ public interface IPlayerServices {
 	IObserverService getObserverService();
 	public String getCurrentWCAGPresenterId();
 	public String getCurrentWCAGPresenterArea();
+	
+	//kslee 커스텀 추가 ::: 
+	public String getCurrentPageId();
+	//kslee 커스텀 추가 ::: 
+	void setDisable(boolean isDisable);
+	
 }

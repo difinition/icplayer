@@ -28,28 +28,40 @@ public class PlayerAppTestCase {
 	@Test
 	public void setPagesWithCorrectString() {
 		PlayerEntryPoint entryPoint = new PlayerEntryPoint();
-		PlayerApp player = new PlayerApp("player", entryPoint);
+		//kslee 커스텀 변경 
+		//PlayerApp player = new PlayerApp("player", entryPoint);
+		String type = "question";
+		PlayerApp player = new PlayerApp("player", entryPoint, type);
 		player.setPages("1,2");
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void setPagesWithEmptyString() {
 		PlayerEntryPoint entryPoint1 = new PlayerEntryPoint();
-		PlayerApp player = new PlayerApp("player", entryPoint1);
+		//kslee 커스텀 변경
+		//PlayerApp player = new PlayerApp("player", entryPoint1);
+		String type = "question";
+		PlayerApp player = new PlayerApp("player", entryPoint1, type);
 		player.setPages("");
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void setPagesWithNull() {
 		PlayerEntryPoint entryPoint1 = new PlayerEntryPoint();
-		PlayerApp player = new PlayerApp("player", entryPoint1);
+		//kslee 커스텀 변경
+		//PlayerApp player = new PlayerApp("player", entryPoint1);
+		String type = "question";
+		PlayerApp player = new PlayerApp("player", entryPoint1, type);
 		player.setPages(null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void setPagesWithAlpha() {
 		PlayerEntryPoint entryPoint1 = new PlayerEntryPoint();
-		PlayerApp player = new PlayerApp("player", entryPoint1);
+		//kslee 커스텀 변경
+		//PlayerApp player = new PlayerApp("player", entryPoint1);
+		String type = "question";
+		PlayerApp player = new PlayerApp("player", entryPoint1, type);
 		player.setPages("1,2a,3");
 	}
 	

@@ -45,8 +45,10 @@ import com.lorepo.icplayer.client.page.KeyboardNavigationController;
 import com.lorepo.icplayer.client.page.PageController;
 import com.lorepo.icplayer.client.page.PagePopupPanel;
 import com.lorepo.icplayer.client.ui.PlayerView;
+import com.lorepo.icplayer.client.utils.Utils;
 import com.lorepo.icplayer.client.xml.IProducingLoadingListener;
 import com.lorepo.icplayer.client.xml.page.PageFactory;
+import com.lorepo.icplayer.client.xml.page.PageFactoryQNote;
 
 public class PlayerController implements IPlayerController {
 
@@ -84,6 +86,13 @@ public class PlayerController implements IPlayerController {
 	private int lastVisitedPageIndex = -1;
 	private int currentMainPageIndex = -1;
 
+//kslee 커스텀 추가  ::: mapAddon, isMultiPages, mContentsIndex, mBookMode, mView 필드 추가됨
+	private HashMap<Integer, Boolean> mapAddon = new HashMap();
+	private boolean isMultiPages = false;
+	private int mContentsIndex = -1;
+	private boolean mBookMode = false;
+	private PlayerView mView;
+
 	public PlayerController(Content content, PlayerView view, boolean bookMode, PlayerEntryPoint entryPoint){
 		this.entryPoint = entryPoint;
 		this.contentModel = content;
@@ -102,11 +111,31 @@ public class PlayerController implements IPlayerController {
 		this.keyboardController.run(entryPoint);
 		this.isIframeInCrossDomain = checkIsPlayerInCrossDomain();
 		this.getIFrameScroll(this);
-		this.handleCurrentPageIdRequest(this);
+		//kslee 커스텀 로직변경 ::: PlayerController메소드 변경됨. 
+		//handleCurrentPageIdRequest() java메소드에서 currentMainPageIndex를 계산해서 결국 handleCurrentPageIdRequest(this)를 호출함!
+		//this.handleCurrentPageIdRequest(this);
+		this.handleCurrentPageIdRequest();
 		this.lang = content.getMetadataValue("lang");
 		this.responsiveVoice = content.getMetadataValue("responsiveVoiceLang");
 
 		this.adaptiveLearningService = new AdaptiveLearningService(this, content.getAdaptiveStructure());
+
+		//kslee 커스텀 필드초기화 ::: mBookMode, mView. 
+		this.mBookMode = bookMode;
+		this.mView = view;
+		
+	}
+
+//kslee 커스텀 추가  ::: setMultiPages 메소드 추가 ▼▼▼
+	private void setMultiPages(ArrayList<Content> contents) {
+		try {
+			if (contents.size() > 1) {
+				this.isMultiPages = true;
+			} else {
+				this.isMultiPages = false;
+			}
+		} catch (Exception var3) {
+		}
 	}
 
 	private void createPageControllers(boolean bookMode) {
@@ -211,9 +240,19 @@ public class PlayerController implements IPlayerController {
 		}
 	}
 
+	//kslee 커스텀 로직변경 ::: switchToPrevPage메소드 변경됨. mContentsIndex추가에 따른 로직추가
 	@Override
 	public void switchToPrevPage() {
-		int index = this.currentMainPageIndex-1;
+		//kslee 커스텀 로직변경 ▼▼▼
+		//int index = this.currentMainPageIndex-1;
+		int index;
+		if (this.isMultiPages) {
+			index = this.mContentsIndex - 1;
+		} else {
+			index = this.currentMainPageIndex - 1;
+		}
+		//kslee 커스텀 로직변경 ▲▲▲
+		
 		if(this.pageController2 != null && index > 0) {
 			index -= 1;
 		}
@@ -232,12 +271,22 @@ public class PlayerController implements IPlayerController {
 	}
 
 
+//kslee 커스텀 로직변경 ::: switchToNextPage메소드 변경됨. mContentsIndex추가에 따른 로직추가
 	@Override
 	public void switchToNextPage() {
 
 		PageList pages = this.contentModel.getPages();
 
-		int index = this.currentMainPageIndex + 1;
+		//kslee 커스텀 로직변경 ▼▼▼
+		//int index = this.currentMainPageIndex + 1;
+		int index;
+		if (this.isMultiPages) {
+			index = this.mContentsIndex + 1;
+		} else {
+			index = this.currentMainPageIndex + 1;
+		}
+		//kslee 커스텀 로직변경 ▲▲▲
+
 		if(this.pageController2 != null && index + 1 < pages.getTotalPageCount()) {
 			index += 1;
 		}
@@ -328,6 +377,9 @@ public class PlayerController implements IPlayerController {
 	private void switchToPage(IPage page, IPage previousPage, final PageController pageController){
 		page.setContentBaseURL(getContentBaseURL());
 		pageController.getGradualShowAnswersService().hideAll();
+		//kslee 커스텀 로직 추가 ::: switchToPage메소드 visitedPages.add(page);
+		this.visitedPages.add(page);
+		
 	    this.pageStamp = this.generatePageStamp(page.getId());
 		HashMap<String, String> params = new HashMap<String, String>();
 		params.put("page", page.getId());
@@ -338,8 +390,26 @@ public class PlayerController implements IPlayerController {
 
         this.playerView.showWaitDialog();
 		
+		Utils.consoleLog("switchToPage : " + url);
 		if (previousPage != null && previousPage.getHref() == page.getHref()) {
 			onPageFinishedLoading((Object) previousPage, pageController);
+		
+		//kslee 커스텀 로직 추가 ::: switchToPage메소드 PageFactoryQNote 관련 조건분기 추가 ▼▼▼
+		} else if (Utils.isLoadSeperate) {
+			PageFactoryQNote factory = new PageFactoryQNote((Page) page);
+			factory.load(url, new IProducingLoadingListener() {
+				@Override
+				public void onFinishedLoading(Object producedItem) {
+					onPageFinishedLoading(producedItem, pageController);
+				}
+				
+				@Override
+				public void onError(String error) {
+					playerView.hideWaitDialog();
+					JavaScriptUtils.log("Can't load page: " + error);
+				}
+			});
+		//kslee 커스텀 로직 추가 ::: switchToPage메소드 PageFactoryQNote 관련 조건분기 추가 ▲▲▲
 		} else {
 			PageFactory factory = new PageFactory((Page) page);
 			factory.load(url, new IProducingLoadingListener() {
@@ -358,6 +428,7 @@ public class PlayerController implements IPlayerController {
 	}
 	
 	private void onPageFinishedLoading(Object producedItem, PageController pageController) {
+		Utils.consoleLog("onPageFinishedLoading");
 		Page page = (Page) producedItem;
 		String isReportable = getReportableService().getStates().get(page.getId());
 		if (isReportable != null) {
@@ -390,6 +461,14 @@ public class PlayerController implements IPlayerController {
 	private void pageLoaded(Page page, PageController pageController) {
 		this.keyboardController.save();
 		this.keyboardController.reset();
+		
+		//kslee 커스텀 로직 추가 ::: pageLoaded메소드 isLoadSeperate 관련 조건분기 추가 ▼▼▼
+		Utils.consoleLog("AAAA pageLoaded : " + (this.headerController != null) + " ," + (pageController != this.pageController2));
+		if (Utils.isLoadSeperate) {
+			pageController.setPageIdx(this.mContentsIndex);
+		}
+		//kslee 커스텀 로직 추가 ::: pageLoaded메소드 isLoadSeperate 관련 조건분기 추가 ▲▲▲
+
 		pageController.setPage(page);
 		if (this.headerController != null && pageController != this.pageController2) {
 		    this.setHeader(page);
@@ -532,6 +611,8 @@ public class PlayerController implements IPlayerController {
 		if (this.isPopupEnabled()) {
 			return;
 		}
+		
+		Utils.consoleLog("pageName " + pageName);
 		this.setPopupEnabled(true);
 		PopupPage page  = new PopupPage(this.contentModel.findPageByName(pageName));
 		page.setContentBaseURL(getContentBaseURL());
@@ -713,6 +794,13 @@ public class PlayerController implements IPlayerController {
 		}
 	}
 
+// kslee 커스텀 추가 ::: handleCurrentPageIdRequest 메소드 추가 ▼▼▼
+	public void handleCurrentPageIdRequest() {
+		if (this.currentMainPageIndex > -1) {
+			this.handleCurrentPageIdRequest(this);
+		}
+	}
+	
 	@Override
 	public boolean isPlayerInCrossDomain() {
 		return this.isIframeInCrossDomain;

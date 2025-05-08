@@ -346,4 +346,19 @@ public class PlayerServicesMockup implements IPlayerServices {
 	public String getCurrentWCAGPresenterArea() {
 	    return "";
 	};
+	
+	//kslee 커스텀 추가  ::: String getCurrentPageId() @Override 메소드 추가됨 
+	@Override
+	public String getCurrentPageId() {
+		// TODO Auto-generated method stub
+		return "";
+	}
+
+
+	//kslee 커스텀 추가  ::: String setDisable(boolean isDisable) @Override 메소드 추가됨 
+	@Override
+	public void setDisable(boolean isDisable) {
+		// TODO Auto-generated method stub
+		
+	}
 }

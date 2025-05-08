@@ -12,6 +12,7 @@ import com.lorepo.icplayer.client.module.api.player.OpenActivitiesScoresParser;
 
 import java.util.List;
 
+import com.lorepo.icplayer.client.utils.Utils;
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
@@ -25,6 +26,31 @@ public class PlayerEntryPoint implements EntryPoint {
 	private JavaScriptObject outstretchHeightListener;
 	private JavaScriptObject contextMetadata;
 	private JavaScriptObject externalVariables;
+
+//kslee 커스텀 추가  ::: Jimun, Answer, Solve 5셋트 15 및 subject, grade 총 17개 필드 추가됨  ::: ▼▼▼
+	private PlayerApp theApplicationJimun;
+	private PlayerApp theApplicationAnswer;
+	private PlayerApp theApplicationSolve;
+
+	private JavaScriptObject pageLoadedListenerJimun;
+	private JavaScriptObject pageLoadedListenerAnswer;
+	private JavaScriptObject pageLoadedListenerSolve;
+
+	private JavaScriptObject pageScrollToListenerJimun;
+	private JavaScriptObject pageScrollToListenerAnswer;
+	private JavaScriptObject pageScrollToListenerSolve;
+
+	private JavaScriptObject statusChangedListenerJimun;
+	private JavaScriptObject statusChangedListenerAnswer;
+	private JavaScriptObject statusChangedListenerSolve;
+
+	private JavaScriptObject outstretchHeightListenerJimun;
+	private JavaScriptObject outstretchHeightListenerAnswer;
+	private JavaScriptObject outstretchHeightListenerSolve;
+
+	public static String subject = "SOSC";
+	public static String grade = "1";
+//kslee 커스텀 추가  ::: Jimun, Answer, Solve 5셋트 15 및 subject, grade 총 17개 필드 추가됨  ::: ▲▲▲
 
 	/**
 	 * This is the entry point method.
@@ -42,6 +68,208 @@ public class PlayerEntryPoint implements EntryPoint {
 
 				entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::load(Ljava/lang/String;I)(url, index);
 			};
+
+            // kslee native 메소드 추가  ::: player.load2 포함 45개 추가 ▼▼▼
+            player.load2 = function(url, subject, grade, index, bQNote, bloadSeperate) {
+                index = index || 0;
+                entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::load2(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IZZ)(
+                    url, subject, grade, index, bQNote, bloadSeperate
+                );
+            };
+            
+            player.loadJimun = function(url, index) {
+                index = index || 0;
+                entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::loadJimun(Ljava/lang/String;I)(url, index);
+            };
+            
+            player.loadAnswer = function(url, index) {
+                index = index || 0;
+                entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::loadAnswer(Ljava/lang/String;I)(url, index);
+            };
+            
+            player.loadSolve = function(url, index) {
+                index = index || 0;
+                entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::loadSolve(Ljava/lang/String;I)(url, index);
+            };
+            
+            player.loadLearnetic = function(url, index) {
+                index = index || 0;
+                entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::loadLearnetic(Ljava/lang/String;I)(url, index);
+            };
+            
+            //player.loadCommonPage 비교작성
+            player.loadCommonPageJimun = function(url, index) {
+                index = index || 0;
+                entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::loadCommonPageJimun(Ljava/lang/String;I)(url, index);
+            };
+            
+            player.loadCommonPageAnswer = function(url, index) {
+                index = index || 0;
+                entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::loadCommonPageAnswer(Ljava/lang/String;I)(url, index);
+            };
+            
+            player.loadCommonPageSolve = function(url, index) {
+                index = index || 0;
+                entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::loadCommonPageSolve(Ljava/lang/String;I)(url, index);
+            };
+            
+            // player.unload 도 없었음
+            player.unload = function(){
+                entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::unload()();
+            };
+            
+            player.unloadJimun = function(){
+                entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::unloadJimun()();
+            };
+            
+            player.unloadAnswer = function(){
+                entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::unloadAnswer()();
+            };
+            
+            player.unloadSolve = function(){
+                entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::unloadSolve()();
+            };
+            
+            // player.setConfig 비교작성
+            player.setConfigJimun = function(config) {
+                entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::setConfigJimun(Lcom/google/gwt/core/client/JavaScriptObject;)(config);
+            };
+            
+            player.setConfigAnswer = function(config) {
+                entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::setConfigAnswer(Lcom/google/gwt/core/client/JavaScriptObject;)(config);
+            };
+            
+            player.setConfigSolve = function(config) {
+                entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::setConfigSolve(Lcom/google/gwt/core/client/JavaScriptObject;)(config);
+            };
+            
+            // player.onStatusChanged 비교작성
+            player.onStatusChangedJimun = function(listener) {
+                entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::statusChangedListenerJimun = listener;
+            };
+            
+            player.onStatusChangedAnswer = function(listener) {
+                entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::statusChangedListenerAnswer = listener;
+            };
+            
+            player.onStatusChangedSolve = function(listener) {
+                entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::statusChangedListenerSolve = listener;
+            };
+            
+            // player.setAnalytics 비교작성
+            player.setAnalyticsJimun = function(id) {
+                entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::setAnalyticsJimun(Ljava/lang/String;)(id);
+            };
+            
+            player.setAnalyticsAnswer = function(id) {
+                entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::setAnalyticsAnswer(Ljava/lang/String;)(id);
+            };
+            
+            player.setAnalyticsSolve = function(id) {
+                entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::setAnalyticsSolve(Ljava/lang/String;)(id);
+            };
+            
+            
+            // player.getSemiResponsiveLayouts 비교작성
+            player.getSemiResponsiveLayoutsJimun = function () {
+                return entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::getSemiResponsiveLayoutsJimun()();
+            }
+            
+            player.getSemiResponsiveLayoutsAnswer = function () {
+                return entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::getSemiResponsiveLayoutsAnswer()();
+            }
+            
+            player.getSemiResponsiveLayoutsSolve = function () {
+                return entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::getSemiResponsiveLayoutsSolve()();
+            }
+            
+            // player.getState 비교작성
+            player.getStateJimun = function() {
+                return entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::getStateJimun()();
+            };
+            
+            player.getStateAnswer = function() {
+                return entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::getStateAnswer()();
+            };
+            
+            player.getStateSolve = function() {
+                return entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::getStateSolve()();
+            };
+            
+            // player.changeLayout 비교작성
+            player.changeLayoutJimun = function (layoutID) {
+                return entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::changeLayoutJimun(Ljava/lang/String;)(layoutID);
+            }
+            
+            player.changeLayoutAnswer = function (layoutID) {
+                return entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::changeLayoutAnswer(Ljava/lang/String;)(layoutID);
+            }
+            
+            player.changeLayoutSolve = function (layoutID) {
+                return entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::changeLayoutSolve(Ljava/lang/String;)(layoutID);
+            }
+            
+            // player.setState 비교작성
+            player.setStateJimun = function(state) {
+                entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::setStateJimun(Ljava/lang/String;)(state);
+            };
+            player.setStateAnswer = function(state) {
+                entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::setStateAnswer(Ljava/lang/String;)(state);
+            };
+            player.setStateSolve = function(state) {
+                entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::setStateSolve(Ljava/lang/String;)(state);
+            };
+            
+            // player.setPages 비교작성
+            player.setPagesJimun = function(pages) {
+                entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::setPagesJimun(Ljava/lang/String;)(pages);
+            };
+
+            player.setPagesAnswer = function(pages) {
+                entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::setPagesAnswer(Ljava/lang/String;)(pages);
+            };
+
+            player.setPagesSolve = function(pages) {
+                entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::setPagesSolve(Ljava/lang/String;)(pages);
+            };
+
+            // player.getPlayerServices 비교작성
+            player.getPlayerServicesJimun = function() {
+                return entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::getPlayerServicesJimun()();
+            };
+
+            player.getPlayerServicesAnswer = function() {
+                return entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::getPlayerServicesAnswer()();
+            };
+
+            player.getPlayerServicesSolve = function() {
+                return entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::getPlayerServicesSolve()();
+            };
+
+            // player.onPageLoaded 비교작성
+            player.onPageLoadedJimun = function(listener) {
+                entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::statusChangedListenerJimun = listener;
+            };
+            
+            player.onPageLoadedAnswer = function(listener) {
+                entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::statusChangedListenerAnswer = listener;
+            };
+            
+            player.onPageLoadedSolve = function(listener) {
+                entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::statusChangedListenerSolve = listener;
+            };
+            
+            // player.forceScoreUpdate 비교작성
+            player.forceScoreUpdateJimun = function(listener) {
+                entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::forceScoreUpdateJimun()();
+            };
+            player.forceScoreUpdateAnswer = function(listener) {
+                entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::forceScoreUpdateAnswer()();
+            };
+            player.forceScoreUpdateSolve = function(listener) {
+                entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::forceScoreUpdateSolve()();
+            };
+            // kslee native 메소드 추가  ::: player.load2 포함 45개 추가 ▲▲▲
 
 			player.loadCommonPage = function(url, index) {
 				index = index || 0;
@@ -198,6 +426,32 @@ public class PlayerEntryPoint implements EntryPoint {
 			return player;
 		}
 
+        //kslee 추가 ::: icCreatePlayerJimun, Answer, Solve 3개추가됨 ▼▼▼
+        $wnd.icCreatePlayerJimun = function(id) {
+            var player = entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::createAppPlayerJimun(Ljava/lang/String;)(id);
+
+            createAPI(player);
+
+            return player;
+        }        
+
+        $wnd.icCreatePlayerAnswer = function(id) {
+            var player = entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::createAppPlayerAnswer(Ljava/lang/String;)(id);
+
+            createAPI(player);
+
+            return player;
+        }        
+
+        $wnd.icCreatePlayerSolve = function(id) {
+            var player = entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::createAppPlayerSolve(Ljava/lang/String;)(id);
+
+            createAPI(player);
+
+            return player;
+        }        
+        //kslee 추가 ::: icCreatePlayerJimun, Answer, Solve 3개추가됨 ▲▲▲
+ 
 		// Create book
 		$wnd.icCreateBook = function(id, useCover) {
 			var player = entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::createBookPlayer(Ljava/lang/String;Z)(id, useCover);
@@ -222,12 +476,34 @@ public class PlayerEntryPoint implements EntryPoint {
 	 *            wrap this node
 	 */
 	private JavaScriptObject createAppPlayer(String node_id) {
-		this.theApplication = new PlayerApp(node_id, this);
+		//kslee 커스텀 수정 ::: createAppPlayer 메소드 PlayerApp생성자 type 추가되어 인수 3개로 수정됨
+		//this.theApplication = new PlayerApp(node_id, this);
+		this.theApplication = new PlayerApp(node_id, this, "question");
+		return JavaScriptObject.createFunction();
+	}
+
+	//kslee 커스텀 추가 ::: createAppPlayerJimun 메소드 추가됨
+	private JavaScriptObject createAppPlayerJimun(String node_id) {
+		this.theApplicationJimun = new PlayerApp(node_id, this, "jimun");
+		return JavaScriptObject.createFunction();
+	}
+
+	//kslee 커스텀 추가 ::: createAppPlayerAnswer 메소드 추가됨
+	private JavaScriptObject createAppPlayerAnswer(String node_id) {
+		this.theApplicationAnswer = new PlayerApp(node_id, this, "answer");
+		return JavaScriptObject.createFunction();
+	}
+
+	//kslee 커스텀 추가 ::: createAppPlayerSolve 메소드 추가됨
+	private JavaScriptObject createAppPlayerSolve(String node_id) {
+		this.theApplicationSolve = new PlayerApp(node_id, this, "solve");
 		return JavaScriptObject.createFunction();
 	}
 
 	private JavaScriptObject createBookPlayer(String node_id, boolean useCover) {
-		this.theApplication = new PlayerApp(node_id, this);
+		//kslee 커스텀 수정 ::: createBookPlayer 메소드 PlayerApp생성자 type 추가되어 인수 3개로 수정됨
+		//this.theApplication = new PlayerApp(node_id, this);
+		this.theApplication = new PlayerApp(node_id, this, "question");
 		this.theApplication.setBookMode();
 		this.theApplication.showCover(useCover);
 		return JavaScriptObject.createFunction();
@@ -245,6 +521,71 @@ public class PlayerEntryPoint implements EntryPoint {
 		this.theApplication.load(url, pageIndex);
 	}
 
+    //kslee 커스텀 추가 ::: load2메소드 포함 10개 메소드 추가됨 ▼▼▼ 
+    private void load2(String url, String subject, String grade, int pageIndex, boolean bQNote, boolean bloadSeperate) {
+        if (pageIndex < 0) {
+            pageIndex = 0;
+        }
+
+        Utils.isQNote = bQNote;
+        Utils.isLoadSeperate = bloadSeperate;
+        PlayerEntryPoint.subject = subject;
+        PlayerEntryPoint.grade = grade;
+        this.clearBeforeReload();
+        this.theApplication.load(url, pageIndex);
+    }
+	
+    private void loadJimun(String url, int pageIndex) {
+        if (pageIndex < 0) {
+           pageIndex = 0;
+        }
+        this.theApplicationJimun.load(url, pageIndex);
+     }
+
+     private void loadAnswer(String url, int pageIndex) {
+        if (pageIndex < 0) {
+           pageIndex = 0;
+        }
+        this.theApplicationAnswer.load(url, pageIndex);
+     }
+
+     private void loadSolve(String url, int pageIndex) {
+        if (pageIndex < 0) {
+           pageIndex = 0;
+        }
+        this.theApplicationSolve.load(url, pageIndex);
+     }
+
+     private void loadLearnetic(String url, int pageIndex) {
+        Utils.isQNote = false;
+        if (pageIndex < 0) {
+           pageIndex = 0;
+        }
+
+        this.clearBeforeReload();
+        this.theApplication.loadLearnetic(url, pageIndex);
+        //subject = subject;
+        //grade = grade;
+     }
+
+     private void unload() {
+        this.theApplication.unload();
+     }
+
+     private void unloadJimun() {
+        this.theApplicationJimun.unload();
+     }
+
+     private void unloadAnswer() {
+        this.theApplicationAnswer.unload();
+     }
+
+     private void unloadSolve() {
+        this.theApplicationSolve.unload();
+     }
+     //kslee 커스텀 추가 ::: load2메소드 포함 10개 메소드 추가됨 ▲▲▲  
+	
+
 	private void loadCommonPage(String url, int pageIndex) {
 		if (pageIndex < 0) {
 			pageIndex = 0;
@@ -253,42 +594,194 @@ public class PlayerEntryPoint implements EntryPoint {
 		this.theApplication.loadCommonPage(url, pageIndex);
 	}
 
+    //kslee 커스텀 추가 ::: loadCommonPageJimun, Answer, Solve 3개 메소드 추가됨▼▼▼
+    private void loadCommonPageJimun(String url, int pageIndex) {
+        if (pageIndex < 0) {
+           pageIndex = 0;
+        }
+        this.theApplicationJimun.loadCommonPage(url, pageIndex);
+     }
+ 
+     private void loadCommonPageAnswer(String url, int pageIndex) {
+        if (pageIndex < 0) {
+           pageIndex = 0;
+        }
+        this.theApplicationAnswer.loadCommonPage(url, pageIndex);
+     }
+ 
+     private void loadCommonPageSolve(String url, int pageIndex) {
+        if (pageIndex < 0) {
+           pageIndex = 0;
+        }
+        this.theApplicationSolve.loadCommonPage(url, pageIndex);
+     }	
+    //kslee 커스텀 추가 ::: loadCommonPageJimun, Answer, Solve 3개 메소드 추가됨▲▲▲
+	
 	private void setConfig(JavaScriptObject config) {
 		this.theApplication.setConfig(config);
 	}
+	
+    //kslee 커스텀 추가 ::: setConfigJimun, Answer, Solve 3개 메소드 추가됨▼▼▼
+    private void setConfigJimun(JavaScriptObject config) {
+       this.theApplicationJimun.setConfig(config);
+    }
+ 
+    private void setConfigAnswer(JavaScriptObject config) {
+       this.theApplicationAnswer.setConfig(config);
+    }
+ 
+    private void setConfigSolve(JavaScriptObject config) {
+       this.theApplicationSolve.setConfig(config);
+    }	
+    //kslee 커스텀 추가 ::: setConfigJimun, Answer, Solve 3개 메소드 추가됨▲▲▲
 
 	private void forceScoreUpdate() {
 		this.theApplication.updateScore();
 	}
 
+    //kslee 커스텀 추가 ::: forceScoreUpdateJimun, Answer, Solve 3개 메소드 추가됨▼▼▼
+    private void forceScoreUpdateJimun() {
+       this.theApplicationJimun.updateScore();
+    }
+    
+    private void forceScoreUpdateAnswer() {
+       this.theApplicationAnswer.updateScore();
+    }
+    
+    private void forceScoreUpdateSolve() {
+       this.theApplicationSolve.updateScore();
+    }	
+    //kslee 커스텀 추가 ::: forceScoreUpdateJimun, Answer, Solve 3개 메소드 추가됨▲▲▲  
+	
 	private void setAnalytics(String id) {
 		this.theApplication.setAnalytics(id);
 	}
 
+    //kslee 커스텀 추가 ::: setAnalyticsJimun, Answer, Solve 3개 메소드 추가됨▼▼▼
+    private void setAnalyticsJimun(String id) {
+       this.theApplicationJimun.setAnalytics(id);
+    }
+    
+    private void setAnalyticsAnswer(String id) {
+       this.theApplicationAnswer.setAnalytics(id);
+    }
+   
+    private void setAnalyticsSolve(String id) {
+       this.theApplicationSolve.setAnalytics(id);
+    }	
+    //kslee 커스텀 추가 ::: setAnalyticsJimun, Answer, Solve 3개 메소드 추가됨▲▲▲  	
+	
 	private void setState(String state) {
 		this.theApplication.setState(state);
 	}
 
+    //kslee 커스텀 추가 ::: setStateJimun, Answer, Solve 3개 메소드 추가됨▼▼▼
+    private void setStateJimun(String state) {
+       this.theApplicationJimun.setState(state);
+    }
+    
+    private void setStateAnswer(String state) {
+       this.theApplicationAnswer.setState(state);
+    }
+    
+    private void setStateSolve(String state) {
+       this.theApplicationSolve.setState(state);
+    }
+    //kslee 커스텀 추가 ::: setStateJimun, Answer, Solve 3개 메소드 추가됨▲▲▲  	
+	
 	private void setPages(String pagesSub) {
 		this.theApplication.setPages(pagesSub);
 	}
+	
+    //kslee 커스텀 추가 ::: setPagesJimun, Answer, Solve 3개 메소드 추가됨▼▼▼
+    private void setPagesJimun(String pagesSub) {
+       this.theApplicationJimun.setPages(pagesSub);
+    }
+ 
+    private void setPagesAnswer(String pagesSub) {
+       this.theApplicationAnswer.setPages(pagesSub);
+    }
+ 
+    private void setPagesSolve(String pagesSub) {
+       this.theApplicationSolve.setPages(pagesSub);
+    }	
+    //kslee 커스텀 추가 ::: setPagesJimun, Answer, Solve 3개 메소드 추가됨▲▲▲  
 
 	private String getState() {
 		return this.theApplication.getState();
 	}
 	
+    //kslee 커스텀 추가 ::: getStateJimun, Answer, Solve 3개 메소드 추가됨▼▼▼
+    private String getStateJimun() {
+       return this.theApplicationJimun.getState();
+    }
+ 
+    private String getStateAnswer() {
+       return this.theApplicationAnswer.getState();
+    }
+ 
+    private String getStateSolve() {
+       return this.theApplicationSolve.getState();
+    }	
+    //kslee 커스텀 추가 ::: getStateJimun, Answer, Solve 3개 메소드 추가됨▲▲▲  
+	
+
 	private JavaScriptObject getSemiResponsiveLayouts() {
 		return this.theApplication.getSemiResponsiveLayouts();
 	}
 
+    //kslee 커스텀 추가 ::: getSemiResponsiveLayoutsJimun, Answer, Solve 3개 메소드 추가됨▼▼▼
+    private JavaScriptObject getSemiResponsiveLayoutsJimun() {
+       return this.theApplicationJimun.getSemiResponsiveLayouts();
+    }
+ 
+    private JavaScriptObject getSemiResponsiveLayoutsAnswer() {
+       return this.theApplicationAnswer.getSemiResponsiveLayouts();
+    }
+ 
+    private JavaScriptObject getSemiResponsiveLayoutsSolve() {
+       return this.theApplicationSolve.getSemiResponsiveLayouts();
+    }	
+    //kslee 커스텀 추가 ::: getSemiResponsiveLayoutsJimun, Answer, Solve 3개 메소드 추가됨▲▲▲  	
+	
+	
 	private JavaScriptObject getPlayerServices() {
 		return this.theApplication.getPlayerServices().getAsJSObject();
 	}
+	
+    //kslee 커스텀 추가 ::: getPlayerServicesJimun, Answer, Solve 3개 메소드 추가됨▼▼▼
+    private JavaScriptObject getPlayerServicesJimun() {
+       return this.theApplicationJimun.getPlayerServices().getAsJSObject();
+    }
+ 
+    private JavaScriptObject getPlayerServicesAnswer() {
+       return this.theApplicationAnswer.getPlayerServices().getAsJSObject();
+    }
+ 
+    private JavaScriptObject getPlayerServicesSolve() {
+       return this.theApplicationSolve.getPlayerServices().getAsJSObject();
+    }	
+    //kslee 커스텀 추가 ::: getPlayerServicesJimun, Answer, Solve 3개 메소드 추가됨▲▲▲  	
 	
 	private boolean changeLayout(String layoutID) {
 		return this.theApplication.changeLayout(layoutID);
 	}
 
+    //kslee 커스텀 추가 ::: changeLayoutJimun, Answer, Solve 3개 메소드 추가됨▼▼▼
+    private boolean changeLayoutJimun(String layoutID) {
+       return this.theApplicationJimun.changeLayout(layoutID);
+    }
+ 
+    private boolean changeLayoutAnswer(String layoutID) {
+       return this.theApplicationAnswer.changeLayout(layoutID);
+    }
+ 
+    private boolean changeLayoutSolve(String layoutID) {
+       return this.theApplicationSolve.changeLayout(layoutID);
+    }	
+    //kslee 커스텀 추가 ::: changeLayoutJimun, Answer, Solve 3개 메소드 추가됨▲▲▲
+	    
+	    
 	private void sendLayoutChangedEvent(String value) {
 	    this.theApplication
 			.getPlayerServices()
@@ -316,6 +809,7 @@ public class PlayerEntryPoint implements EntryPoint {
 	}-*/;
 
 	public void onPageLoaded() {
+	    Utils.consoleLog("onPageLoaded");
 		fireCallback(this.pageLoadedListener);
 		final int currentPageIndex = this.theApplication.getPlayerServices()
 				.getCurrentPageIndex();
@@ -323,9 +817,47 @@ public class PlayerEntryPoint implements EntryPoint {
 		fireStatusChanged(this.statusChangedListener, "PageLoaded", source, "");
 	}
 
+    //kslee 커스텀 추가 ::: onPageLoadedJimun, Answer, Solve 3개 메소드 추가됨▼▼▼
+    public void onPageLoadedJimun() {
+       fireCallback(this.pageLoadedListenerJimun);
+       int currentPageIndex = this.theApplicationJimun.getPlayerServices().getCurrentPageIndex();
+       String source = Integer.toString(currentPageIndex + 1);
+       fireStatusChanged(this.statusChangedListenerJimun, "PageLoaded", source, "");
+    }
+ 
+    public void onPageLoadedAnswer() {
+       fireCallback(this.pageLoadedListenerAnswer);
+       int currentPageIndex = this.theApplicationAnswer.getPlayerServices().getCurrentPageIndex();
+       String source = Integer.toString(currentPageIndex + 1);
+       fireStatusChanged(this.statusChangedListenerAnswer, "PageLoaded", source, "");
+    }
+ 
+    public void onPageLoadedSolve() {
+       fireCallback(this.pageLoadedListenerSolve);
+       int currentPageIndex = this.theApplicationSolve.getPlayerServices().getCurrentPageIndex();
+       String source = Integer.toString(currentPageIndex + 1);
+       fireStatusChanged(this.statusChangedListenerSolve, "PageLoaded", source, "");
+    }	
+    //kslee 커스텀 추가 ::: onPageLoadedJimun, Answer, Solve 3개 메소드 추가됨▲▲▲
+
+	// js에 없음
 	public void onScrollTo(int top) {
 		fireScrollTo(this.pageScrollToListener, top);
 	}
+	
+    //kslee 커스텀 추가 ::: onScrollToJimun, Answer, Solve 3개 메소드 추가됨▼▼▼
+    public void onScrollToJimun(int top) {
+       fireScrollTo(this.pageScrollToListenerJimun, top);
+    }
+ 
+    public void onScrollToAnswer(int top) {
+       fireScrollTo(this.pageScrollToListenerAnswer, top);
+    }
+ 
+    public void onScrollToSolve(int top) {
+       fireScrollTo(this.pageScrollToListenerSolve, top);
+    }	
+    //kslee 커스텀 추가 ::: onScrollToJimun, Answer, Solve 3개 메소드 추가됨▲▲▲
 	
 	private static native void fireExternalEvent(JavaScriptObject callback, String eventType, String data)/*-{
 		if (callback != null) {
@@ -337,13 +869,44 @@ public class PlayerEntryPoint implements EntryPoint {
 		fireExternalEvent(this.externalEventListener, eventType, data);
 	}
 
+	//kslee js에 없음
 	public JavaScriptObject getPageScrollToObject() {
 		return this.pageScrollToListener;
 	}
 
+    //kslee 커스텀 추가 ::: getPageScrollToObjectJimun, Answer, Solve 3개 메소드 추가됨▼▼▼
+    public JavaScriptObject getPageScrollToObjectJimun() {
+       return this.pageScrollToListenerJimun;
+    }
+ 
+    public JavaScriptObject getPageScrollToObjetAnswer() {
+       return this.pageScrollToListenerJimun;
+    }
+ 
+    public JavaScriptObject getPageScrollToObjectSolve() {
+       return this.pageScrollToListenerSolve;
+    }	
+    //kslee 커스텀 추가 ::: getPageScrollToObjectJimun, Answer, Solve 3개 메소드 추가됨▲▲▲
+	
+	//kslee js에 없음
 	public void fireOutstretchHeightEvent() {
 		fireCallback(this.outstretchHeightListener);
 	}
+
+	
+    //kslee 커스텀 추가 ::: fireOutstretchHeightEventJimun, Answer, Solve 3개 메소드 추가됨▼▼▼
+    public void fireOutstretchHeightEventJimun() {
+       fireCallback(this.outstretchHeightListenerJimun);
+    }
+ 
+    public void fireOutstretchHeightEventAnswer() {
+       fireCallback(this.outstretchHeightListenerAnswer);
+    }
+ 
+    public void fireOutstretchHeightEventSolve() {
+       fireCallback(this.outstretchHeightListenerSolve);
+    }	
+    //kslee 커스텀 추가 ::: fireOutstretchHeightEventJimun, Answer, Solve 3개 메소드 추가됨▲▲▲  	
 
 	public JavaScriptObject getContextMetadata() {
 		return this.contextMetadata;

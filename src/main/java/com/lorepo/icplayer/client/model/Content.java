@@ -735,5 +735,21 @@ public class Content implements IContentBuilder, IContent {
 			}
 		}
 	}
+	
+	//kslee 커스텀 추가 ::: ▼▼▼
+	public IChapter getCommonTableOfContents() {
+		return this.commonPages;
+	}
+	
+	public IContentNode getTableOfContent() {
+		return this.pages.get(0);
+	}
 
+	public IContentNode getTableOfContentByHref(String href) {
+		return this.pages.getPageByHref(href);
+	}	
+	
+	public void addPage(IContentNode page) {
+		this.pages.add(page);
+	}	//kslee 커스텀 추가 ::: ▲▲▲
 }

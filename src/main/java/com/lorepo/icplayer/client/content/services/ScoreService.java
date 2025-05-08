@@ -11,6 +11,7 @@ import com.lorepo.icplayer.client.module.api.player.IScoreService;
 import com.lorepo.icplayer.client.module.api.player.PageScore;
 import com.lorepo.icplayer.client.module.api.player.PageOpenActivitiesScore;
 import com.lorepo.icplayer.client.module.api.player.PageOpenActivitiesScore.ScoreInfo;
+import com.lorepo.icplayer.client.utils.Utils;
 
 public class ScoreService implements IScoreService {
 
@@ -22,6 +23,11 @@ public class ScoreService implements IScoreService {
 	private final boolean useLast;
 	private final ScoreType scoreType;
 	private IPlayerServices playerServices;
+	
+	//kslee 커스텀 추가  ::: groupids 필드 추가됨 
+	private final HashMap<String, String> groupids;
+	//kslee 커스텀 추가  ::: groupTexts 필드 추가됨 
+	private final HashMap<String, HashMap<String, String>> groupTexts;
 
 	public ScoreService(ScoreType scoreType){
 		this.scoreType = scoreType;
@@ -30,6 +36,49 @@ public class ScoreService implements IScoreService {
 		pagesNamesToIds = new HashMap<String, String>();
 		pageScores = new HashMap<String, PageScore>();
 		pagesOpenActivitiesScores = new HashMap<String, PageOpenActivitiesScore>();
+		
+		//kslee 커스텀 추가  ::: groupids 필드 초기화 추가됨 
+		this.groupids = new HashMap();
+		//kslee 커스텀 추가  ::: groupTexts 필드 초기화 추가됨 
+		this.groupTexts = new HashMap();
+	}
+
+	//kslee 커스텀 추가  ::: setTextGroupID(String module, String groupID) 메소드 추가됨 
+	@Override
+	public void setTextGroupID(String module, String groupID) {
+		this.groupids.remove(module);
+		if (groupID.length() > 0) {
+			Utils.consoleLog("setTextGroupID module : " + module + ", groupID : " + groupID);
+			this.groupids.put(module, groupID);
+	    }
+	
+	}
+
+	//kslee 커스텀 추가  ::: getTextGroupID() 메소드 추가됨 
+	@Override
+	public HashMap<String, String> getTextGroupID() {
+		return this.groupids;
+	}
+	
+	//kslee 커스텀 추가  ::: setGroupTexts(String module, String text) 메소드 추가됨 
+	@Override
+	public void setGroupTexts(String module, String text) {
+		String groupID = (String)this.groupids.get(module);
+		if (text.length() > 0) {
+			HashMap<String, String> group = (HashMap)this.groupTexts.get(groupID);
+			if (group == null) {
+				group = new HashMap();
+			}
+		
+			group.put(module, text);
+			this.groupTexts.put(groupID, group);
+		}
+	 }
+	
+	//kslee 커스텀 추가  ::: getGroupTexts() 메소드 추가됨 
+	@Override
+	public HashMap<String, HashMap<String, String>> getGroupTexts() {
+		return this.groupTexts;
 	}
 
 	@Override

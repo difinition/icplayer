@@ -9,10 +9,12 @@ import com.lorepo.icf.utils.ExtendedRequestBuilder;
 import com.lorepo.icf.utils.StringUtils;
 import com.lorepo.icf.utils.UUID;
 import com.lorepo.icf.utils.URLUtils;
+import com.lorepo.icplayer.client.PlayerEntryPoint;
 import com.lorepo.icplayer.client.model.alternativeText.AlternativeTextService;
 import com.lorepo.icplayer.client.module.NestedAddonUtils;
 import com.lorepo.icplayer.client.module.text.LinkInfo.LinkType;
 import com.lorepo.icplayer.client.utils.DomElementManipulator;
+import com.lorepo.icplayer.client.utils.Utils;
 
 import java.util.*;
 
@@ -50,6 +52,39 @@ public class TextParser {
 
 	private HashMap<String, String> variables = new HashMap<String, String>();
 	private ParserResult parserResult;
+	
+	//kslee 커스텀 추가  ::: gapStyles ~ isQuestionNumber 6개 필드 추가됨
+	private String gapStyles = "";
+	private boolean multipleLines = false;
+	private int gapHeight = 0;
+	private String isHandwritingInput = "None";
+	private boolean isIgnoreSpace = false;
+	private boolean isQuestionNumber = false;
+
+	//kslee 커스텀 추가  ::: setGapStyles() 메소드 추가됨
+	public void setGapStyles(String styles) {
+		this.gapStyles = styles;
+	}
+
+	//kslee 커스텀 추가  ::: setMultipleLines() 메소드 추가됨
+	public void setMultipleLines(Boolean multipleLines) {
+		this.multipleLines = multipleLines;
+	}
+
+	//kslee 커스텀 추가  ::: setGapHeight() 메소드 추가됨
+	public void setGapHeight(int gapHeight) {
+		this.gapHeight = gapHeight;
+	}
+	
+	//kslee 커스텀 추가  ::: setIsHandwritingInput() 메소드 추가됨
+	public void setIsHandwritingInput(String isHandwritingInput) {
+		this.isHandwritingInput = isHandwritingInput;
+	}
+
+	//kslee 커스텀 추가  ::: setIsQuestionNumber() 메소드 추가됨
+	public void setIsQuestionNumber(Boolean isQuestionNumber) {
+		this.isQuestionNumber = isQuestionNumber;
+	}	
 
 	public void setUseDraggableGaps(boolean draggable) {
 		useDraggableGaps = draggable;
@@ -90,12 +125,33 @@ public class TextParser {
 		return parse(srcText);
 	}
 
+//kslee 커스텀 parse(String srcText) 메소드 수정됨 ::: ▼▼▼
 	public ParserResult parse (String srcText) {
 		this.gapsOrder = calculateGapsOrder(srcText);
 
 		parserResult = new ParserResult();
 		parserResult.originalText = srcText;
-		srcText = srcText.replaceAll("\\s+", " ");
+		//kslee 로직추가 ::: ▼▼▼
+		//srcText = srcText.replaceAll("\\s+", " ");
+		if (!this.multipleLines) {
+			srcText = srcText.replaceAll("\\s+", " ");
+		}
+
+		if (Utils.isQNote) {
+			srcText = srcText.replaceAll("<u>", "<span class=\"underline_math\">");
+			srcText = srcText.replaceAll("</u>", "</span>");
+		}
+
+		if (PlayerEntryPoint.subject.toUpperCase().equals("ENG")) {
+			Utils.consoleLog("srcText 1 : " + srcText);
+			srcText = srcText.replace("\\(,\\)", ",");
+		}
+
+		if (Utils.isSafari() && srcText.indexOf("&nbsp;") > -1) {
+			srcText = Utils.parseNBSP(srcText);
+		}
+		//kslee 로직추가 ::: ▲▲▲
+
 		hasSyntaxError = false;
 		try {
 			if (this.editorMode) {
@@ -128,6 +184,8 @@ public class TextParser {
 		parserResult.hasSyntaxError = hasSyntaxError;
 		return parserResult;
 	}
+//kslee 커스텀 parse(String srcText) 메소드 수정됨 ::: ▲▲▲	
+	
 
 	private List<String> calculateGapsOrder (String text) {
 		String rawText = getRawTextSource(text);
@@ -297,24 +355,54 @@ public class TextParser {
 
 		return replaceText;
 	}
-	
-	private DomElementManipulator createGapInputElement(String id, String answer, Map<String,String> gapOptions) {
-		DomElementManipulator inputElement = new DomElementManipulator("input");
+//kslee 커스텀 createGapInputElement(String id, String answer, Map<String,String> gapOptions) 메소드 수정됨 ::: ▼▼▼	
+//	private DomElementManipulator createGapInputElement(String id, String answer, Map<String,String> gapOptions) {
+//		DomElementManipulator inputElement = new DomElementManipulator("input");
+//		inputElement.setHTMLAttribute("id", id);
+//		inputElement.setHTMLAttribute("type", "edit");
+//		inputElement.setHTMLAttribute("data-gap", "editable");
+//		if (this.editorMode) {
+//			inputElement.setHTMLAttribute("data-gap-value", "\\gap{" + answer + "}"+createGapOptionString(gapOptions));
+//		}
+//		
+//		inputElement.setHTMLAttribute("size", "" + answer.length());
+//		inputElement.addClass("ic_gap");
+//		if (this.editorMode) {
+//			inputElement.setHTMLAttribute("readonly", true);
+//		}
+//		
+//		return inputElement;
+//	}
+	private DomElementManipulator createGapInputElement(String id, String answer, Map<String, String> gapOptions) {
+		DomElementManipulator inputElement;
+		if (this.multipleLines) {
+			inputElement = new DomElementManipulator("textarea");
+		} else {
+			inputElement = new DomElementManipulator("input");
+		}
+
 		inputElement.setHTMLAttribute("id", id);
 		inputElement.setHTMLAttribute("type", "edit");
 		inputElement.setHTMLAttribute("data-gap", "editable");
 		if (this.editorMode) {
 			inputElement.setHTMLAttribute("data-gap-value", "\\gap{" + answer + "}"+createGapOptionString(gapOptions));
 		}
-		
+
 		inputElement.setHTMLAttribute("size", "" + answer.length());
+
+		try {
+			inputElement.setHTMLAttribute("isHandwritingInput", this.isHandwritingInput);
+		} catch (Exception var6) {
+		}
+
 		inputElement.addClass("ic_gap");
 		if (this.editorMode) {
 			inputElement.setHTMLAttribute("readonly", true);
 		}
-		
+
 		return inputElement;
 	}
+//kslee 커스텀 createGapInputElement(String id, String answer, Map<String,String> gapOptions) 메소드 수정됨 ::: ▲▲▲	
 	
 	private String createGapOptionString(Map<String,String> gapOptions) {
 		if(gapOptions==null) {
@@ -359,58 +447,144 @@ public class TextParser {
 		return replaceText;
 	}
 	
-	private DomElementManipulator createFilledGapInputElement(String placeholder, String answer, String id, int maxAnswerLength, Map<String,String> gapOptions) {
-		DomElementManipulator inputElement = new DomElementManipulator("input");
+//kslee 커스텀 createFilledGapInputElement(String placeholder, String answer, String id, int maxAnswerLength, Map<String,String> gapOptions) 메소드 수정됨 ::: ▼▼▼
+//	private DomElementManipulator createFilledGapInputElement(String placeholder, String answer, String id, int maxAnswerLength, Map<String,String> gapOptions) {
+//		DomElementManipulator inputElement = new DomElementManipulator("input");
+//		inputElement.setHTMLAttribute("data-gap", "filled");
+//		if (this.editorMode) {
+//			inputElement.setHTMLAttribute("data-gap-value", "\\filledGap{" + placeholder + "|" + answer + "}"+createGapOptionString(gapOptions));
+//		}
+//		inputElement.setHTMLAttribute("id", id);
+//		inputElement.setHTMLAttribute("type", "edit");
+//		inputElement.setHTMLAttribute("size", "" + Math.max(maxAnswerLength, placeholder.length()));
+//		inputElement.setHTMLAttribute("placeholder", placeholder);
+//		inputElement.addClass("ic_filled_gap");
+//		if (this.editorMode) {
+//			inputElement.setHTMLAttribute("readonly", true);
+//		}
+//		
+//		return inputElement;
+//	}
+	private DomElementManipulator createFilledGapInputElement(String placeholder, String answer, String id, int maxAnswerLength, Map<String, String> gapOptions) {
+		Utils.consoleLog("multipleLines : " + this.multipleLines);
+		DomElementManipulator inputElement;
+		if (this.multipleLines) {
+			inputElement = new DomElementManipulator("textarea");
+		} else {
+			inputElement = new DomElementManipulator("input");
+		}
+
 		inputElement.setHTMLAttribute("data-gap", "filled");
 		if (this.editorMode) {
 			inputElement.setHTMLAttribute("data-gap-value", "\\filledGap{" + placeholder + "|" + answer + "}"+createGapOptionString(gapOptions));
 		}
+
 		inputElement.setHTMLAttribute("id", id);
 		inputElement.setHTMLAttribute("type", "edit");
 		inputElement.setHTMLAttribute("size", "" + Math.max(maxAnswerLength, placeholder.length()));
 		inputElement.setHTMLAttribute("placeholder", placeholder);
+
+		try {
+			inputElement.setHTMLAttribute("isHandwritingInput", this.isHandwritingInput);
+		} catch (Exception var8) {
+		}
+
 		inputElement.addClass("ic_filled_gap");
 		if (this.editorMode) {
 			inputElement.setHTMLAttribute("readonly", true);
 		}
-		
+
 		return inputElement;
 	}
-	
-	private String matchMathGap(String expression, Map<String,String> gapOptions) {
-		String replaceText = null;
-		String langTag = gapOptions!=null && gapOptions.containsKey("lang")? gapOptions.get("lang") : "";
+//kslee 커스텀 createFilledGapInputElement(String placeholder, String answer, String id, int maxAnswerLength, Map<String,String> gapOptions) 메소드 수정됨 ::: ▲▲▲
 
-		int index = expression.indexOf(":");
-		
-		if (index > 0) {
-			String value = expression.substring(0, index).trim();
-			String answer = expression.substring(index + 1).trim();
-			String id = baseId + "-" + idCounter;
-			
-			replaceText = // \gap{id|size|width|{{value:id}} - {{value:id}} will be replaced in setState
-						"\\gap{" +
-						id + 
-						"|" + 
-						answer.length() + 
-						"|" + 
-						gapWidth +  
-						"|" +
-						"{{value:" + id + "}}" + 
-						"}";
-			idCounter++;
-			
-			GapInfo gi = new GapInfo(id, Integer.parseInt(value),
-					isCaseSensitive, isIgnorePunctuation, gapMaxLength, isNumericOnly, langTag);
-			String[] answers = answer.split("\\|");
-			for (int i = 0; i < answers.length; i++) {
-				gi.addAnswer(answers[i]);
-			}
-			parserResult.gapInfos.add(gi);
-		}
+//kslee 커스텀 matchMathGap(String expression, Map<String,String> gapOptions) 메소드 수정됨 ::: ▼▼▼
+//	private String matchMathGap(String expression, Map<String,String> gapOptions) {
+//		String replaceText = null;
+//		String langTag = gapOptions!=null && gapOptions.containsKey("lang")? gapOptions.get("lang") : "";
+//
+//		int index = expression.indexOf(":");
+//		
+//		if (index > 0) {
+//			String value = expression.substring(0, index).trim();
+//			String answer = expression.substring(index + 1).trim();
+//			String id = baseId + "-" + idCounter;
+//			
+//			replaceText = // \gap{id|size|width|{{value:id}} - {{value:id}} will be replaced in setState
+//						"\\gap{" +
+//						id + 
+//						"|" + 
+//						answer.length() + 
+//						"|" + 
+//						gapWidth +  
+//						"|" +
+//						"{{value:" + id + "}}" + 
+//						"}";
+//			idCounter++;
+//			
+//			GapInfo gi = new GapInfo(id, Integer.parseInt(value),
+//					isCaseSensitive, isIgnorePunctuation, gapMaxLength, isNumericOnly, langTag);
+//			String[] answers = answer.split("\\|");
+//			for (int i = 0; i < answers.length; i++) {
+//				gi.addAnswer(answers[i]);
+//			}
+//			parserResult.gapInfos.add(gi);
+//		}
+//
+//		return replaceText;
+//	}
+	private String matchMathGap(String expression, Map<String, String> gapOptions) {
+	    String replaceText = null;
+	    String langTag = (gapOptions != null && gapOptions.containsKey("lang")) ? gapOptions.get("lang") : "";
 
-		return replaceText;
+	    int index = expression.indexOf(":");
+	    if (index > 0) {
+	        String value = expression.substring(0, index).trim();
+	        String answer = expression.substring(index + 1).trim();
+	        String id = baseId + "-" + idCounter;
+
+	        int calculatedGapWidth = 0;
+	        int gapWidthToUse = gapWidth;
+
+	        if (Utils.isQNote) {
+	            calculatedGapWidth = Utils.getCalculatedGapWidthQNote(answer);
+	            gapWidthToUse = (gapWidth == 0) ? calculatedGapWidth : gapWidth;
+	        }
+
+	        Utils.consoleLog("matchMathGap answer.length() : " + answer.length() + ", gapWidth : " + gapWidthToUse);
+
+	        replaceText = "\\gap{" +
+	                id + "|" +
+	                answer.length() + "|" +
+	                gapWidthToUse + "|" +
+	                "{{value:" + id + "}}"
+	                + "}";
+
+	        idCounter++;
+
+	        GapInfo gi = new GapInfo(
+	            id,
+	            Integer.parseInt(value),
+	            isCaseSensitive,
+	            isIgnorePunctuation,
+	            gapMaxLength,
+	            isNumericOnly,
+	            langTag
+	        );
+
+	        String[] answers = answer.split("\\|");
+	        for (String ans : answers) {
+	            if (ans != null && !ans.isEmpty()) {
+	                gi.addAnswer(ans);
+	            }
+	        }
+
+	        parserResult.gapInfos.add(gi);
+	    }
+
+	    return replaceText;
 	}
+//kslee 커스텀 matchMathGap(String expression, Map<String,String> gapOptions) 메소드 수정됨 ::: ▲▲▲
 
 	private String matchDraggableFilledGap(String expression, Map<String,String> gapOptions) {
 		String langTag = getLangTagForGap(gapOptions);
@@ -728,14 +902,32 @@ public class TextParser {
 		return parsedText;
 	}
 
+//kslee 커스텀 isBetweenBrackets(String text) 메소드 수정됨 ::: ▼▼▼
+//	private static boolean isBetweenBrackets(String text) {
+//		int endIndex = text.indexOf("\\)");
+//		if (endIndex > 0) {
+//			int startIndex = text.indexOf("\\(");
+//			return startIndex >= 0 && startIndex < endIndex;
+//		}
+//		return false;
+//	}
 	private static boolean isBetweenBrackets(String text) {
-		int endIndex = text.indexOf("\\)");
-		if (endIndex > 0) {
-			int startIndex = text.indexOf("\\(");
-			return startIndex >= 0 && startIndex < endIndex;
-		}
-		return false;
+	    int endIndex = text.indexOf("\\)");
+	    if (endIndex < 0) {
+	        endIndex = text.indexOf("\\]");
+	    }
+
+	    if (endIndex > 0) {
+	        int startIndex = text.indexOf("\\(");
+	        if (startIndex < 0) {
+	            startIndex = text.indexOf("\\[");
+	        }
+	        return startIndex >= 0 && startIndex < endIndex;
+	    }
+
+	    return false;
 	}
+//kslee 커스텀 isBetweenBrackets(String text) 메소드 수정됨 ::: ▲▲▲	
 	
 	private String parseGaps(String srcText) {
 		final String pattern = "\\\\gap\\{|\\\\filledGap\\{";
@@ -956,39 +1148,66 @@ public class TextParser {
 		return output;
 	}
 
+//kslee 커스텀 parseAudio(String srcText) 메소드 수정됨 ::: ▼▼▼
+//	private String parseAudio(String srcText) {
+//		final String patternString = "\\\\audio\\{(.+?)\\}";
+//		RegExp regexp = RegExp.compile(patternString);
+//		MatchResult matchResult;
+//
+//		String input = srcText;
+//		String output = "";
+//
+//		while ((matchResult = regexp.exec(input)) != null) {
+//			if (matchResult.getGroupCount() > 0) {
+//				String group = matchResult.getGroup(0);
+//				String filePath = matchResult.getGroup(1);
+//				if (contentBaseURL != null) {
+//					filePath = URLUtils.resolveURL(contentBaseURL, filePath, true);
+//				} else if (ExtendedRequestBuilder.getSigningPrefix() != null) {
+//					filePath = URLUtils.resolveURL(baseURL, filePath, false);
+//				}
+//				filePath = ExtendedRequestBuilder.signURL(filePath);
+//				int lastIndex = matchResult.getIndex();
+//				int groupLength = group.length();
+//
+//				output += input.substring(0, lastIndex);
+//				input = input.substring(lastIndex + groupLength);
+//				output += createAudio(filePath);
+//			} else {
+//				break;
+//			}
+//
+//		}
+//		output += input;
+//
+//		return output;
+//	}
 	private String parseAudio(String srcText) {
-		final String patternString = "\\\\audio\\{(.+?)\\}";
+		String patternString = "\\\\audio\\{(.+?)\\}";
 		RegExp regexp = RegExp.compile(patternString);
 		MatchResult matchResult;
 
 		String input = srcText;
-		String output = "";
-
-		while ((matchResult = regexp.exec(input)) != null) {
-			if (matchResult.getGroupCount() > 0) {
-				String group = matchResult.getGroup(0);
-				String filePath = matchResult.getGroup(1);
-				if (contentBaseURL != null) {
-					filePath = URLUtils.resolveURL(contentBaseURL, filePath, true);
-				} else if (ExtendedRequestBuilder.getSigningPrefix() != null) {
-					filePath = URLUtils.resolveURL(baseURL, filePath, false);
-				}
-				filePath = ExtendedRequestBuilder.signURL(filePath);
-				int lastIndex = matchResult.getIndex();
-				int groupLength = group.length();
-
-				output += input.substring(0, lastIndex);
-				input = input.substring(lastIndex + groupLength);
-				output += createAudio(filePath);
-			} else {
-				break;
+		String output;
+		String filePath;
+		for (output = ""; (matchResult = regexp.exec(input)) != null
+				&& matchResult.getGroupCount() > 0; output = output + this.createAudio(filePath)) {
+			String group = matchResult.getGroup(0);
+			filePath = matchResult.getGroup(1);
+			if (this.contentBaseURL != null) {
+				filePath = URLUtils.resolveURL(this.contentBaseURL, filePath, true);
 			}
 
+			int lastIndex = matchResult.getIndex();
+			int groupLength = group.length();
+			output = output + input.substring(0, lastIndex);
+			input = input.substring(lastIndex + groupLength);
 		}
-		output += input;
 
+		output = output + input;
 		return output;
 	}
+//kslee 커스텀 parseAudio(String srcText) 메소드 수정됨 ::: ▲▲▲
 
 	private String createAudio(String filePath) {
 		String id = UUID.uuid(8);

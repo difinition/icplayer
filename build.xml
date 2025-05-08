@@ -493,7 +493,10 @@
         <antcall target="test.addons"/>
     </target>
 
-    <target name="build" depends="clean, test, gwtc" description="Build this project"/>
+	<!-- kslee 최초빌드시 Utils의 native void consoleLog 및 native String getAppName를 각 java메소드로 대체해서 test하자!! -->
+	<!-- kslee 이후빌드시 Utils의 native void consoleLog 및 native String getAppName를 사용하여 결과물을 만들자 !! -->
+	<!-- <target name="build" depends="clean, test, gwtc" description="Build this project"/> -->
+    <target name="build" depends="clean, gwtc" description="Build this project"/>
 
     <target name="build.full" depends="clean, test.full, gwtc" description="Build this project with addon tests"/>
 
@@ -507,7 +510,17 @@
         <copy todir="dist/build">
             <fileset dir="doc/demo"/>
         </copy>
+        	
+    	<!-- kslee 커스텀 동아빌드원본에서 추가  -->
+    	<copy todir="dist/build/icplayer">
+            <fileset dir="src/main/java/com/lorepo/icplayer/public" />
+        </copy>
 
+    	<!-- kslee 커스텀  동아빌드원본에서 추가  -->
+        <copy todir="dist/build/icplayer/addons/">
+            <fileset dir="addons_donga" />
+        </copy>
+    	
         <zip destfile="dist/icplayer.zip" basedir="dist/build"/>
     </target>
 

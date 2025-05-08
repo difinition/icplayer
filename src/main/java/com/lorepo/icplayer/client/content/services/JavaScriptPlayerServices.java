@@ -1,5 +1,6 @@
 package com.lorepo.icplayer.client.content.services;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -52,6 +53,9 @@ import com.lorepo.icplayer.client.module.api.player.PageOpenActivitiesScore;
 import com.lorepo.icplayer.client.module.api.player.PageOpenActivitiesScore.ScoreInfo;
 import com.lorepo.icplayer.client.printable.IPrintableModuleModel;
 import com.lorepo.icplayer.client.printable.Printable;
+import com.lorepo.icplayer.client.utils.Utils;
+import com.lorepo.icplayer.client.model.page.group.GroupPresenter;
+
 
 public class JavaScriptPlayerServices {
 	private final IPlayerServices playerServices;
@@ -119,6 +123,11 @@ public class JavaScriptPlayerServices {
 			return x.@com.lorepo.icplayer.client.content.services.JavaScriptPlayerServices::getCurrentPageIndex()();
 		};
 		
+		//kslee 커스텀 추가 native ::: getCurrentPageID
+		playerServices.getCurrentPageID = function() {
+			return x.@com.lorepo.icplayer.client.content.services.JavaScriptPlayerServices::getCurrentPageID()();
+		};
+		
 		playerServices.getPageTitle = function() {
 			return x.@com.lorepo.icplayer.client.content.services.JavaScriptPlayerServices::getPageTitle()();
 		};
@@ -155,6 +164,16 @@ public class JavaScriptPlayerServices {
 				x.@com.lorepo.icplayer.client.content.services.JavaScriptPlayerServices::gotoPageIndex(I)(index);
 			};
 			
+			//kslee 커스텀 추가 native ::: commands.nextPage
+			commands.nextPage = function(index) {
+				x.@com.lorepo.icplayer.client.content.services.JavaScriptPlayerServices::gotoNextPage()();
+			};
+			
+			//kslee 커스텀 추가 native ::: commands.prevPage
+			commands.prevPage = function(index) {
+				x.@com.lorepo.icplayer.client.content.services.JavaScriptPlayerServices::gotoPrevPage()();
+			};
+			
 			commands.gotoPageId = function(pageId) {
 				x.@com.lorepo.icplayer.client.content.services.JavaScriptPlayerServices::gotoPageId(Ljava/lang/String;)(pageId);
 			};
@@ -183,6 +202,7 @@ public class JavaScriptPlayerServices {
 				return x.@com.lorepo.icplayer.client.content.services.JavaScriptPlayerServices::increaseMistakeCounter()();
 			};
 
+			//kslee 커스텀 변경 native ::: commands.checkAnswers = function() { 에서 인수가 있는 메소드로 변경됨 ※단순 업데이트일까?
 			commands.checkAnswers = function(updateCounter) {
 				if (updateCounter == undefined) updateCounter = true;
 				return x.@com.lorepo.icplayer.client.content.services.JavaScriptPlayerServices::checkAnswers(Z)(updateCounter);
@@ -203,6 +223,11 @@ public class JavaScriptPlayerServices {
 			
 			commands.sendPageAllOkOnValueChanged = function(sendEvent) {
 				return x.@com.lorepo.icplayer.client.content.services.JavaScriptPlayerServices::sendPageAllOkOnValueChanged(Z)(sendEvent);
+			};
+			
+			//kslee 커스텀 추가 native ::: commands.getPageController
+			commands.getPageController = function() {
+				return x.@com.lorepo.icplayer.client.content.services.JavaScriptPlayerServices::getPageController()();
 			};
 			
 			commands.setNavigationPanelsAutomaticAppearance = function(shouldAppear) {
@@ -488,6 +513,11 @@ public class JavaScriptPlayerServices {
 		playerServices.isPlayerInCrossDomain = function() {
 			return x.@com.lorepo.icplayer.client.content.services.JavaScriptPlayerServices::isPlayerInCrossDomain()();
 		}
+
+		//kslee 커스텀 추가 native ::: playerServices.setDisable
+		playerServices.setDisable = function(isDisable){
+			x.@com.lorepo.icplayer.client.content.services.JavaScriptPlayerServices::setDisable(Z)(isDisable); 
+		};
 		
 		playerServices.isWCAGOn = function() {
 			return x.@com.lorepo.icplayer.client.content.services.JavaScriptPlayerServices::isWCAGOn()();
@@ -698,6 +728,42 @@ public class JavaScriptPlayerServices {
 		return playerServices.getCurrentPageIndex();
 	}
 
+	//kslee 커스텀 추가 java ::: getCurrentPageID()
+	private String getCurrentPageID() {
+		return this.playerServices.getCurrentPageId();
+	}
+
+	//kslee 커스텀 추가 native ::: JavaScriptObject createJsListObject()
+	private native JavaScriptObject createJsListObject() /*-{
+		console.log("Restored by DF: createJsListObject");
+		return [];
+	}-*/;
+
+	//kslee 커스텀 추가 native ::: addStringElement(JavaScriptObject jsArray, Content content)
+	private native void addStringElement(JavaScriptObject jsArray, Content content) /*-{
+		console.log("Restored by DF: addStringElement contentId 가 없음 문제있음 여기 찾아보세요");
+		if (!jsArray || !content)
+			return;
+
+		var contentId = "contentId-test";
+		jsArray.push(contentId);
+	}-*/;
+
+	private JavaScriptObject convertListToJsList(ArrayList<Content> list) {
+		JavaScriptObject jsListObject = this.createJsListObject();
+		Iterator var3 = list.iterator();
+
+		while (var3.hasNext()) {
+			Content content = (Content) var3.next();
+			this.addStringElement(jsListObject, content);
+		}
+
+		return jsListObject;
+	}
+	//kslee 而ㅼ뒪�� �뼯�뼯�뼯
+	
+	
+	
 	private int getPageCount(){
 		return playerServices.getModel().getPageCount();
 	}
@@ -710,6 +776,17 @@ public class JavaScriptPlayerServices {
 		playerServices.getCommands().gotoPageIndex(index);
 	}
 
+	//kslee 커스텀 추가 java ::: gotoNextPage()
+	private void gotoNextPage() {
+		this.playerServices.getCommands().nextPage();
+	}
+	
+	//kslee 커스텀 추가 java ::: gotoPrevPage()
+	private void gotoPrevPage() {
+		this.playerServices.getCommands().prevPage();
+	}
+	//kslee 而ㅼ뒪�� �뼯�뼯�뼯
+	
 	private void gotoPageId(String pageId){
 		playerServices.getCommands().gotoPageId(pageId);
 	}
@@ -991,6 +1068,16 @@ public class JavaScriptPlayerServices {
 		playerServices.getCommands().sendPageAllOkOnValueChanged(sendEvent);
 	}
 
+	//kslee 커스텀 추가 java ::: getPageController 추가는 확실한것 같음 왜? 없던것이 생겼으니 지금 버전에도 없고!!
+	private void getPageController() {
+		try {
+			List<IPresenter> presenters = this.playerServices.getCommands().getPageController().getPresenters();
+			((IPresenter) presenters.get(0)).setDisabled(true);
+		} catch (Exception var2) {
+			Utils.consoleLog("getPageController : " + var2);
+		}
+	}
+	   
 	private void setNavigationPanelsAutomaticAppearance(boolean shouldAppear) {
 		playerServices.getCommands().setNavigationPanelsAutomaticAppearance(shouldAppear);
 	}
@@ -1056,6 +1143,11 @@ public class JavaScriptPlayerServices {
 	
 	public boolean isPlayerInCrossDomain() {
 		return this.playerServices.isPlayerInCrossDomain();
+	}
+
+	//kslee 커스텀 추가 java ::: setDisable 추가는 확실한것 같음 왜? 없던것이 생겼으니 지금 버전에도 없고!!
+	public void setDisable(boolean isDisable) {
+		this.playerServices.setDisable(isDisable);
 	}
 	
 	public boolean isWCAGOn() {
@@ -1161,7 +1253,9 @@ public class JavaScriptPlayerServices {
 		return playerServices.getObserverService().getAsJS();
 	}
 
-	private JavaScriptObject getOpenEndedContentForCurrentPage() { return this.playerServices.getOpenEndedContentForCurrentPage(); }
+	private JavaScriptObject getOpenEndedContentForCurrentPage() { 
+		return this.playerServices.getOpenEndedContentForCurrentPage(); 
+	}
 
 	private void clearVisitedPages() {
 	    this.playerServices.clearVisitedPages();

@@ -26,12 +26,16 @@ import com.lorepo.icplayer.client.module.api.player.IPlayerServices;
 import com.lorepo.icplayer.client.module.api.player.IScoreService;
 import com.lorepo.icplayer.client.module.api.player.PageOpenActivitiesScore;
 import com.lorepo.icplayer.client.printable.PrintableContentParser;
+import com.lorepo.icplayer.client.printable.PrintableOrderParser;
 import com.lorepo.icplayer.client.printable.PrintableParams;
 import com.lorepo.icplayer.client.ui.PlayerView;
+import com.lorepo.icplayer.client.utils.Utils;
 import com.lorepo.icplayer.client.xml.IProducingLoadingListener;
 import com.lorepo.icplayer.client.xml.IXMLFactory;
 import com.lorepo.icplayer.client.xml.content.ContentFactory;
+import com.lorepo.icplayer.client.xml.content.ContentFactoryQNote;
 import com.lorepo.icplayer.client.xml.page.PageFactory;
+import com.lorepo.icplayer.client.xml.page.PageFactoryQNote;
 import com.lorepo.icplayer.client.printable.PrintableOrderParser;
 
 public class PlayerApp {
@@ -57,10 +61,26 @@ public class PlayerApp {
 	private HashMap<String, List<String>> printableOrder = new HashMap<String, List<String>>();
 	private PrintableContentParser printableParser;
 
-	public PlayerApp(String id, PlayerEntryPoint entryPoint) {
+	//kslee 커스텀 추가  ::: contentModels 필드 추가됨 
+	private ArrayList<Content> contentModels;
+	//kslee 커스텀 추가  ::: areStaticScaledElementsFixed 필드 추가됨 
+	private static boolean areStaticScaledElementsFixed = false;
+	//kslee 커스텀 추가  ::: loadedCnt 필드 추가됨 
+	private int loadedCnt = 0;
+	//kslee 커스텀 추가  ::: type 필드 추가됨 
+	private String type = "question";
+	
+//kslee 커스텀 변경  ::: 생성자 type이 추가되며 인수3개로 변경 ▼▼▼
+//	public PlayerApp(String id, PlayerEntryPoint entryPoint) {
+//		this.divId = id;
+//		this.entryPoint = entryPoint;
+//	}
+	public PlayerApp(String id, PlayerEntryPoint entryPoint, String type) {
 		this.divId = id;
 		this.entryPoint = entryPoint;
+		this.type = type;
 	}
+//kslee 커스텀 변경  ::: 생성자 type이 추가되며 인수3개로 변경 ▲▲▲
 
 	public static native int getIFrameSize(boolean isCommonPage, PlayerApp instance) /*-{
 		var frameSizesHandler = function(event) {
@@ -99,6 +119,7 @@ public class PlayerApp {
 		return isContentModelLoaded;
 	}
 
+//kslee 커스텀 변경  ::: loadPage 메소드 isQNote가 추가되며 인수4개로 변경 ▼▼▼
 	/**
 	 * Load content from given URL
 	 * 
@@ -106,32 +127,72 @@ public class PlayerApp {
 	 * @param pageIndex
 	 * @param isCommonPage
 	 */
-	private void loadPage(String url, int pageIndex, final boolean isCommonPage) {
-		startPageIndex = pageIndex;
-
-		IXMLFactory contentFactory = ContentFactory.getInstance(this.pagesSubset);
-		isContentModelLoaded = false;
+//	private void loadPage(String url, int pageIndex, final boolean isCommonPage) {
+//		startPageIndex = pageIndex;
+//
+//		IXMLFactory contentFactory = ContentFactory.getInstance(this.pagesSubset);
+//		isContentModelLoaded = false;
+//		contentFactory.load(url, new IProducingLoadingListener() {
+//			public void onFinishedLoading(Object content) {
+//				contentModel = (Content) content;
+//				isContentModelLoaded = true;
+//				initPlayer(isCommonPage);
+//			}
+//
+//			public void onError(String error) {
+//				JavaScriptUtils.log("Can't load:" + error);
+//			}
+//		});
+//	}
+	private void loadPage(final String url, int pageIndex, final boolean isCommonPage, boolean isQNote) {
+		this.startPageIndex = pageIndex;
+		Utils.consoleLog("loadPage url 2 :" + url);
+		Utils.consoleLog("isQNote :" + isQNote);
+		Utils.consoleLog("isCommonPage :" + isCommonPage);
+		Utils.consoleLog("isLoadSeperate :" + Utils.isLoadSeperate);
+		IXMLFactory contentFactory = Utils.isLoadSeperate ? ContentFactoryQNote.getInstance(this.pagesSubset) : ContentFactory.getInstance(this.pagesSubset);
+		Utils.consoleLog("contentFactory :" + contentFactory);
+		int toCnt = Utils.getUrlCount(url);
+		this.loadedCnt = 0;
+		this.isContentModelLoaded = false;
 		contentFactory.load(url, new IProducingLoadingListener() {
 			public void onFinishedLoading(Object content) {
+				Utils.consoleLog("loadPage onFinishedLoading url: " + url);
+				// PlayerApp.this.contentModel = (Content) content; 와 같은 방식으로 필요한 필드에 직접 접근해야 함
 				contentModel = (Content) content;
 				isContentModelLoaded = true;
-				initPlayer(isCommonPage);
+				initPlayer(isCommonPage); // 예시 메서드, 실제 구현에 맞게 수정 필요
 			}
-
 			public void onError(String error) {
 				JavaScriptUtils.log("Can't load:" + error);
 			}
 		});
 	}
-
+//kslee 커스텀 변경  ::: loadPage 메소드 isQNote가 추가되며 인수4개로 변경 ▲▲▲
+	
 	/**
 	 * Load content from given URL
 	 * 
 	 * @param url
 	 * @param pageIndex
 	 */
+//kslee 커스텀 변경  ::: load 메소드 loadPage호출실 isQNote가 추가되며 인수4개로 변경 ▼▼▼
+//	public void load(String url, int pageIndex) {
+//		loadPage(url, pageIndex, false);
+//	}
 	public void load(String url, int pageIndex) {
-		loadPage(url, pageIndex, false);
+		loadPage(url, pageIndex, false, Utils.isQNote);
+	}
+//kslee 커스텀 변경  ::: load 메소드 loadPage호출실 isQNote가 추가되며 인수4개로 변경 ▲▲▲
+
+//kslee 커스텀 추가  ::: loadLearnetic 메소드 추가 ▼▼▼
+	public void loadLearnetic(String url, int pageIndex) {
+		loadPage(url, pageIndex, false, false);
+	}
+
+//kslee 커스텀 추가  ::: unload 메소드 추가 ▼▼▼
+	public void unload() {
+		removeIframe(this);
 	}
 
 	/**
@@ -140,9 +201,14 @@ public class PlayerApp {
 	 * @param url
 	 * @param pageIndex
 	 */
+//kslee 커스텀 변경  ::: loadCommonPage 메소드 loadPage호출실 isQNote가 추가되며 인수4개로 변경 ▼▼▼
+//	public void loadCommonPage(String url, int pageIndex) {
+//		loadPage(url, pageIndex, true);
+//	}
 	public void loadCommonPage(String url, int pageIndex) {
-		loadPage(url, pageIndex, true);
+		loadPage(url, pageIndex, true, false);
 	}
+//kslee 커스텀 변경  ::: loadCommonPage 메소드 loadPage호출실 isQNote가 추가되며 인수4개로 변경 ▲▲▲
 
 	public void setPages(String pagesSub) {
 		if (pagesSub == null || pagesSub.isEmpty()) {
@@ -176,6 +242,22 @@ public class PlayerApp {
 
 	public static native int getPageHeight() /*-{
 		return $wnd.$('table.ic_player').css('height').replace('px', '');
+	}-*/;
+
+//kslee 커스텀 추가  ::: removeIframe native 메소드 추가 ▼▼▼
+	public static native void removeIframe(PlayerApp instance)/*-{
+		console.log("Restored by DF: removeIframe");
+		if ($wnd.playerIFrame) {
+			// 실제 DOM에서 iframe 제거
+			$wnd.playerIFrame.remove();
+
+			// 참조 삭제
+			$wnd.playerIFrame = null;
+
+			// iframe 관련 상태 초기화
+			$wnd.isInIframe = false;
+			$wnd.isFrameInDifferentDomain = false;
+		}
 	}-*/;
 
 	public static native void removeStaticFooter() /*-{
@@ -558,6 +640,8 @@ public class PlayerApp {
 	 * Init player after content is loaded
 	 */
 	private void _initPlayer(final boolean isCommonPage) {
+		Utils.consoleLog("_initPlayer : " + isCommonPage);
+		
 		PlayerView playerView = new PlayerView();
 		playerController = new PlayerController(this.contentModel, playerView, bookMode, entryPoint);
 		playerController.setPlayerConfig(playerConfig);
@@ -763,8 +847,11 @@ public class PlayerApp {
 	}
 
 	public void setState(String state) {
+		Utils.consoleLog("playerApp setState 1 : " + state);
+		
 		HashMap<String, String> data = JSONUtils.decodeHashMap(state);
-
+		Utils.consoleLog("playerApp setState 2 : " + data);
+		
 		if (data.containsKey("state") && data.containsKey("score")) {
 			loadedState = data;
 		}
@@ -891,42 +978,93 @@ public class PlayerApp {
 		return loader.getAddonsCSS() + "\n" + this.getCurrentUserStyles();
 	}
 	
+//kslee 커스텀 변경  ::: preloadAllPages 메소드 PageFactoryQNote관련 변경 ▼▼▼
+//	public void preloadAllPages(final ILoadListener listener) {
+//		List<Page> pages = contentModel.getPages().getAllPages();
+//		boolean allPagesLoaded = true;
+//		for (Page page: pages) {
+//			if (!page.isLoaded()) {
+//				allPagesLoaded = false;
+//				String baseUrl = contentModel.getBaseUrl();
+//				String url = URLUtils.resolveURL(baseUrl, page.getHref());
+//				PageFactory factory = new PageFactory((Page) page);
+//				factory.load(url, new IProducingLoadingListener() {
+//					@Override
+//					public void onFinishedLoading(Object producedItem) {
+//						List<Page> pages = contentModel.getPages().getAllPages();
+//						boolean allPagesLoaded = true;
+//						for(Page p: pages) {
+//							if (!p.isLoaded()) {
+//								allPagesLoaded = false;
+//								break;
+//							}
+//						}
+//						if (allPagesLoaded) {
+//							listener.onFinishedLoading("All pages have been loaded!");
+//						}
+//					}
+//
+//					@Override
+//					public void onError(String error) {
+//						listener.onError(error);
+//					}
+//				});
+//			}
+//		}
+//		if (allPagesLoaded) {
+//			listener.onFinishedLoading("All pages have been loaded!");
+//		}
+//	};
 	public void preloadAllPages(final ILoadListener listener) {
 		List<Page> pages = contentModel.getPages().getAllPages();
 		boolean allPagesLoaded = true;
-		for (Page page: pages) {
+		
+		for (final Page page : pages) {
 			if (!page.isLoaded()) {
 				allPagesLoaded = false;
 				String baseUrl = contentModel.getBaseUrl();
 				String url = URLUtils.resolveURL(baseUrl, page.getHref());
-				PageFactory factory = new PageFactory((Page) page);
-				factory.load(url, new IProducingLoadingListener() {
-					@Override
-					public void onFinishedLoading(Object producedItem) {
-						List<Page> pages = contentModel.getPages().getAllPages();
-						boolean allPagesLoaded = true;
-						for(Page p: pages) {
-							if (!p.isLoaded()) {
-								allPagesLoaded = false;
-								break;
-							}
-						}
-						if (allPagesLoaded) {
-							listener.onFinishedLoading("All pages have been loaded!");
-						}
-					}
-
-					@Override
-					public void onError(String error) {
-						listener.onError(error);
-					}
-				});
+				
+				if (Utils.isLoadSeperate) {
+					PageFactoryQNote factory = new PageFactoryQNote(page);
+					factory.load(url, new PagePreloadListener(listener));
+				} else {
+					PageFactory factory = new PageFactory(page);
+					factory.load(url, new PagePreloadListener(listener));
+				}
 			}
 		}
+		
 		if (allPagesLoaded) {
 			listener.onFinishedLoading("All pages have been loaded!");
 		}
-	};
+	}
+//kslee 커스텀 변경  ::: preloadAllPages 메소드 PageFactoryQNote관련 변경 ▲▲▲
+
+//kslee 커스텀 추가  ::: PagePreloadListener 클래스 추가 ▼▼▼
+	private class PagePreloadListener implements IProducingLoadingListener {
+		private final ILoadListener listener;
+		PagePreloadListener(ILoadListener listener) {
+			this.listener = listener;
+		}
+		public void onFinishedLoading(Object producedItem) {
+			List<Page> pages = contentModel.getPages().getAllPages();
+			boolean allPagesLoaded = true;
+			for (Page p : pages) {
+				if (!p.isLoaded()) {
+					allPagesLoaded = false;
+					break;
+				}
+			}
+			if (allPagesLoaded) {
+				listener.onFinishedLoading("All pages have been loaded!");
+			}
+		}
+		public void onError(String error) {
+			listener.onError(error);
+		}
+	}
+//kslee 커스텀 추가  ::: PagePreloadListener 클래스 추가 ▲▲▲
 
 	public List<ScoreWithMetadata> getScoreWithMetadata() {
 		playerController.updateState();

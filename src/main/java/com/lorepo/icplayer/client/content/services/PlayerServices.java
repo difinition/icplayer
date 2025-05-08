@@ -21,6 +21,8 @@ import com.lorepo.icplayer.client.page.PageController;
 
 import java.util.HashMap;
 
+import com.lorepo.icplayer.client.model.ModuleList;
+
 public class PlayerServices implements IPlayerServices {
 	private final PlayerCommands playerCommands;
 	private final IPlayerController playerController;
@@ -112,6 +114,12 @@ public class PlayerServices implements IPlayerServices {
 	@Override
 	public int getCurrentPageIndex() {
 		return playerController.getCurrentPageIndex();
+	}
+
+	//kslee 커스텀 추가  ::: getCurrentPageId() 메소드 추가됨 
+	@Override
+	public String getCurrentPageId() {
+		return this.playerController.getCurrentPageId();
 	}
 
 	@Override
@@ -461,6 +469,18 @@ public class PlayerServices implements IPlayerServices {
 	@Override
 	public IAdaptiveLearningService getAdaptiveLearningService() {
 		return this.playerController.getAdaptiveLearningService();
+	}
+
+	//kslee 커스텀 추가  ::: setDisable(boolean b) 메소드 추가됨
+	@Override
+	public void setDisable(boolean b) {
+		ModuleList modules = this.pageController.getModules();
+
+		for (int i = 0; i < modules.size(); ++i) {
+			IPresenter ipresenter = this.getModule(((IModuleModel) modules.get(i)).getId());
+			ipresenter.setDisabled(b);
+		}
+
 	}
 
 	@Override

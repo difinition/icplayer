@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+import com.lorepo.icplayer.client.model.ModuleList;
 
 public class PageController implements ITextToSpeechController, IPageController {
 
@@ -69,6 +70,8 @@ public class PageController implements ITextToSpeechController, IPageController 
 	private boolean isReadingOn = false;
 	private Content contentModel;
 	private GradualShowAnswersService gradualShowAnswersService;
+	//kslee 커스텀 추가  ::: currentPageIdx 필드 추가됨 
+	private int currentPageIdx = -1;
 	
 	public PageController(IPlayerController playerController) {
 		this.playerController = playerController;
@@ -86,6 +89,11 @@ public class PageController implements ITextToSpeechController, IPageController 
 		groupPresenters = new ArrayList<GroupPresenter>();
 		this.playerService = playerServices;
 		moduleFactory = new ModuleFactory(playerService);
+	}
+	
+	//kslee 커스텀 추가  ::: setPageIdx(int pagesIdx) 메소드 추가됨 
+	public void setPageIdx(int pagesIdx) {
+		this.currentPageIdx = pagesIdx;
 	}
 
 	public void setContent(Content model) {
@@ -744,5 +752,10 @@ public class PageController implements ITextToSpeechController, IPageController 
 		if (pageView != null) {
 			pageView.refreshMathJax();
 		}
+	}
+
+	//kslee 커스텀 추가  ::: getModules() 메소드 추가됨
+	public ModuleList getModules() {
+		return this.currentPage.getModules();
 	}
 }
