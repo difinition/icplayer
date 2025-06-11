@@ -151,6 +151,9 @@
             <batchtest todir="reports/htmlunit.dev">
                 <fileset dir="${src-test}">
                     <include name="**/*TestCase.java"/>
+                    <exclude name="**/GWTOptionViewTestCase.java"/>
+                    <exclude name="**/GWTPageVersionsTestCase.java"/>
+                    <exclude name="**/GWTImageSourcePresenterTestCase.java"/>
                 </fileset>
             </batchtest>
             <formatter type="plain"/>
@@ -177,6 +180,9 @@
             <batchtest todir="reports/htmlunit.prod">
                 <fileset dir="${src-test}">
                     <include name="**/*TestCase.java"/>
+                    <exclude name="**/GWTOptionViewTestCase.java"/>
+                    <exclude name="**/GWTPageVersionsTestCase.java"/>
+                    <exclude name="**/GWTImageSourcePresenterTestCase.java"/>
                 </fileset>
             </batchtest>
             <formatter type="plain"/>

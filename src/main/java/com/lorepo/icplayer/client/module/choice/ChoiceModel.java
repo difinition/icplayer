@@ -21,9 +21,10 @@ import com.lorepo.icplayer.client.module.IWCAGModuleModel;
 import com.lorepo.icplayer.client.module.api.player.IJsonServices;
 import com.lorepo.icplayer.client.printable.IPrintableModuleModel;
 import com.lorepo.icplayer.client.printable.Printable;
+import com.lorepo.icplayer.client.printable.Printable.PrintableMode;
 import com.lorepo.icplayer.client.printable.PrintableContentParser;
 import com.lorepo.icplayer.client.printable.PrintableController;
-import com.lorepo.icplayer.client.printable.Printable.PrintableMode;
+import com.lorepo.icplayer.client.utils.Utils;
 
 public class ChoiceModel extends BasicModuleModel implements IWCAGModuleModel, IPrintableModuleModel{
 
@@ -41,6 +42,10 @@ public class ChoiceModel extends BasicModuleModel implements IWCAGModuleModel, I
 	private PrintableController printableController = null;
 	private HashMap<String, String> printableState = null;
 	
+	// kslee 커스텀 필드추가 ::: ▼▼▼
+	private String orderType = "";
+	private String layoutStyle = "vertical";
+
 	public ChoiceModel() {
 		super("Choice", DictionaryWrapper.get("choice_module"));
 		
@@ -56,6 +61,9 @@ public class ChoiceModel extends BasicModuleModel implements IWCAGModuleModel, I
 		addPropertyLangAttribute();
 		addPropertySpeechTexts();
 		addPropertyPrintable();
+		
+		// kslee 커스텀 필드 초기화 추가 ::: ▼▼▼
+		this.addPropertyOrderType();
 	}
 	
 	public void addOption(ChoiceOption option) {
@@ -105,6 +113,47 @@ public class ChoiceModel extends BasicModuleModel implements IWCAGModuleModel, I
 		return isMulti;
 	}
 
+	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	public String getOrderType() {
+		return this.orderType;
+	}
+
+	//kslee 커스텀  메소드 수정 ::: ▼▼▼ 
+	//	@Override
+	//	protected void parseModuleNode(Element node) {
+	//		options.clear();
+	//		maxScore = 0;
+	//		
+	//		// Read choice node
+	//		NodeList nodeList = node.getElementsByTagName("choice");
+	//		if(nodeList.getLength() > 0){
+	//			Element choice = (Element)nodeList.item(0);
+	//			isMulti = XMLUtils.getAttributeAsBoolean(choice, "isMulti");
+	//			isDisabled = XMLUtils.getAttributeAsBoolean(choice, "isDisabled", false);
+	//			isActivity = XMLUtils.getAttributeAsBoolean(choice, "isActivity", true);
+	//			randomOrder = XMLUtils.getAttributeAsBoolean(choice, "randomOrder", false);
+	//			isHorizontal = XMLUtils.getAttributeAsBoolean(choice, "isHorizontal", false);
+	//			langAttribute = XMLUtils.getAttributeAsString(choice, "langAttribute");
+	//			printableValue = XMLUtils.getAttributeAsString(choice, "printable");
+	//			this.speechTextItems.get(0).setText(XMLUtils.getAttributeAsString(choice, "selected"));
+	//			this.speechTextItems.get(1).setText(XMLUtils.getAttributeAsString(choice, "deselected"));
+	//			this.speechTextItems.get(2).setText(XMLUtils.getAttributeAsString(choice, "correct"));
+	//			this.speechTextItems.get(3).setText(XMLUtils.getAttributeAsString(choice, "incorrect"));
+	//		}
+	//		
+	//		// Read options nodes
+	//		NodeList optionNodes = node.getElementsByTagName("option");
+	//		
+	//		for(int i = 0; i < optionNodes.getLength(); i++){
+	//
+	//			Element element = (Element)optionNodes.item(i);
+	//			String optionID = Integer.toString(i+1);
+	//			ChoiceOption option = new ChoiceOption(optionID);
+	//			option.load(element, this.getBaseURL());
+	//			addOption(option);
+	//		}
+	//
+	//	}
 	@Override
 	protected void parseModuleNode(Element node) {
 		options.clear();
@@ -112,15 +161,43 @@ public class ChoiceModel extends BasicModuleModel implements IWCAGModuleModel, I
 		
 		// Read choice node
 		NodeList nodeList = node.getElementsByTagName("choice");
+		
+		String strOrderType;
+		
 		if(nodeList.getLength() > 0){
 			Element choice = (Element)nodeList.item(0);
 			isMulti = XMLUtils.getAttributeAsBoolean(choice, "isMulti");
 			isDisabled = XMLUtils.getAttributeAsBoolean(choice, "isDisabled", false);
 			isActivity = XMLUtils.getAttributeAsBoolean(choice, "isActivity", true);
 			randomOrder = XMLUtils.getAttributeAsBoolean(choice, "randomOrder", false);
-			isHorizontal = XMLUtils.getAttributeAsBoolean(choice, "isHorizontal", false);
+			String strHorizontal = XMLUtils.getAttributeAsString(choice, "isHorizontal");
+	         Utils.consoleLog("strHorizontal : " + strHorizontal);
+	         boolean isQnoteChoice = strHorizontal != "true" && strHorizontal != "false";
+			//isHorizontal = XMLUtils.getAttributeAsBoolean(choice, "isHorizontal", false);
+	         if (Utils.isQNote && isQnoteChoice) {
+	             strOrderType = XMLUtils.getAttributeAsString(choice, "orderType");
+	             if (strOrderType.length() > 2) {
+	                this.orderType = strOrderType;
+	             }
+
+	             this.layoutStyle = XMLUtils.getAttributeAsString(choice, "isHorizontal");
+	             if (this.layoutStyle == "absolute") {
+	                this.randomOrder = false;
+	             } else {
+	                this.randomOrder = XMLUtils.getAttributeAsBoolean(choice, "randomOrder", false);
+	             }
+	          } else {
+	             this.isHorizontal = XMLUtils.getAttributeAsBoolean(choice, "isHorizontal", false);
+	          }			
+			
 			langAttribute = XMLUtils.getAttributeAsString(choice, "langAttribute");
 			printableValue = XMLUtils.getAttributeAsString(choice, "printable");
+			
+	         strOrderType = XMLUtils.getAttributeAsString(choice, "selected");
+	         String deselected = XMLUtils.getAttributeAsString(choice, "deselected");
+	         String correct = XMLUtils.getAttributeAsString(choice, "correct");
+	         String incorrect = XMLUtils.getAttributeAsString(choice, "incorrect");			
+			
 			this.speechTextItems.get(0).setText(XMLUtils.getAttributeAsString(choice, "selected"));
 			this.speechTextItems.get(1).setText(XMLUtils.getAttributeAsString(choice, "deselected"));
 			this.speechTextItems.get(2).setText(XMLUtils.getAttributeAsString(choice, "correct"));
@@ -131,15 +208,17 @@ public class ChoiceModel extends BasicModuleModel implements IWCAGModuleModel, I
 		NodeList optionNodes = node.getElementsByTagName("option");
 		
 		for(int i = 0; i < optionNodes.getLength(); i++){
-
+			
 			Element element = (Element)optionNodes.item(i);
-			String optionID = Integer.toString(i+1);
-			ChoiceOption option = new ChoiceOption(optionID);
+			//String optionID = Integer.toString(i+1);
+			//ChoiceOption option = new ChoiceOption(optionID);
+			strOrderType = Integer.toString(i+1);
+			ChoiceOption option = new ChoiceOption(strOrderType);
 			option.setContentBaseURL(this.getContentBaseURL());
 			option.load(element, this.getBaseURL());
 			addOption(option);
 		}
-
+		
 	}
 
 	/**
@@ -160,6 +239,38 @@ public class ChoiceModel extends BasicModuleModel implements IWCAGModuleModel, I
 	/**
 	 * Convert module into XML
 	 */
+	//kslee 커스텀  메소드 수정 ::: ▼▼▼ 
+	//@Override
+	//	public String toXML () {
+	//		Element choiceModule = XMLUtils.createElement("choiceModule");
+	//		
+	//		this.setBaseXMLAttributes(choiceModule);
+	//		choiceModule.appendChild(this.getLayoutsXML());
+	//		
+	//		Element choice = XMLUtils.createElement("choice");
+	//		choice.setAttribute("isMulti", Boolean.toString(isMulti));
+	//		choice.setAttribute("isDisabled", Boolean.toString(isDisabled));
+	//		choice.setAttribute("isActivity", Boolean.toString(isActivity));
+	//		choice.setAttribute("randomOrder", Boolean.toString(randomOrder));
+	//		choice.setAttribute("isHorizontal", Boolean.toString(isHorizontal));
+	//		choice.setAttribute("langAttribute", langAttribute);
+	//		choice.setAttribute("printable", printableValue);
+	//		choice.setAttribute("selected", this.speechTextItems.get(0).getText());
+	//		choice.setAttribute("deselected", this.speechTextItems.get(1).getText());
+	//		choice.setAttribute("correct", this.speechTextItems.get(2).getText());
+	//		choice.setAttribute("incorrect", this.speechTextItems.get(3).getText());
+	//		
+	//		choiceModule.appendChild(choice);
+	//		
+	//		Element optionsElement = XMLUtils.createElement("options");
+	//
+	//		for (ChoiceOption option : options) {
+	//			optionsElement.appendChild(option.toXML());
+	//		}
+	//		
+	//		choiceModule.appendChild(optionsElement);
+	//		return choiceModule.toString();
+	//	}
 	@Override
 	public String toXML () {
 		Element choiceModule = XMLUtils.createElement("choiceModule");
@@ -172,7 +283,14 @@ public class ChoiceModel extends BasicModuleModel implements IWCAGModuleModel, I
 		choice.setAttribute("isDisabled", Boolean.toString(isDisabled));
 		choice.setAttribute("isActivity", Boolean.toString(isActivity));
 		choice.setAttribute("randomOrder", Boolean.toString(randomOrder));
-		choice.setAttribute("isHorizontal", Boolean.toString(isHorizontal));
+		choice.setAttribute("orderType", this.orderType);
+		//choice.setAttribute("isHorizontal", Boolean.toString(isHorizontal));
+		if (Utils.isQNote) {
+			choice.setAttribute("isHorizontal", this.layoutStyle);
+		} else {
+			choice.setAttribute("isHorizontal", Boolean.toString(this.isHorizontal));
+		}
+		
 		choice.setAttribute("langAttribute", langAttribute);
 		choice.setAttribute("printable", printableValue);
 		choice.setAttribute("selected", this.speechTextItems.get(0).getText());
@@ -183,7 +301,7 @@ public class ChoiceModel extends BasicModuleModel implements IWCAGModuleModel, I
 		choiceModule.appendChild(choice);
 		
 		Element optionsElement = XMLUtils.createElement("options");
-
+		
 		for (ChoiceOption option : options) {
 			optionsElement.appendChild(option.toXML());
 		}
@@ -253,8 +371,21 @@ public class ChoiceModel extends BasicModuleModel implements IWCAGModuleModel, I
 		addProperty(property);
 	}
 	
+	//kslee 커스텀  메소드 수정 ::: ▼▼▼ 
+	//	public boolean isHorizontalLayout() {
+	//		return isHorizontal;
+	//	}
 	public boolean isHorizontalLayout() {
-		return isHorizontal;
+		if (Utils.isQNote) {
+			return this.layoutStyle == "horizontal";
+		} else {
+			return this.isHorizontal;
+		}
+	}
+	
+	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	public String getLayoutStyle() {
+		return this.layoutStyle;
 	}
 	
 	private void addPropertyIsMulti() {
@@ -540,6 +671,42 @@ public class ChoiceModel extends BasicModuleModel implements IWCAGModuleModel, I
 		
 		addProperty(property);
 	}
+	
+	
+	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	private void addPropertyOrderType() {
+		IProperty property = new IProperty() {
+
+			@Override
+			public void setValue(String newValue) {
+				langAttribute = newValue;
+				sendPropertyChangedEvent(this);
+			}
+
+			@Override
+			public String getValue() {
+				return langAttribute;
+			}
+
+			@Override
+			public String getName() {
+				return DictionaryWrapper.get("orderType");
+			}
+
+			@Override
+			public boolean isDefault() {
+				return false;
+			}
+
+			@Override
+			public String getDisplayName() {
+				return DictionaryWrapper.get("orderType");
+			}
+		};
+
+		addProperty(property);
+	}
+	
 	
 	private void addPropertyLangAttribute() {
 		IProperty property = new IProperty() {

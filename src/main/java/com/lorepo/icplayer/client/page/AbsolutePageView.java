@@ -7,6 +7,7 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.lorepo.icf.utils.URLUtils;
 import com.lorepo.icplayer.client.PlayerApp;
+import com.lorepo.icplayer.client.PlayerEntryPoint;
 import com.lorepo.icplayer.client.dimensions.CalculateModuleDimensions;
 import com.lorepo.icplayer.client.dimensions.ModuleDimensions;
 import com.lorepo.icplayer.client.dimensions.PageDimensionsForCalculations;
@@ -20,6 +21,7 @@ import com.lorepo.icplayer.client.page.PageController.IPageDisplay;
 import com.lorepo.icplayer.client.page.WidgetsPositionsStore.WidgetPositionStruct;
 import com.lorepo.icplayer.client.utils.DOMUtils;
 import com.lorepo.icplayer.client.utils.MathJax;
+import com.lorepo.icplayer.client.utils.Utils;
 
 public class AbsolutePageView extends AbsolutePanel implements IPageDisplay {
 
@@ -61,9 +63,11 @@ public class AbsolutePageView extends AbsolutePanel implements IPageDisplay {
 		this.createPageDimensions();
 	}
 
+	//kslee 커스텀  메소드 수정 ::: ▼▼▼ 
 	@Override
 	public void refreshMathJax() {
-		MathJax.refreshMathJax(this.getElement());
+		//MathJax.refreshMathJax(this.getElement());
+		MathJax.refreshMathJax(this.getElement(), PlayerEntryPoint.subject, Utils.isQNote);
 	}
 	
 	@Override

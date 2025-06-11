@@ -9,6 +9,7 @@ import com.lorepo.icf.utils.*;
 import com.lorepo.icf.utils.i18n.DictionaryWrapper;
 import com.lorepo.icplayer.client.module.BasicModuleModel;
 import com.lorepo.icplayer.client.module.IWCAGModuleModel;
+import com.lorepo.icplayer.client.module.api.player.IPlayerServices;
 import com.lorepo.icplayer.client.module.choice.SpeechTextsStaticListItem;
 import com.lorepo.icplayer.client.module.text.TextParser.ParserResult;
 import com.lorepo.icplayer.client.printable.IPrintableModuleModel;
@@ -16,6 +17,8 @@ import com.lorepo.icplayer.client.printable.Printable;
 import com.lorepo.icplayer.client.printable.PrintableContentParser;
 import com.lorepo.icplayer.client.printable.PrintableController;
 import com.lorepo.icplayer.client.printable.Printable.PrintableMode;
+import com.lorepo.icplayer.client.utils.Utils;
+
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -66,10 +69,29 @@ public class TextModel extends BasicModuleModel implements IWCAGModuleModel, IPr
 	private boolean blockWrongAnswers = false;
 	private boolean userActionEvents = false;
 	private boolean useEscapeCharacterInGap = false;
+	
+	//kslee 커스텀  필드추가 ::: ▼▼▼ 
+	private String gapStyles;
+	private boolean multipleLines = false;
+	private int gapHeight = 0;
+	private String groupID = "";
+	private String isHandwritingInput = "None";
+	private boolean isQuestionNumber = false;
+	
 	private boolean syntaxError = false;
 	private String originalText;
 	private ArrayList<SpeechTextsStaticListItem> speechTextItems = new ArrayList<SpeechTextsStaticListItem>();
 	private String langAttribute = "";
+
+	//kslee 커스텀  필드추가 ::: ▼▼▼ 
+	private String layoutID;
+	private Element node;
+	private String compareText;
+	private IPlayerServices playerService;	
+	
+	//kslee 커스텀  필드 인위추가 ::: ▼▼▼ 
+	private String defaultLayoutID = "default";
+	
 	IListProperty groupGapsListProperty = null;
 	private ArrayList<GroupGapsListItem> groupGaps = new ArrayList<GroupGapsListItem>();
 	private boolean allCharactersGapSizeStyle = true;
@@ -81,6 +103,17 @@ public class TextModel extends BasicModuleModel implements IWCAGModuleModel, IPr
 
 	public TextModel() {
 		super("Text", DictionaryWrapper.get("text_module"));
+		
+		//kslee 커스텀  필드 초기화 추가 ::: ▼▼▼ 
+	      this.layoutID = this.defaultLayoutID;
+	      this.node = null;
+	      this.compareText = "text";
+	      this.groupGapsListProperty = null;
+	      this.groupGaps = new ArrayList();
+	      this.allCharactersGapSizeStyle = true;
+	      this.printableController = null;		
+		
+		
 		gapUniqueId = UUID.uuid(6);
 		setText(DictionaryWrapper.get("text_module_default"));
 		addPropertyGapType();
@@ -101,6 +134,15 @@ public class TextModel extends BasicModuleModel implements IWCAGModuleModel, IPr
 		addPropertyUseEscapeCharacterInGap();
 		addPropertySpeechTexts();
 		addPropertyLangAttribute();
+		
+		//kslee 커스텀  필드 초기화 추가 ::: ▼▼▼ 
+	      this.addPropertyGapStyles();
+	      this.addPropertyMultipleLines();
+	      this.addPropertyGapHeight();
+	      this.addPropertyGroupID();
+	      this.addPropertyIsHandwritingInput();
+	      this.addPropertyIsQuestionNumber();		
+		
 		addPropertyGapSizeCalculationMethod();
 		addPropertyPrintable();
 		addPropertyIsSection();
@@ -110,6 +152,24 @@ public class TextModel extends BasicModuleModel implements IWCAGModuleModel, IPr
 		addGroupGapsItems(1);
 	}
 
+	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	public void setPlayerSerivice(IPlayerServices playerService) {
+		this.playerService = playerService;
+	}
+
+	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	public IPlayerServices getPlayerSerivice() {
+		return this.playerService;
+	}
+
+	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	public void setLayoutID(String layoutID) {
+		if (this.layoutID != layoutID) {
+			this.layoutID = layoutID;
+			this.resetText();
+		}
+	}
+	
 	@Override
 	public void setId(String id) {
 		super.setId(id);
@@ -138,6 +198,58 @@ public class TextModel extends BasicModuleModel implements IWCAGModuleModel, IPr
 		return gapWidth;
 	}
 
+	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	public int getGapHeight() {
+		return this.gapHeight;
+	}
+
+	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	public String getGroupID() {
+		return this.groupID;
+	}
+
+	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	public boolean getMultipleLines() {
+		return this.multipleLines;
+	}
+
+	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	public String getIsHandwritingInput() {
+		return this.isHandwritingInput;
+	}
+
+	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	public boolean getIsQuestionNumber() {
+		return this.isQuestionNumber;
+	}
+
+	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	private void resetText() {
+		if (this.node != null) {
+			
+			Utils.consoleLog("::: ks.lee Restored by DF: TextModel.java resetText : defaultLayoutID[" + defaultLayoutID + "]");
+			
+			if (this.layoutID == this.defaultLayoutID) {
+				this.compareText = "text";
+			} else {
+				this.compareText = "text_" + this.layoutID;
+			}
+
+			this.parseModuleNode(this.node);
+		}
+	}
+
+	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	private void resetWidth() {
+		
+		Utils.consoleLog("::: ks.lee Restored by DF: TextModel.java resetWidth :::");
+		
+		Utils.consoleLog(" this.getId() : " + this.getModuleName());
+		Utils.consoleLog(" this.getId() : " + this.getModuleTypeName());
+		Utils.consoleLog(" this.getWidth() : " + this.getWidth());
+		this.setWidth(this.getWidth());
+	}	
+	
 	@Override
 	protected void parseModuleNode(Element node) {
 		NodeList nodes = node.getChildNodes();
@@ -149,6 +261,10 @@ public class TextModel extends BasicModuleModel implements IWCAGModuleModel, IPr
 				useDraggableGaps = XMLUtils.getAttributeAsBoolean(textElement, "draggable");
 				useMathGaps = XMLUtils.getAttributeAsBoolean(textElement, "math");
 				gapWidth = XMLUtils.getAttributeAsInt(textElement, "gapWidth");
+				
+				//kslee 커스텀  추가 ::: ▼▼▼ 
+				gapHeight = XMLUtils.getAttributeAsInt(textElement, "gapHeight");
+				
 				gapMaxLength = XMLUtils.getAttributeAsInt(textElement, "gapMaxLength");
 				isActivity = XMLUtils.getAttributeAsBoolean(textElement, "isActivity", true);
 				isDisabled = XMLUtils.getAttributeAsBoolean(textElement, "isDisabled", false);
@@ -159,6 +275,16 @@ public class TextModel extends BasicModuleModel implements IWCAGModuleModel, IPr
 				isClearPlaceholderOnFocus = XMLUtils.getAttributeAsBoolean(textElement, "isClearPlaceholderOnFocus", false);
 				openLinksinNewTab = XMLUtils.getAttributeAsBoolean(textElement, "openLinksinNewTab", true);
 				rawText = XMLUtils.getCharacterDataFromElement(textElement);
+				
+				//kslee 커스텀  추가 ::: ▼▼▼ 
+	            this.rawText = XMLUtils.getCharacterDataFromElement(textElement);
+	            this.gapStyles = XMLUtils.getAttributeAsString(textElement, "gapStyles", "");
+	            this.groupID = XMLUtils.getAttributeAsString(textElement, "group", "");
+	            this.multipleLines = XMLUtils.getAttributeAsBoolean(textElement, "multipleLines", false);
+	            this.isHandwritingInput = XMLUtils.getAttributeAsString(textElement, "isHandwritingInput", "");
+	            this.isQuestionNumber = XMLUtils.getAttributeAsBoolean(textElement, "isQuestionNumber", false);
+	            this.isActivity = this.setIsActivity(node.getAttribute("id"), this.isActivity);
+	            Utils.consoleLog("multipleLines 2: " + XMLUtils.getAttributeAsBoolean(textElement, "multipleLines", false));
 
 				valueType = XMLUtils.getAttributeAsString(textElement, "valueType");
 				blockWrongAnswers = XMLUtils.getAttributeAsBoolean(textElement, "blockWrongAnswers", false);
@@ -170,15 +296,48 @@ public class TextModel extends BasicModuleModel implements IWCAGModuleModel, IPr
 				isSplitInPrintBlocked = XMLUtils.getAttributeAsBoolean(textElement, "isSplitInPrintBlocked", false);
 				ignoreDefaultPlaceholderWhenCheck = XMLUtils.getAttributeAsBoolean(textElement, "ignoreDefaultPlaceholderWhenCheck", false);
 				allCharactersGapSizeStyle = XMLUtils.getAttributeAsBoolean(textElement, "allAnswersGapSizeCalculationStyle", true);
-				this.speechTextItems.get(TextModel.NUMBER_INDEX).setText(XMLUtils.getAttributeAsString(textElement, "number"));
-				this.speechTextItems.get(TextModel.GAP_INDEX).setText(XMLUtils.getAttributeAsString(textElement, "gap"));
-				this.speechTextItems.get(TextModel.DROPDOWN_INDEX).setText(XMLUtils.getAttributeAsString(textElement, "dropdown"));
-				this.speechTextItems.get(TextModel.CORRECT_INDEX).setText(XMLUtils.getAttributeAsString(textElement, "correct"));
-				this.speechTextItems.get(TextModel.WRONG_INDEX).setText(XMLUtils.getAttributeAsString(textElement, "wrong"));
-				this.speechTextItems.get(TextModel.EMPTY_INDEX).setText(XMLUtils.getAttributeAsString(textElement, "empty"));
-				this.speechTextItems.get(TextModel.INSERT_INDEX).setText(XMLUtils.getAttributeAsString(textElement, "insert"));
-				this.speechTextItems.get(TextModel.REMOVED_INDEX).setText(XMLUtils.getAttributeAsString(textElement, "removed"));
-				this.speechTextItems.get(TextModel.LINK_INDEX).setText(XMLUtils.getAttributeAsString(textElement, "link"));
+				
+				//kslee 커스텀  수정 ::: ▼▼▼ 
+				//this.speechTextItems.get(TextModel.NUMBER_INDEX).setText(XMLUtils.getAttributeAsString(textElement, "number"));
+				//this.speechTextItems.get(TextModel.GAP_INDEX).setText(XMLUtils.getAttributeAsString(textElement, "gap"));
+				//this.speechTextItems.get(TextModel.DROPDOWN_INDEX).setText(XMLUtils.getAttributeAsString(textElement, "dropdown"));
+				//this.speechTextItems.get(TextModel.CORRECT_INDEX).setText(XMLUtils.getAttributeAsString(textElement, "correct"));
+				//this.speechTextItems.get(TextModel.WRONG_INDEX).setText(XMLUtils.getAttributeAsString(textElement, "wrong"));
+				//this.speechTextItems.get(TextModel.EMPTY_INDEX).setText(XMLUtils.getAttributeAsString(textElement, "empty"));
+				//this.speechTextItems.get(TextModel.INSERT_INDEX).setText(XMLUtils.getAttributeAsString(textElement, "insert"));
+				//this.speechTextItems.get(TextModel.REMOVED_INDEX).setText(XMLUtils.getAttributeAsString(textElement, "removed"));
+				//this.speechTextItems.get(TextModel.LINK_INDEX).setText(XMLUtils.getAttributeAsString(textElement, "link"));
+	            String number = XMLUtils.getAttributeAsString(textElement, "number");
+	            String gap = XMLUtils.getAttributeAsString(textElement, "gap");
+	            String dropdown = XMLUtils.getAttributeAsString(textElement, "dropdown");
+	            String correct = XMLUtils.getAttributeAsString(textElement, "correct");
+	            String wrong = XMLUtils.getAttributeAsString(textElement, "wrong");
+	            String empty = XMLUtils.getAttributeAsString(textElement, "empty");
+	            String insert = XMLUtils.getAttributeAsString(textElement, "insert");
+	            String removed = XMLUtils.getAttributeAsString(textElement, "removed");
+	            String link = XMLUtils.getAttributeAsString(textElement, "link");
+	            if (Utils.isQNote) {
+					this.speechTextItems.get(TextModel.NUMBER_INDEX).setText(Utils.tts_number);
+					this.speechTextItems.get(TextModel.GAP_INDEX).setText(Utils.tts_gap);
+					this.speechTextItems.get(TextModel.DROPDOWN_INDEX).setText(Utils.tts_dropdown);
+					this.speechTextItems.get(TextModel.CORRECT_INDEX).setText(Utils.tts_correct);
+					this.speechTextItems.get(TextModel.WRONG_INDEX).setText(Utils.tts_wrong);
+					this.speechTextItems.get(TextModel.EMPTY_INDEX).setText(Utils.tts_empty);
+					this.speechTextItems.get(TextModel.INSERT_INDEX).setText(Utils.tts_insert);
+					this.speechTextItems.get(TextModel.REMOVED_INDEX).setText(Utils.tts_removed);
+					this.speechTextItems.get(TextModel.LINK_INDEX).setText(Utils.tts_link);
+	            } else {
+					this.speechTextItems.get(TextModel.NUMBER_INDEX).setText(XMLUtils.getAttributeAsString(textElement, "number"));
+					this.speechTextItems.get(TextModel.GAP_INDEX).setText(XMLUtils.getAttributeAsString(textElement, "gap"));
+					this.speechTextItems.get(TextModel.DROPDOWN_INDEX).setText(XMLUtils.getAttributeAsString(textElement, "dropdown"));
+					this.speechTextItems.get(TextModel.CORRECT_INDEX).setText(XMLUtils.getAttributeAsString(textElement, "correct"));
+					this.speechTextItems.get(TextModel.WRONG_INDEX).setText(XMLUtils.getAttributeAsString(textElement, "wrong"));
+					this.speechTextItems.get(TextModel.EMPTY_INDEX).setText(XMLUtils.getAttributeAsString(textElement, "empty"));
+					this.speechTextItems.get(TextModel.INSERT_INDEX).setText(XMLUtils.getAttributeAsString(textElement, "insert"));
+					this.speechTextItems.get(TextModel.REMOVED_INDEX).setText(XMLUtils.getAttributeAsString(textElement, "removed"));
+					this.speechTextItems.get(TextModel.LINK_INDEX).setText(XMLUtils.getAttributeAsString(textElement, "link"));
+	            }
+				
 
 				this.parseModuleGroupsGapsNode(node);
 				if (rawText == null) {
@@ -189,6 +348,13 @@ public class TextModel extends BasicModuleModel implements IWCAGModuleModel, IPr
 				setText(rawText);
 			}
 		}
+	}
+
+	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	private boolean setIsActivity(String moduleId, boolean isActivity) {
+		String newstr = moduleId.replaceAll("[^A-Za-z]+", "");
+		Utils.consoleLog("newstr : " + newstr);
+		return newstr.equals("Title") ? false : isActivity;
 	}
 
 	private void parseModuleGroupsGapsNode(Element node) {
@@ -219,6 +385,14 @@ public class TextModel extends BasicModuleModel implements IWCAGModuleModel, IPr
 		parser.setIgnorePunctuationGaps(isIgnorePunctuation);
 		parser.setKeepOriginalOrder(isKeepOriginalOrder);
 		parser.setGapWidth(gapWidth);
+		
+		// kslee 커스텀 메소드 추가 ::: ▼▼▼
+		parser.setGapHeight(this.gapHeight);
+		parser.setGapStyles(this.gapStyles);
+		parser.setMultipleLines(this.multipleLines);  // seMultipleLines
+		parser.setIsHandwritingInput(this.isHandwritingInput);
+		parser.setIsQuestionNumber(this.isQuestionNumber);
+
 		parser.setGapMaxLength(gapMaxLength);
 		parser.setOpenLinksinNewTab(openLinksinNewTab);
 		parser.setUseEscapeCharacterInGap(this.useEscapeCharacterInGap);
@@ -276,6 +450,10 @@ public class TextModel extends BasicModuleModel implements IWCAGModuleModel, IPr
 		XMLUtils.setBooleanAttribute(text, "math", this.useMathGaps);
 		XMLUtils.setIntegerAttribute(text, "gapMaxLength", this.gapMaxLength);
 		XMLUtils.setIntegerAttribute(text, "gapWidth", this.gapWidth);
+		
+		//kslee 커스텀  추가 ::: ▼▼▼ 
+		XMLUtils.setIntegerAttribute(text, "gapHeight", this.gapHeight);
+		
 		XMLUtils.setBooleanAttribute(text, "isActivity", this.isActivity);
 		XMLUtils.setBooleanAttribute(text, "isIgnorePunctuation", this.isIgnorePunctuation);
 		XMLUtils.setBooleanAttribute(text, "isKeepOriginalOrder", this.isKeepOriginalOrder);
@@ -294,6 +472,37 @@ public class TextModel extends BasicModuleModel implements IWCAGModuleModel, IPr
 		if (this.langAttribute.compareTo("") != 0) {
 			text.setAttribute("langAttribute", this.langAttribute);
 		}
+		
+		//kslee 커스텀   추가 ::: ▼▼▼ 
+		try {
+			text.setAttribute("gapStyles", this.gapStyles);
+		} catch (Exception var10) {
+		}
+
+		//kslee 커스텀   추가 ::: ▼▼▼ 
+		try {
+			XMLUtils.setBooleanAttribute(text, "multipleLines", this.multipleLines);
+		} catch (Exception var9) {
+		}
+
+		//kslee 커스텀   추가 ::: ▼▼▼ 
+		try {
+			text.setAttribute("group", this.groupID);
+		} catch (Exception var8) {
+		}
+
+		//kslee 커스텀   추가 ::: ▼▼▼ 
+		try {
+			text.setAttribute("isHandwritingInput", this.isHandwritingInput);
+		} catch (Exception var7) {
+		}
+
+		//kslee 커스텀   추가 ::: ▼▼▼ 
+		try {
+			XMLUtils.setBooleanAttribute(text, "isQuestionNumber", this.isQuestionNumber);
+		} catch (Exception var6) {
+		}
+		
 		text.setAttribute("valueType", this.valueType);
 		text.setAttribute("printable", printableValue);
 		text.setAttribute("number", this.speechTextItems.get(TextModel.NUMBER_INDEX).getText());
@@ -545,7 +754,78 @@ public class TextModel extends BasicModuleModel implements IWCAGModuleModel, IPr
 
 		addProperty(property);
 	}
+	
+	// kslee 커스텀 메소드 추가 ::: ▼▼▼
+	private void addPropertyGapHeight() {
+		IProperty property = new IProperty() {
 
+			@Override
+			public void setValue(String newValue) {
+				gapHeight = Integer.parseInt(newValue);
+				setText(moduleText);
+				sendPropertyChangedEvent(this);
+			}
+
+			@Override
+			public String getValue() {
+				return Integer.toString(gapHeight);
+			}
+
+			@Override
+			public String getName() {
+				return DictionaryWrapper.get("text_module_gap_height");
+			}
+
+			@Override
+			public String getDisplayName() {
+				return DictionaryWrapper.get("text_module_gap_height");
+			}
+
+			@Override
+			public boolean isDefault() {
+				return false;
+			}
+		};
+
+		addProperty(property);
+	}
+
+	// kslee 커스텀 메소드 추가 ::: ▼▼▼
+	private void addPropertyGroupID() {
+		IProperty property = new IProperty() {
+
+			@Override
+			public void setValue(String newValue) {
+				groupID = newValue;
+				setText(moduleText);
+				sendPropertyChangedEvent(this);
+			}
+
+			@Override
+			public String getValue() {
+				return groupID;
+			}
+
+			@Override
+			public String getName() {
+				return DictionaryWrapper.get("text_module_group_id");
+			}
+
+			@Override
+			public String getDisplayName() {
+				return DictionaryWrapper.get("text_module_group_id");
+			}
+
+			@Override
+			public boolean isDefault() {
+				return false;
+			}
+		};
+
+		addProperty(property);
+	}
+	
+	
 	private void addPropertyGapMaxLength() {
 		IProperty property = new IProperty() {
 
@@ -941,6 +1221,153 @@ public class TextModel extends BasicModuleModel implements IWCAGModuleModel, IPr
 
 		addProperty(property);
 	}
+	
+	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	private void addPropertyGapStyles() {
+		IProperty property = new IProperty() {
+
+			@Override
+			public void setValue(String newValue) {
+				gapStyles = newValue;
+				setText(moduleText);
+				sendPropertyChangedEvent(this);
+			}
+
+			@Override
+			public String getValue() {
+				return gapStyles;
+			}
+
+			@Override
+			public String getName() {
+				return DictionaryWrapper.get("gap_styles");
+			}
+
+			@Override
+			public String getDisplayName() {
+				return DictionaryWrapper.get("gap_styles");
+			}
+
+			@Override
+			public boolean isDefault() {
+				return false;
+			}
+		};
+
+		addProperty(property);
+	}
+	
+	// kslee 커스텀 메소드 추가 ::: ▼▼▼
+	private void addPropertyMultipleLines() {
+		IProperty property = new IBooleanProperty() {
+
+			@Override
+			public void setValue(String newValue) {
+				boolean value = (newValue.compareToIgnoreCase("true") == 0);
+
+				if (value != multipleLines) {
+					multipleLines = value;
+					sendPropertyChangedEvent(this);
+				}
+			}
+
+			@Override
+			public String getValue() {
+				return multipleLines ? "True" : "False";
+			}
+
+			@Override
+			public String getName() {
+				return DictionaryWrapper.get("multipleLines");
+			}
+
+			@Override
+			public String getDisplayName() {
+				return DictionaryWrapper.get("multipleLines");
+			}
+
+			@Override
+			public boolean isDefault() {
+				return false;
+			}
+
+		};
+
+		addProperty(property);
+	}
+
+	// kslee 커스텀 메소드 추가 ::: ▼▼▼
+	private void addPropertyIsHandwritingInput() {
+		IProperty property = new IProperty() {
+
+			@Override
+			public void setValue(String newValue) {
+				isHandwritingInput = newValue;
+				sendPropertyChangedEvent(this);
+			}
+
+			@Override
+			public String getValue() {
+				return isHandwritingInput;
+			}
+
+			@Override
+			public String getName() {
+				return DictionaryWrapper.get("isHandwritingInput");
+			}
+
+			@Override
+			public boolean isDefault() {
+				return false;
+			}
+
+			@Override
+			public String getDisplayName() {
+				return DictionaryWrapper.get("isHandwritingInput");
+			}
+		};
+
+		addProperty(property);
+	}
+
+	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	private void addPropertyIsQuestionNumber() {
+		IProperty property = new IBooleanProperty() {
+
+			@Override
+			public void setValue(String newValue) {
+				boolean value = (newValue.compareToIgnoreCase("true") == 0);
+
+				if (value != isQuestionNumber) {
+					isQuestionNumber = value;
+					sendPropertyChangedEvent(this);
+				}
+			}
+
+			@Override
+			public String getValue() {
+				return isQuestionNumber ? "True" : "False";
+			}
+
+			@Override
+			public String getName() {
+				return DictionaryWrapper.get("isQuestionNumber");
+			}
+
+			@Override
+			public String getDisplayName() {
+				return DictionaryWrapper.get("isQuestionNumber");
+			}
+
+			@Override
+			public boolean isDefault() {
+				return false;
+			}
+
+		};
+
+		addProperty(property);
+	}
 
 	private void addPropertyUserActionEvents() {
 		IProperty property = new IBooleanProperty() {
@@ -1227,6 +1654,16 @@ public class TextModel extends BasicModuleModel implements IWCAGModuleModel, IPr
 
 	public boolean isUsingEscapeCharacterInGap() {
 		return this.useEscapeCharacterInGap;
+	}
+	
+	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	public String gapStyles() {
+		return this.gapStyles;
+	}
+	
+	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	public Boolean multipleLines() {
+		return this.multipleLines;
 	}
 	
 	public boolean isOldGapSizeCalculation() {

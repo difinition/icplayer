@@ -5,6 +5,7 @@ import java.util.HashMap;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.lorepo.icf.utils.URLUtils;
+import com.lorepo.icplayer.client.PlayerEntryPoint;
 import com.lorepo.icplayer.client.model.page.Page;
 import com.lorepo.icplayer.client.model.page.group.Group;
 import com.lorepo.icplayer.client.model.page.group.GroupView;
@@ -13,6 +14,7 @@ import com.lorepo.icplayer.client.module.api.IModuleView;
 import com.lorepo.icplayer.client.page.PageController.IPageDisplay;
 import com.lorepo.icplayer.client.utils.DOMUtils;
 import com.lorepo.icplayer.client.utils.MathJax;
+import com.lorepo.icplayer.client.utils.Utils;
 
 
 /**
@@ -49,7 +51,8 @@ public class ResponsivePageView extends FlowPanel implements IPageDisplay{
 
 	@Override
 	public void refreshMathJax() {
-		MathJax.refreshMathJax(getElement());
+		//MathJax.refreshMathJax(getElement());
+		MathJax.refreshMathJax(this.getElement(), PlayerEntryPoint.subject, Utils.isQNote);
 	}
 
 

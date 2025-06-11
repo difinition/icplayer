@@ -63,6 +63,8 @@ public class Utils {
 //   };
    
    public static String[] getUrls(String url) {
+       consoleLog("::: Restored by DF : Utils : getUrls : [" + url + "] :::");
+	   
       try {
          consoleLog("getUrls : " + url);
          JSONValue parsed = JSONParser.parseStrict(url);
@@ -94,6 +96,8 @@ public class Utils {
    }
 
    public static String[] getUrlPages(String url) {
+       consoleLog("::: Restored by DF : Utils : getUrlPages : [" + url + "] :::");
+       
       try {
          consoleLog("getUrls : " + url);
          JSONValue parsed = JSONParser.parseStrict(url);
@@ -122,14 +126,20 @@ public class Utils {
    }
 
    public static int getUrlCount(String url) {
+       consoleLog("::: Restored by DF : Utils : getUrlCount : [" + url + "] :::");
+       
       return url.split(delemiter).length;
    }
 
    public static String addUrl(String url, String addUrl) {
+       consoleLog("::: Restored by DF : Utils : addUrl : addUrl[" + addUrl + "] :::");
+       
       return addUrl + delemiter + url;
    }
 
    public static String getPath(String url) {
+      consoleLog("::: Restored by DF : Utils : getPath : url[" + url + "] :::");
+
       String[] urls = url.split("/");
       if (urls.length > 1) {
          String retValue = "";
@@ -147,6 +157,8 @@ public class Utils {
    }
 
    public static String getFileName(String url) {
+      consoleLog("::: Restored by DF : Utils : getFileName : url[" + url + "] :::");
+
       String[] urls = url.split("/");
       if (urls.length > 1) {
          String retValue = "";
@@ -164,6 +176,7 @@ public class Utils {
    }
 
    public static String format(String format, String... args) {
+      
       String[] split = format.split("%s");
       consoleLog("split :" + split.length);
       StringBuffer msg = new StringBuffer();
@@ -177,11 +190,17 @@ public class Utils {
       }
 
       msg.append(split[split.length - 1]);
+      
+      consoleLog("::: Restored by DF : Utils : format : msg.toString()[" + msg.toString() + "] :::");
+      
       return msg.toString();
    }
 
    public static String getModuleID() {
+      
       ++moduleCnt;
+      consoleLog("::: Restored by DF : Utils : getModuleID : ModuleID[" + "value_" + moduleCnt  + "] :::");
+      
       return "value_" + moduleCnt;
    }
 
@@ -201,12 +220,16 @@ public class Utils {
    }
 
    public static String getPageGroupID(int currentPageIdx, String groupID) {
+	      consoleLog("::: Restored by DF : Utils : getPageGroupID : currentPageIdx[" + currentPageIdx + "] groupID[" + groupID + "]:::");
+      
       String id = currentPageIdx + "_" + groupID;
       consoleLog("getPageGroupID : " + id);
       return id;
    }
 
    public static boolean checkSameAnswerInGroup(IPlayerServices playerService, String moduleID, String enteredValue) {
+      consoleLog("::: Restored by DF : Utils : checkSameAnswerInGroup : moduleID[" + moduleID + "] enteredValue[" + enteredValue + "]:::");
+      
       try {
          IScoreService scoreService = playerService.getScoreService();
          String groupID = (String)scoreService.getTextGroupID().get(moduleID);
@@ -248,10 +271,13 @@ public class Utils {
       } catch (Exception var2) {
       }
 
+      consoleLog("::: Restored by DF : Utils : removeTag : value[" + value + "] :::");
+      
       return value;
    }
 
 	public static boolean isCrossWalkWebView() {
+      
 		if (userAgent.equals("")) {
 			userAgent = getAppName();
 			if (userAgent == null) {
@@ -260,10 +286,14 @@ public class Utils {
 			isCrossWalkWebview = userAgent.contains("Crosswalk");
 		}
 
+		consoleLog("::: Restored by DF : Utils : isCrossWalkWebView : isCrossWalkWebview[" + isCrossWalkWebview + "] :::");
+
 		return isCrossWalkWebview;
 	}
 
 	public static boolean isSafari() {
+	      consoleLog("::: Restored by DF : Utils : isSafari :::");
+	      
 		if (userAgent.equals("")) {
 			userAgent = getAppName();
 			if (userAgent == null) {
@@ -277,6 +307,8 @@ public class Utils {
 	}
 
    private static String convertDocumentToString(Element doc) {
+      consoleLog("::: Restored by DF : Utils : convertDocumentToString : doc[" + doc + "] :::");
+      
       String str = doc.toString();
       consoleLog("convertDocumentToString before : " + str);
       str = str.replace("&lt;", "<");
@@ -291,6 +323,8 @@ public class Utils {
    }
 
    private static Element convertStringToDocument(String xmlString) {
+      consoleLog("::: Restored by DF : Utils : convertStringToDocument : xmlString[" + xmlString + "] :::");
+      
       Element xml = null;
 
       try {
@@ -308,6 +342,8 @@ public class Utils {
    }
 
    public static void hasExceptFont(Node node, boolean isKeepfontSize) {
+      consoleLog("::: Restored by DF : Utils : hasExceptFont : node[" + node + "] isKeepfontSize[" + isKeepfontSize + "]:::");
+      
       isExistsExceptFont = false;
       consoleLog("hasExceptFont node : " + node);
       if (node != null) {
@@ -376,6 +412,8 @@ public class Utils {
    }
 
    public static void getFontSize(Node node) {
+      consoleLog("::: Restored by DF : Utils : getFontSize : node[" + node + "] :::");
+      
       if (node != null) {
          if (node.getNodeType() != 1) {
             getFontSize(node.getParentNode());
@@ -430,6 +468,8 @@ public class Utils {
    }
 
    public static void replaceNBSP(Node cNode) {
+      consoleLog("::: Restored by DF : Utils : replaceNBSP : cNode[" + cNode + "] :::");
+
       consoleLog("---------------------------------");
       isExistsExceptFont = false;
       fontSize = 0.0;
@@ -452,7 +492,7 @@ public class Utils {
                if (isExistsExceptFont) {
                   consoleLog("doSomething before : " + currentNode.getNodeValue());
                   consoleLog("doSomething fontSize : " + fontSize);
-                  parseText = currentNode.getNodeValue().replaceAll(" ", "<span style=\"word-spacing: " + (double)Math.round(fontSize * 100.0 / 3.07) / 100.0 + "px;\">&nbsp;</span>");
+                  parseText = currentNode.getNodeValue().replaceAll(" ", "<span style=\"word-spacing: " + spaceSize + "px;\">&nbsp;</span>");
                   consoleLog("doSomething after : " + parseText);
                } else {
                   parseText = currentNode.getNodeValue().replaceAll(" ", "&nbsp;");
@@ -467,6 +507,8 @@ public class Utils {
    }
 
    public static void doSomething(Element element, boolean isStart) {
+	      consoleLog("::: Restored by DF : Utils : doSomething : element[" + element + "] isStart[" + isStart + "] :::");
+	      
       NodeList nodes = element.getChildNodes();
       if (isStart) {
          replaceNBSP(element);
@@ -486,6 +528,8 @@ public class Utils {
    }
 
    public static String parseNBSP(String str) {
+	      consoleLog("::: Restored by DF : Utils : parseNBSP : str[" + str + "] :::");
+	      
       consoleLog("isSafari : " + isSafari());
       if (!isSafari()) {
          return str;
@@ -508,6 +552,8 @@ public class Utils {
    }
 
    public static String addWordSpacing(String str) {
+      consoleLog("::: Restored by DF : Utils : addWordSpacing : str[" + str + "] :::");
+      
       consoleLog("isSafari : " + isSafari());
       if (!isSafari()) {
          return str;
@@ -543,6 +589,8 @@ public class Utils {
    }
 
    public static String fromUnicode(String unicode) {
+      consoleLog("::: Restored by DF : Utils : fromUnicode : unicode[" + unicode + "] :::");
+      
       String str = unicode.replace("\\", "");
       String[] arr = str.split("u");
       StringBuffer text = new StringBuffer();
@@ -556,6 +604,8 @@ public class Utils {
    }
 
    public static String toUnicode(String text) {
+      consoleLog("::: Restored by DF : Utils : toUnicode : text[" + text + "] :::");
+      
       StringBuffer sb = new StringBuffer();
 
       for(int i = 0; i < text.length(); ++i) {
@@ -578,6 +628,9 @@ public class Utils {
    }
 
    public static native int getCalculatedGapWidthQNote(String strId)/*-{
+      
+   	 console.log("::: Restored by DF : Utils : getCalculatedGapWidthQNote : strId[" + strId + "] :::");
+   	 
     var elem = $doc.getElementById(strId);
     if (elem) {
         // SVG 요소일 경우

@@ -16,6 +16,11 @@ public class StyleUtils {
 		}
 	};
 
+	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	public static void applyInlineStyle(Widget widget, String styles) {
+		DOMUtils.applyInlineStyle(widget.getElement(), styles);
+	}
+
 	/**
      * Wrapper for {@link com.google.gwt.user.client.ui.UIObject} setStyle method.
      * In addition to setting style name it maintains custom class name provided in iceditor.

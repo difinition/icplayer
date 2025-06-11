@@ -371,11 +371,14 @@ public class GWTTextPresenterTestCase extends GwtTest{
 		widget3.setId("3");
 		Document.get().getBody().appendChild(widget3);
 		
-		GapWidget answer2Widget = new GapWidget(gapInfo2, null);
-		
-		GapWidget answer1Widget = new GapWidget(gapInfo1, null);
-		
-		GapWidget answer3Widget = new GapWidget(gapInfo3, null);
+		//kslee GapWidget 인수추가에 따른 수정
+		//GapWidget answer2Widget = new GapWidget(gapInfo2, null);
+		//GapWidget answer1Widget = new GapWidget(gapInfo1, null);
+		//GapWidget answer3Widget = new GapWidget(gapInfo3, null);
+		GapWidget answer2Widget = new GapWidget(gapInfo2, null, null, null, null);
+		GapWidget answer1Widget = new GapWidget(gapInfo1, null, null, null, null);
+		GapWidget answer3Widget = new GapWidget(gapInfo3, null, null, null, null);
+
 
 		
 		textView.addElement(answer2Widget);

@@ -10,6 +10,7 @@ import com.lorepo.icf.utils.JavaScriptUtils;
 import com.lorepo.icf.utils.StringUtils;
 import com.lorepo.icf.utils.TextToSpeechVoice;
 import com.lorepo.icf.utils.dom.ElementHTMLUtils;
+import com.lorepo.icplayer.client.PlayerEntryPoint;
 import com.lorepo.icplayer.client.framework.module.StyleUtils;
 import com.lorepo.icplayer.client.module.IWCAG;
 import com.lorepo.icplayer.client.module.IWCAGModuleView;
@@ -18,6 +19,7 @@ import com.lorepo.icplayer.client.page.PageController;
 import com.lorepo.icplayer.client.utils.DOMUtils;
 import com.lorepo.icplayer.client.utils.MathJax;
 import com.lorepo.icplayer.client.utils.MathJaxElement;
+import com.lorepo.icplayer.client.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -264,20 +266,28 @@ public class SourceListView extends FlowPanel implements IDisplay, IWCAG, IWCAGM
 	}
 
 	public void refreshMath(Element element) {
-		MathJax.refreshMathJax(element);
+		//kslee 커스텀  메소드수정 ::: ▼▼▼ 
+		//MathJax.refreshMathJax(element);
+		MathJax.refreshMathJax(element, PlayerEntryPoint.subject, Utils.isQNote);
 	}
 	
 	@Override
 	public void refreshMath() {
-		MathJax.refreshMathJax(getElement());
+		//kslee 커스텀  메소드수정 ::: ▼▼▼ 
+		//MathJax.refreshMathJax(getElement());
+		MathJax.refreshMathJax(this.getElement(), PlayerEntryPoint.subject, Utils.isQNote);
 	}
 
 	public void rerenderMath() {
-		MathJax.rerenderMathJax(getElement());
+		//kslee 커스텀  메소드수정 ::: ▼▼▼ 
+		//MathJax.rerenderMathJax(getElement());
+		MathJax.rerenderMathJax(this.getElement(), Utils.isQNote);
 	}
 
 	public void refreshMathJax() {
-		MathJax.refreshMathJax(getElement());
+		//kslee 커스텀  메소드수정 ::: ▼▼▼ 
+		//MathJax.rerenderMathJax(getElement());
+		MathJax.rerenderMathJax(this.getElement(), Utils.isQNote);
 	}
 	
 	@Override

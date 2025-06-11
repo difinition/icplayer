@@ -11,6 +11,7 @@ import com.lorepo.icf.utils.ExtendedRequestBuilder;
 import com.lorepo.icf.utils.StringUtils;
 import com.lorepo.icf.utils.XMLUtils;
 import com.lorepo.icf.utils.i18n.DictionaryWrapper;
+import com.lorepo.icplayer.client.utils.Utils;
 
 public class ChoiceOption extends BasicPropertyProvider{
 
@@ -22,6 +23,19 @@ public class ChoiceOption extends BasicPropertyProvider{
 	private String baseURL;
 	private String contentBaseURL;
 	
+	//kslee 커스텀  필드추가 ::: ▼▼▼ 
+	private int x;
+	private int y;
+	private int absoluteWidth;
+	private int absoluteHeight;
+	private int width;
+	private int height;
+	private String layoutID;
+	private Element element;	
+	
+	//kslee 커스텀  인위추가 ::: ▼▼▼ 
+	private String defaultLayoutID = "default";
+	
 	public ChoiceOption(String id){
 		
 		super(DictionaryWrapper.get("choice_option"));
@@ -30,8 +44,24 @@ public class ChoiceOption extends BasicPropertyProvider{
 		addPropertyValue();
 		addPropertyText();
 		addPropertyFeedback();
+		
+		//kslee 커스텀  필드 초기화 추가 ::: ▼▼▼ 
+		this.feedback = "";
+		this.parentId = "";
+		this.x = -1;
+		this.y = -1;
+		this.absoluteWidth = -1;
+		this.absoluteHeight = -1;
+		this.width = -1;
+		this.height = -1;
+		this.layoutID = this.defaultLayoutID;
 	}
 	
+	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	public void setLayoutID(String layoutID) {
+		this.layoutID = layoutID;
+		this.resetXY(this.element);
+	}	
 	
 	public ChoiceOption(String id, String html, int value){
 
@@ -55,7 +85,36 @@ public class ChoiceOption extends BasicPropertyProvider{
 		return value;
 	}
 
-	
+	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	public int getX() {
+		return this.x;
+	}
+
+	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	public int getY() {
+		return this.y;
+	}
+
+	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	public int getAbsoluteWidth() {
+		return this.absoluteWidth;
+	}
+
+	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	public int getAbsoluteHeight() {
+		return this.absoluteHeight;
+	}
+
+	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	public int getWidth() {
+		return this.width;
+	}
+
+	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	public int getHeight() {
+		return this.height;
+	}
+
 	public String getFeedback(){
 		return feedback;
 	}
@@ -76,6 +135,60 @@ public class ChoiceOption extends BasicPropertyProvider{
 		this.feedback = feedback;
 	}
 
+	private void resetXY(Element element) {
+		NodeList textNodes = element.getElementsByTagName("text");
+
+		try {
+			Utils.consoleLog("layoutID  : " + this.layoutID);
+			if (this.layoutID == this.defaultLayoutID) {
+				this.x = XMLUtils.getAttributeAsInt(element, "x");
+				this.y = XMLUtils.getAttributeAsInt(element, "y");
+
+				try {
+					this.absoluteWidth = XMLUtils.getAttributeAsInt(element, "absoluteWidth");
+					this.absoluteHeight = XMLUtils.getAttributeAsInt(element, "absoluteHeight");
+				} catch (Exception var7) {
+				}
+
+				try {
+					this.width = XMLUtils.getAttributeAsInt(element, "width");
+					this.height = XMLUtils.getAttributeAsInt(element, "height");
+				} catch (Exception var6) {
+				}
+			} else {
+				this.x = XMLUtils.getAttributeAsInt(element, "x_" + this.layoutID);
+				this.y = XMLUtils.getAttributeAsInt(element, "y_" + this.layoutID);
+				textNodes = element.getElementsByTagName("text_" + this.layoutID);
+
+				try {
+					this.absoluteWidth = XMLUtils.getAttributeAsInt(element, "absoluteWidth_" + this.layoutID);
+					this.absoluteHeight = XMLUtils.getAttributeAsInt(element, "absoluteHeight_" + this.layoutID);
+				} catch (Exception var5) {
+				}
+
+				try {
+					this.width = XMLUtils.getAttributeAsInt(element, "width_" + this.layoutID);
+					this.height = XMLUtils.getAttributeAsInt(element, "height_" + this.layoutID);
+				} catch (Exception var4) {
+				}
+			}
+
+			if (textNodes.getLength() > 0) {
+				Element textElement = (Element) textNodes.item(0);
+				this.text = XMLUtils.getCharacterDataFromElement(textElement);
+				Utils.consoleLog("text : " + this.layoutID + " / " + this.text);
+				Utils.consoleLog("text : " + this.layoutID + " / " + this.text);
+				if (this.text == null) {
+					this.text = XMLUtils.getText(textElement);
+					this.text = StringUtils.unescapeXML(this.text);
+				}
+			}
+		} catch (Exception var8) {
+			Utils.consoleLog("resetXY e : " + var8);
+		}
+	}	
+	
+	
 	
 	private void addPropertyText() {
 
@@ -142,6 +255,66 @@ public class ChoiceOption extends BasicPropertyProvider{
 		
 		addProperty(property);
 	}
+	
+	private void addPropertyX() {
+		IProperty property = new IProperty() {
+			@Override
+			public void setValue(String newValue) {
+				x = Integer.parseInt(newValue);
+			}
+
+			@Override
+			public String getValue() {
+				return Integer.toString(x);
+			}
+
+			@Override
+			public String getName() {
+				return DictionaryWrapper.get("choice_item_x");
+			}
+
+			@Override
+			public String getDisplayName() {
+				return DictionaryWrapper.get("choice_item_x");
+			}
+
+			@Override
+			public boolean isDefault() {
+				return false;
+			}
+		};
+		addProperty(property);
+	}
+
+	private void addPropertyY() {
+		IProperty property = new IProperty() {
+			@Override
+			public void setValue(String newValue) {
+				y = Integer.parseInt(newValue);
+			}
+
+			@Override
+			public String getValue() {
+				return Integer.toString(y);
+			}
+
+			@Override
+			public String getName() {
+				return DictionaryWrapper.get("choice_item_y");
+			}
+
+			@Override
+			public String getDisplayName() {
+				return DictionaryWrapper.get("choice_item_y");
+			}
+
+			@Override
+			public boolean isDefault() {
+				return false;
+			}
+		};
+		addProperty(property);
+	}
 
 	private void addPropertyFeedback() {
 
@@ -174,41 +347,133 @@ public class ChoiceOption extends BasicPropertyProvider{
 	}
 
 
+	//kslee 커스텀 수정::: load ▼▼▼ 
+	//	public void load(Element element, String baseUrl) {
+	//		
+	//		value = XMLUtils.getAttributeAsInt(element, "value");
+	//		String rawFeedback = "";
+	//		
+	//		NodeList textNodes = element.getElementsByTagName("text"); 
+	//		if(textNodes.getLength() > 0){
+	//			Element textElement = (Element) textNodes.item(0);
+	//			text = XMLUtils.getCharacterDataFromElement(textElement);
+	//			if(text == null){
+	//				text = XMLUtils.getText(textElement);
+	//				text = StringUtils.unescapeXML(text);
+	//			}
+	//			if(baseUrl != null){
+	//				text = StringUtils.updateLinks(text, baseUrl);
+	//			}
+	//			
+	//			NodeList feedbackNodes = element.getElementsByTagName("feedback");
+	//			if(feedbackNodes.getLength() > 0){
+	//				rawFeedback = XMLUtils.getText((Element) feedbackNodes.item(0));
+	//			}
+	//		}
+	//		else{
+	//			text = XMLUtils.getText((Element) element);
+	//		}
+	//		
+	//		if(!rawFeedback.isEmpty()){
+	//			feedback = StringUtils.unescapeXML(rawFeedback);
+	//		}
+	//
+	//		text = text.replaceAll("<!--[\\s\\S]*?-->", "");
+	//	}
 	public void load(Element element, String baseUrl) {
-		this.baseURL = baseUrl;
-		value = XMLUtils.getAttributeAsInt(element, "value");
+		this.element = element;
+		this.value = XMLUtils.getAttributeAsInt(element, "value");
 		String rawFeedback = "";
-		
-		NodeList textNodes = element.getElementsByTagName("text"); 
-		if (textNodes.getLength() > 0){
-			Element textElement = (Element) textNodes.item(0);
-			text = XMLUtils.getCharacterDataFromElement(textElement);
-			if (text == null){
-				text = XMLUtils.getText(textElement);
-				text = StringUtils.unescapeXML(text);
+		NodeList textNodes = element.getElementsByTagName("text");
+		if (Utils.isQNote) {
+			try {
+				if (this.layoutID == this.defaultLayoutID) {
+					this.x = XMLUtils.getAttributeAsInt(element, "x");
+					this.y = XMLUtils.getAttributeAsInt(element, "y");
+				} else {
+					this.x = XMLUtils.getAttributeAsInt(element, "x_" + this.layoutID);
+					this.y = XMLUtils.getAttributeAsInt(element, "y_" + this.layoutID);
+					textNodes = element.getElementsByTagName("text_" + this.layoutID);
+				}
+			} catch (Exception var8) {
 			}
-			if (baseUrl != null || contentBaseURL != null || ExtendedRequestBuilder.getSigningPrefix() != null){
-				text = StringUtils.updateLinks(text, baseUrl, contentBaseURL);
+
+			try {
+				if (this.layoutID == this.defaultLayoutID) {
+					this.absoluteWidth = XMLUtils.getAttributeAsInt(element, "absoluteWidth");
+					this.absoluteHeight = XMLUtils.getAttributeAsInt(element, "absoluteHeight");
+				} else {
+					this.absoluteWidth = XMLUtils.getAttributeAsInt(element, "absoluteWidth_" + this.layoutID);
+					this.absoluteHeight = XMLUtils.getAttributeAsInt(element, "absoluteHeight_" + this.layoutID);
+				}
+			} catch (Exception var7) {
+			}
+		}
+
+		if (textNodes.getLength() > 0) {
+			Element textElement = (Element) textNodes.item(0);
+			this.text = XMLUtils.getCharacterDataFromElement(textElement);
+			if (this.text == null) {
+				this.text = XMLUtils.getText(textElement);
+				this.text = StringUtils.unescapeXML(this.text);
+			}
+
+			if (baseUrl != null || this.contentBaseURL != null) {
+				this.text = StringUtils.updateLinks(this.text, baseUrl, this.contentBaseURL);
 			}
 
 			NodeList feedbackNodes = element.getElementsByTagName("feedback");
-			if (feedbackNodes.getLength() > 0){
+			if (feedbackNodes.getLength() > 0) {
 				rawFeedback = XMLUtils.getText((Element) feedbackNodes.item(0));
 			}
 		} else {
-			text = XMLUtils.getText((Element) element);
-		}
-		
-		if (!rawFeedback.isEmpty()){
-			feedback = StringUtils.unescapeXML(rawFeedback);
+			this.text = XMLUtils.getText(element);
 		}
 
-		text = text.replaceAll("<!--[\\s\\S]*?-->", "");
+		if (!rawFeedback.isEmpty()) {
+			this.feedback = StringUtils.unescapeXML(rawFeedback);
+		}
+
+		this.text = this.text.replaceAll("<!--[\\s\\S]*?-->", "");
 	}
 	
 	
+	//kslee 커스텀 수정::: load ▼▼▼ 
+	//	public Element toXML() {
+	//		Element optionElement = XMLUtils.createElement("option");
+	//		XMLUtils.setIntegerAttribute(optionElement, "value", value);
+	//		
+	//		Element textElement = XMLUtils.createElement("text");
+	//		CDATASection cdataText = XMLUtils.createCDATASection(text);
+	//		textElement.appendChild(cdataText);
+	//		
+	//		Element feedbackElement = XMLUtils.createElement("feedback");		
+	//		feedbackElement.appendChild(XMLUtils.createTextNode(StringUtils.escapeHTML(feedback)));
+	//
+	//		optionElement.appendChild(textElement);
+	//		optionElement.appendChild(feedbackElement);
+	//		
+	//		return optionElement;
+	//	}
 	public Element toXML() {
 		Element optionElement = XMLUtils.createElement("option");
+		
+		if (this.x > 0) {
+			XMLUtils.setIntegerAttribute(optionElement, "x", this.x);
+		}
+
+		if (this.y > 0) {
+			XMLUtils.setIntegerAttribute(optionElement, "y", this.y);
+		}
+
+		if (this.absoluteWidth > 0) {
+			XMLUtils.setIntegerAttribute(optionElement, "absoluteWidth", this.absoluteWidth);
+		}
+
+		if (this.absoluteHeight > 0) {
+			XMLUtils.setIntegerAttribute(optionElement, "absoluteHeight", this.absoluteHeight);
+		}
+		
 		XMLUtils.setIntegerAttribute(optionElement, "value", value);
 		
 		Element textElement = XMLUtils.createElement("text");

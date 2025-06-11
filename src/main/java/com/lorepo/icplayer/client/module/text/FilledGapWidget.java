@@ -8,13 +8,19 @@ import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Element;
+import com.lorepo.icplayer.client.module.api.player.IPlayerServices;
 import com.lorepo.icplayer.client.module.text.TextPresenter.TextElementDisplay;
 
 public class FilledGapWidget extends GapWidget implements TextElementDisplay {
 	private ArrayList<HandlerRegistration> filledGapHandlers = new ArrayList<HandlerRegistration>();
 	
-	public FilledGapWidget(GapInfo gi, final ITextViewListener listener){
-		super(gi, listener);
+	//kslee 커스텀  생성자 수정 ::: ▼▼▼ 
+	//public FilledGapWidget(GapInfo gi, final ITextViewListener listener){
+	//	super(gi, listener);
+	//	this.initialize(listener);
+	//}
+	public FilledGapWidget(GapInfo gi, String gapStyles, ITextViewListener listener, String moduleID, IPlayerServices playerSerivice) {
+		super(gi, gapStyles, listener, moduleID, playerSerivice);
 		this.initialize(listener);
 	}
 
@@ -70,6 +76,10 @@ public class FilledGapWidget extends GapWidget implements TextElementDisplay {
 		}
 		
 		filledGapHandlers.clear();
+	}
+
+	@Override
+	public void setIndex(int index) {
 	}
 
 	@Override

@@ -26,6 +26,7 @@ import com.lorepo.icplayer.client.module.text.WCAGUtils;
 import com.lorepo.icplayer.client.page.PageController;
 import com.lorepo.icplayer.client.utils.MathJax;
 import com.lorepo.icplayer.client.utils.MathJaxElement;
+import com.lorepo.icplayer.client.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -804,9 +805,11 @@ public class OrderingView extends Composite implements IDisplay, IWCAG, IWCAGMod
 		this.listener = listener;
 	}
 
+	//kslee 커스텀 메소드 수정 ::: ▼▼▼ 
 	@Override
 	public void refreshMath() {
-		MathJax.rerenderMathJax(getElement());
+		//MathJax.rerenderMathJax(getElement());
+		MathJax.rerenderMathJax(this.getElement(), Utils.isQNote);
 	}
 
 	@Override

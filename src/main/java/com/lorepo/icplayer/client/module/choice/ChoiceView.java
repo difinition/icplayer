@@ -1,6 +1,8 @@
 package com.lorepo.icplayer.client.module.choice;
 
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.dom.client.AudioElement;
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.EndedHandler;
 import com.google.gwt.event.dom.client.EndedEvent;
@@ -11,6 +13,7 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.AudioElement;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -18,14 +21,19 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.lorepo.icf.utils.StringUtils;
 import com.lorepo.icf.utils.TextToSpeechVoice;
+import com.lorepo.icplayer.client.PlayerEntryPoint;
 import com.lorepo.icplayer.client.framework.module.StyleUtils;
 import com.lorepo.icplayer.client.module.IWCAG;
 import com.lorepo.icplayer.client.module.IWCAGModuleView;
 import com.lorepo.icplayer.client.module.choice.ChoicePresenter.IOptionDisplay;
+import com.lorepo.icplayer.client.module.text.AudioButtonWidget;
+import com.lorepo.icplayer.client.module.text.AudioInfo;
+import com.lorepo.icplayer.client.module.text.AudioWidget;
 import com.lorepo.icplayer.client.module.text.WCAGUtils;
 import com.lorepo.icplayer.client.page.PageController;
 import com.lorepo.icplayer.client.utils.MathJax;
 import com.lorepo.icplayer.client.utils.MathJaxElement;
+import com.lorepo.icplayer.client.utils.Utils;
 import com.lorepo.icplayer.client.module.text.AudioInfo;
 import com.lorepo.icplayer.client.module.text.AudioWidget;
 import com.lorepo.icplayer.client.module.text.AudioButtonWidget;
@@ -60,6 +68,10 @@ public class ChoiceView extends AbsolutePanel implements ChoicePresenter.IDispla
 
 	private int position = -1;
 	
+	//kslee 커스텀  필드추가 ::: ▼▼▼ 
+	private AbsolutePanel optionsPanelAbsolute;
+
+	
 	public ChoiceView(ChoiceModel module, boolean isPreview) {
 		this.module = module;
 		createUI(isPreview);
@@ -71,77 +83,191 @@ public class ChoiceView extends AbsolutePanel implements ChoicePresenter.IDispla
 	 * GWT głupieje.
 	 * @param isPreview 
 	 */
-	private void createUI(boolean isPreview){
-
-		optionsPanel = new VerticalPanel();
-		optionsPanelHorizontal = new HorizontalPanel();
-
-		if(module.isHorizontalLayout()){
-			optionsPanelHorizontal.setStyleName("ic_choice");
-		}else{
-			optionsPanel.setStyleName("ic_choice");
+	//kslee 커스텀  메소드 수정 ::: ▼▼▼ 
+	//	private void createUI(boolean isPreview){
+	//
+	//		optionsPanel = new VerticalPanel();
+	//		optionsPanelHorizontal = new HorizontalPanel();
+	//
+	//		if(module.isHorizontalLayout()){
+	//			optionsPanelHorizontal.setStyleName("ic_choice");
+	//		}else{
+	//			optionsPanel.setStyleName("ic_choice");
+	//		}
+	//		
+	//		makeOrder(isPreview);
+	//		
+	//		for(int i = 0; i < order.length; i++) {
+	//			ChoiceOption option;
+	//			option = module.getOption(order[i]);
+	//			OptionView widget;
+	//			widget = new OptionView(option, module.isMulti());
+	//			
+	//			if (!this.module.isTabindexEnabled()) {
+	//				// must be negative other than -1, otherwise GWT resets it to 0 for FocusWidget in onAttach
+	//				widget.setTabIndex(-2);
+	//			}
+	//			
+	//			widget.addValueChangeHandler(this);
+	//			optionWidgets.add(widget);
+	//			if(module.isHorizontalLayout()){
+	//				optionsPanelHorizontal.add((Widget)widget);
+	//			}else{
+	//				optionsPanel.add((Widget)widget);
+	//			}
+	//		}
+	//
+	//		getOrderedOptions();
+	//		if(module.isHorizontalLayout()){
+	//			optionsPanelHorizontal.setSize("100%", "100%");
+	//			add(optionsPanelHorizontal);
+	//			setWidgetPosition(optionsPanelHorizontal, 0, 0);
+	//		}else{
+	//			optionsPanel.setSize("100%", "100%");
+	//			add(optionsPanel);
+	//			setWidgetPosition(optionsPanel, 0, 0);
+	//		}
+	//		
+	//		StyleUtils.applyInlineStyle(this, module);
+	//		originalDisplay = getElement().getStyle().getDisplay();
+	//		if(!isPreview){
+	//			setVisible(module.isVisible());
+	//		}
+	//		getElement().setId(module.getId());
+	//		if(module.isDisabled()){
+	//			setEnabled(false);
+	//		}
+	//		
+	//		getElement().setAttribute("lang", this.module.getLangAttribute());
+	//		
+	//		if(this.module.getSpeechTextItem(0) != "") {
+	//			this.selectedText = this.module.getSpeechTextItem(0);
+	//		}
+	//		
+	//		if(this.module.getSpeechTextItem(1) != "") {
+	//			this.deselectedText = this.module.getSpeechTextItem(1);
+	//		}
+	//		
+	//		if(this.module.getSpeechTextItem(2) != "") {
+	//			this.correctText = this.module.getSpeechTextItem(2);
+	//		}
+	//		
+	//		if(this.module.getSpeechTextItem(3) != "") {
+	//			this.incorrectText = this.module.getSpeechTextItem(3);
+	//		}
+	//	}
+	private void createUI(boolean isPreview) {
+		this.optionsPanel = new VerticalPanel();
+		this.optionsPanelHorizontal = new HorizontalPanel();
+		this.optionsPanelAbsolute = new AbsolutePanel();
+		Utils.consoleLog("module.isHorizontalLayout():  " + this.module.isHorizontalLayout());
+		if (Utils.isQNote) {
+			if (this.module.getLayoutStyle() == "horizontal") {
+				this.optionsPanelHorizontal.setStyleName("ic_choice");
+			} else if (this.module.getLayoutStyle() == "vertical") {
+				this.optionsPanel.setStyleName("ic_choice");
+			} else if (this.module.getLayoutStyle() == "absolute") {
+				this.optionsPanelAbsolute.setStyleName("ic_choice");
+			}
+		} else if (this.module.isHorizontalLayout()) {
+			this.optionsPanelHorizontal.setStyleName("ic_choice");
+		} else {
+			this.optionsPanel.setStyleName("ic_choice");
 		}
-		
-		makeOrder(isPreview);
-		
-		for(int i = 0; i < order.length; i++) {
-			ChoiceOption option;
-			option = module.getOption(order[i]);
-			OptionView widget;
-			widget = new OptionView(option, module.isMulti());
-			
+
+		this.makeOrder(isPreview);
+
+		for (int i = 0; i < this.order.length; ++i) {
+			String layoutID = this.module.getSemiResponsiveID();
+			ChoiceOption option = this.module.getOption(this.order[i]);
+			option.setLayoutID(layoutID);
+			OptionView widget = new OptionView(option, this.module.isMulti(), this.module.getLayoutStyle(), i,
+					this.module.getOrderType());
 			if (!this.module.isTabindexEnabled()) {
-				// must be negative other than -1, otherwise GWT resets it to 0 for FocusWidget in onAttach
 				widget.setTabIndex(-2);
 			}
-			
+
 			widget.addValueChangeHandler(this);
-			optionWidgets.add(widget);
-			if(module.isHorizontalLayout()){
-				optionsPanelHorizontal.add((Widget)widget);
-			}else{
-				optionsPanel.add((Widget)widget);
+			this.optionWidgets.add(widget);
+			if (Utils.isQNote) {
+				if (this.module.getLayoutStyle() == "horizontal") {
+					this.optionsPanelHorizontal.add(widget);
+				} else if (this.module.getLayoutStyle() == "vertical") {
+					this.optionsPanel.add(widget);
+				} else if (this.module.getLayoutStyle() == "absolute") {
+					Utils.consoleLog("getWidth : " + option.getAbsoluteWidth());
+					Utils.consoleLog("getHeight : " + option.getAbsoluteHeight());
+					if (option.getAbsoluteWidth() > 0 && option.getAbsoluteHeight() > 0) {
+						widget.setWidth(option.getAbsoluteWidth() + "px");
+						widget.setHeight(option.getAbsoluteHeight() + "px");
+					} else {
+						widget.setWidth(option.getWidth() + "px");
+						widget.setHeight(option.getHeight() + "px");
+					}
+
+					this.optionsPanelAbsolute.add(widget, option.getX() - this.module.getLeft(),
+							option.getY() - this.module.getTop());
+				}
+			} else if (this.module.isHorizontalLayout()) {
+				this.optionsPanelHorizontal.add(widget);
+			} else {
+				this.optionsPanel.add(widget);
 			}
 		}
 
-		getOrderedOptions();
-		if(module.isHorizontalLayout()){
-			optionsPanelHorizontal.setSize("100%", "100%");
-			add(optionsPanelHorizontal);
-			setWidgetPosition(optionsPanelHorizontal, 0, 0);
-		}else{
-			optionsPanel.setSize("100%", "100%");
-			add(optionsPanel);
-			setWidgetPosition(optionsPanel, 0, 0);
+		this.getOrderedOptions();
+		if (Utils.isQNote) {
+			if (this.module.getLayoutStyle() == "horizontal") {
+				this.optionsPanelHorizontal.setSize("100%", "100%");
+				this.add(this.optionsPanelHorizontal);
+				this.setWidgetPosition(this.optionsPanelHorizontal, 0, 0);
+			} else if (this.module.getLayoutStyle() == "vertical") {
+				this.optionsPanel.setSize("100%", "100%");
+				this.add(this.optionsPanel);
+				this.setWidgetPosition(this.optionsPanel, 0, 0);
+			} else if (this.module.getLayoutStyle() == "absolute") {
+				this.optionsPanelAbsolute.setSize("100%", "100%");
+				this.add(this.optionsPanelAbsolute);
+				this.setWidgetPosition(this.optionsPanelAbsolute, 0, 0);
+			}
+		} else if (this.module.isHorizontalLayout()) {
+			this.optionsPanelHorizontal.setSize("100%", "100%");
+			this.add(this.optionsPanelHorizontal);
+			this.setWidgetPosition(this.optionsPanelHorizontal, 0, 0);
+		} else {
+			this.optionsPanel.setSize("100%", "100%");
+			this.add(this.optionsPanel);
+			this.setWidgetPosition(this.optionsPanel, 0, 0);
 		}
-		
-		StyleUtils.applyInlineStyle(this, module);
-		originalDisplay = getElement().getStyle().getDisplay();
-		if(!isPreview){
-			setVisible(module.isVisible());
+
+		StyleUtils.applyInlineStyle(this, this.module);
+		this.originalDisplay = this.getElement().getStyle().getDisplay();
+		if (!isPreview) {
+			this.setVisible(this.module.isVisible());
 		}
-		getElement().setId(module.getId());
-		if(module.isDisabled()){
-			setEnabled(false);
+
+		this.getElement().setId(this.module.getId());
+		if (this.module.isDisabled()) {
+			this.setEnabled(false);
 		}
-		
-		getElement().setAttribute("lang", this.module.getLangAttribute());
-		
-		if(this.module.getSpeechTextItem(0) != "") {
+
+		this.getElement().setAttribute("lang", this.module.getLangAttribute());
+		if (this.module.getSpeechTextItem(0) != "") {
 			this.selectedText = this.module.getSpeechTextItem(0);
 		}
-		
-		if(this.module.getSpeechTextItem(1) != "") {
+
+		if (this.module.getSpeechTextItem(1) != "") {
 			this.deselectedText = this.module.getSpeechTextItem(1);
 		}
-		
-		if(this.module.getSpeechTextItem(2) != "") {
+
+		if (this.module.getSpeechTextItem(2) != "") {
 			this.correctText = this.module.getSpeechTextItem(2);
 		}
-		
-		if(this.module.getSpeechTextItem(3) != "") {
+
+		if (this.module.getSpeechTextItem(3) != "") {
 			this.incorrectText = this.module.getSpeechTextItem(3);
 		}
+
 	}
 	
 	@Override
@@ -267,11 +393,15 @@ public class ChoiceView extends AbsolutePanel implements ChoicePresenter.IDispla
 		setVisible(val);
 	}
 
-	@Override
+	//kslee 커스텀  메소드 수정 ::: ▼▼▼ 
+//	@Override
+//	public void refreshMath() {
+//		MathJax.refreshMathJax(getElement());
+//	}
 	public void refreshMath() {
-		MathJax.refreshMathJax(getElement());
+		MathJax.refreshMathJax(this.getElement(), PlayerEntryPoint.subject, Utils.isQNote);
 	}
-
+	
 	public int[] getOryginalOrder() {
 		int[] array = new int[order.length];
 		for (int i=0; i<order.length; i++) {

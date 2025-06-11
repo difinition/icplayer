@@ -28,6 +28,7 @@ import com.lorepo.icplayer.client.module.api.player.IPlayerServices;
 import com.lorepo.icplayer.client.module.api.player.IScoreService;
 import com.lorepo.icplayer.client.module.text.LinkInfo.LinkType;
 import com.lorepo.icplayer.client.page.KeyboardNavigationController;
+import com.lorepo.icplayer.client.utils.Utils;
 import com.lorepo.icplayer.client.utils.DevicesUtils;
 
 import java.util.*;
@@ -40,6 +41,10 @@ public class TextPresenter implements IPresenter, IStateful, IActivity, ICommand
 		void setWorkMode();
 		void reset();
 		void setText(String text);
+		
+		//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+		void setIndex(int index);
+		
 		String getTextValue();
 		String getWCAGTextValue();
 		void markGapAsCorrect();
@@ -117,6 +122,10 @@ public class TextPresenter implements IPresenter, IStateful, IActivity, ICommand
 	private final IPlayerServices playerServices;
 	private IDisplay view;
 	private final HashMap<String, String> values = new HashMap<String, String>();
+	
+	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	private final HashMap<String, String> indexValues = new HashMap<String, String>();
+	
 	private HashMap<String, DraggableItem> consumedItems = new HashMap<String, DraggableItem>();
 	private DraggableItem draggableItem;
 	private JavaScriptObject jsObject;
@@ -142,6 +151,9 @@ public class TextPresenter implements IPresenter, IStateful, IActivity, ICommand
 		this.playerServices = services;
 		isVisible = module.isVisible();
 		isDisabled = module.isDisabled();
+		
+		//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+		module.setPlayerSerivice(this.playerServices);
 		try {
 			// in editor services are null
 			if (this.playerServices != null) {
@@ -224,6 +236,13 @@ public class TextPresenter implements IPresenter, IStateful, IActivity, ICommand
 				handleGradualHideAnswers();
 			}
 		});
+	}
+	
+	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	private void setTextGroupID() {
+		IScoreService scoreService = this.playerServices.getScoreService();
+		scoreService.setTextGroupID(this.module.getId(),
+				Utils.getPageGroupID(this.playerServices.getCurrentPageIndex(), this.module.getGroupID()));
 	}
 	
 	private boolean isShowAnswers() {
@@ -590,10 +609,15 @@ public class TextPresenter implements IPresenter, IStateful, IActivity, ICommand
 			updateViewText();
 		}
 
+		view.refreshMath();
 		enteredText = null;
 		draggableItem = null;
 		consumedItems.clear();
 		values.clear();
+		
+		//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+		this.indexValues.clear();
+		
 		updateScore();
 
 		this.currentState = "";
@@ -932,7 +956,30 @@ public class TextPresenter implements IPresenter, IStateful, IActivity, ICommand
 	protected void valueChangeLogic(String id, String newValue) {
 		GapInfo gap = getGapInfoById(id);
 
+		
+		//kslee 커스텀  로직 추가 ::: ▼▼▼ 
+		Utils.consoleLog("valueChangeLogic : " + id + ", " + newValue);
+		String selectedIndex = "0";
+		String tempNewValue = newValue;
+		Utils.consoleLog("a222");
+
+		try {
+			if (newValue.contains(Utils.delemiter)) {
+				Utils.consoleLog("a444");
+				newValue = tempNewValue.split(Utils.delemiter)[0];
+
+				try {
+					selectedIndex = tempNewValue.split(Utils.delemiter)[1];
+				} catch (Exception var14) {
+					Utils.consoleLog("valueChangeLogic e : " + var14);
+				}
+			}
+		} catch (Exception var15) {
+			Utils.consoleLog("valueChangeLogic2 e : " + var15);
+		}
+		
 		values.put(id, newValue);
+		this.indexValues.put(id, selectedIndex);
 		updateScore();
 
 		String score = Integer.toString(getItemScore(id));
@@ -942,6 +989,9 @@ public class TextPresenter implements IPresenter, IStateful, IActivity, ICommand
 			try {
 				view.getChild(Integer.parseInt(itemID) - 1).setText("");
 				values.remove(id);
+				
+				this.indexValues.remove(id);
+				
 			} catch(NumberFormatException nfe) {
 				JavaScriptUtils.log(nfe);
 			}
@@ -1086,6 +1136,9 @@ public class TextPresenter implements IPresenter, IStateful, IActivity, ICommand
 		DraggableItem previouslyConsumedItem = consumedItems.get(gapId);
 
 		removeFromItems(gapId);
+		
+		//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+		this.indexValues.remove(gapId);
 		fireItemReturnedEvent(previouslyConsumedItem);
 
 		if (shouldFireEvent) {
@@ -1223,6 +1276,28 @@ public class TextPresenter implements IPresenter, IStateful, IActivity, ICommand
 	private void updateScore() {
 		IScoreService scoreService = playerServices.getScoreService();
 		scoreService.setScore(module.getId(), getScore(), getMaxScore());
+	}
+	
+	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	private void updateText() {
+		IScoreService scoreService = this.playerServices.getScoreService();
+		Iterator var2 = this.module.getGapInfos().iterator();
+
+		String enteredValue;
+		while (var2.hasNext()) {
+			GapInfo gap = (GapInfo) var2.next();
+			enteredValue = this.getElementText(gap.getId());
+			scoreService.setGroupTexts(this.module.getId(), enteredValue);
+		}
+
+		var2 = this.module.getChoiceInfos().iterator();
+
+		while (var2.hasNext()) {
+			InlineChoiceInfo choice = (InlineChoiceInfo) var2.next();
+			enteredValue = this.getElementText(choice.getId());
+			scoreService.setGroupTexts(this.module.getId(), enteredValue);
+		}
+
 	}
 
 	@Override
@@ -1538,6 +1613,36 @@ public class TextPresenter implements IPresenter, IStateful, IActivity, ICommand
 		presenter.hideAnswers = function() {
 			x.@com.lorepo.icplayer.client.module.text.TextPresenter::hideAnswers()();
 		};
+		
+		
+		// 여기부터 임의추가
+		presenter.restoreGapMode = function() {
+			x.@com.lorepo.icplayer.client.module.text.TextPresenter::restoreGapMode()();
+		};
+
+		presenter.getGapCnt = function() {
+			return x.@com.lorepo.icplayer.client.module.text.TextPresenter::getGapCnt()();
+		};
+
+		presenter.getAttempedCount = function() {
+			return x.@com.lorepo.icplayer.client.module.text.TextPresenter::getAttempedCount()();
+		};
+
+		presenter.setUserValueWithScore = function(index, id, value) {
+			x.@com.lorepo.icplayer.client.module.text.TextPresenter::setUserValueWithScore(ILjava/lang/String;Ljava/lang/String;)(index, id, value);
+		}		
+
+		presenter.isAttemptedAtLeastOne = function() {
+			return x.@com.lorepo.icplayer.client.module.text.TextPresenter::isAttemptedAtLeastOne()();
+		};
+
+		presenter.setTextCommand = function(text) {
+			x.@com.lorepo.icplayer.client.module.text.TextPresenter::setTextCommand(Ljava/lang/String;)(text);
+		}		
+
+		presenter.haveStandaloneKeyboardNavigationSupport = function() {
+			return x.@com.lorepo.icplayer.client.module.text.TextPresenter::haveStandaloneKeyboardNavigationSupport()();
+		};
 
 		return presenter;
 	}-*/;
@@ -1571,7 +1676,8 @@ public class TextPresenter implements IPresenter, IStateful, IActivity, ICommand
 			console.log("Error : " + err);
 		}
 	}-*/;
-
+	
+	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
 	private void restoreGapMode() {
 		if (this.isShowErrorsMode) {
 			this.setShowErrorsMode();
@@ -1610,6 +1716,24 @@ public class TextPresenter implements IPresenter, IStateful, IActivity, ICommand
 		return "[error]";
 	}
 
+	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	private int getGapCnt() {
+		return this.view.getChildrenCount();
+	}
+	
+	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	private int getAttempedCount() {
+		int cnt = 0;
+
+		for (int i = 0; i < this.view.getChildrenCount(); ++i) {
+			if (this.isGapAttempted(i + 1)) {
+				++cnt;
+			}
+		}
+
+		return cnt;
+	}
+	
 	private void setGapAnswer(int index, String answer) {
 		if (view != null && index <= view.getChildrenCount()) {
 			TextElementDisplay gap = view.getChild(index-1);
@@ -1631,6 +1755,23 @@ public class TextPresenter implements IPresenter, IStateful, IActivity, ICommand
 		isMathShowAnswersActive = false;
 	}
 
+	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	private void setUserValueWithScore(int index, String id, String value) {
+		if (this.view != null && index <= this.view.getChildrenCount()) {
+			Utils.consoleLog("setUserValueWithScore id : " + id);
+			Utils.consoleLog("setUserValueWithScore value : " + value);
+			TextElementDisplay gap = this.view.getChild(index - 1);
+			gap.setText(value);
+			gap.removeStyleHideAnswers();
+			this.values.put(String.valueOf(id), String.valueOf(value));
+			Utils.consoleLog("setUserValueWithScore values : " + (String) this.values.get(String.valueOf(id)));
+			this.updateScore();
+			Utils.consoleLog("setUserValueWithScore values : " + this.values);
+		}
+
+		this.isMathShowAnswersActive = false;
+	}
+	
 	private void setGapText(int gapIndex, String text) {
 		if (view != null && gapIndex <= view.getChildrenCount() && gapIndex > 0) {
 			TextElementDisplay gap = view.getChild(gapIndex-1);
@@ -1741,7 +1882,25 @@ public class TextPresenter implements IPresenter, IStateful, IActivity, ICommand
 
 		return true;
 	}
+	
+	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	private boolean isAttemptedAtLeastOne() {
+		if (this.isShowAnswers()) {
+			this.hideAnswers();
+		}
 
+		int attemptedCnt = 0;
+
+		for (int index = 0; index < this.view.getChildrenCount(); ++index) {
+			if (this.view.getChild(index).isAttempted()) {
+				++attemptedCnt;
+			}
+		}
+
+		return attemptedCnt > 0 && this.view.getChildrenCount() != 0;
+	}
+
+	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
 	private void setTextCommand(String text) {
 		setText(text);
 		view.refreshMath();

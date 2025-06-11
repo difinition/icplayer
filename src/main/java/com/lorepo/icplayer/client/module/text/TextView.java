@@ -12,6 +12,7 @@ import com.lorepo.icf.utils.JavaScriptUtils;
 import com.lorepo.icf.utils.StringUtils;
 import com.lorepo.icf.utils.TextToSpeechVoice;
 import com.lorepo.icf.utils.i18n.DictionaryWrapper;
+import com.lorepo.icplayer.client.PlayerEntryPoint;
 import com.lorepo.icplayer.client.framework.module.StyleUtils;
 import com.lorepo.icplayer.client.metadata.IMetadata;
 import com.lorepo.icplayer.client.metadata.ScoreWithMetadata;
@@ -25,6 +26,7 @@ import com.lorepo.icplayer.client.module.text.TextPresenter.NavigationTextElemen
 import com.lorepo.icplayer.client.page.PageController;
 import com.lorepo.icplayer.client.utils.MathJax;
 import com.lorepo.icplayer.client.utils.MathJaxElement;
+import com.lorepo.icplayer.client.utils.Utils;
 
 import java.util.*;
 
@@ -36,6 +38,10 @@ public class TextView extends HTML implements IDisplay, IWCAG, MathJaxElement, I
 	private ArrayList<NavigationTextElement> navigationTextElements = new ArrayList<NavigationTextElement>();
 	private final ArrayList<String> mathGapIds = new ArrayList<String>();
 	private boolean moduleHasFocus = false;
+	
+	//kslee 커스텀  필드추가 ::: ▼▼▼ 
+	private int clicks = -1;
+	
 	private PageController pageController;
 	private ArrayList<InlineChoiceInfo> inlineChoiceInfoArrayList = new ArrayList<InlineChoiceInfo>();
 	private boolean isWCAGon = false;
@@ -61,6 +67,15 @@ public class TextView extends HTML implements IDisplay, IWCAG, MathJaxElement, I
 		this.isPreview = isPreview;
 		createUI(isPreview);
 		mathJaxLoaded();
+		
+		//kslee 커스텀  필드 초기화 추가 ::: ▼▼▼ 
+		this.changetLayout();
+		
+	}
+	
+	private void changetLayout() {
+		String layoutID = this.module.getSemiResponsiveID();
+		this.module.setLayoutID(layoutID);
 	}
 
 	@Override
@@ -82,6 +97,13 @@ public class TextView extends HTML implements IDisplay, IWCAG, MathJaxElement, I
 		}
 
 		getElement().setAttribute("lang", this.module.getLangAttribute());
+		
+		//kslee 커스텀  로직 추가 ::: ▼▼▼ 
+		try {
+			this.getElement().setAttribute("isQuestionNumber", this.module.getIsQuestionNumber() + "");
+		} catch (Exception var3) {
+		}
+
 	}
 
 	@Override
@@ -142,7 +164,18 @@ public class TextView extends HTML implements IDisplay, IWCAG, MathJaxElement, I
 			} else {
 				String longestAnswer = gi.getLongestAnswer();
 				String fontSize = getFontSize(gap.getId());
-				int calculatedGapWidth = getCalculatedGapWidth(longestAnswer, fontSize);
+				
+				Utils.consoleLog("Utils.isQNote [" + Utils.isQNote + "] :::");
+				
+				//kslee 커스텀  메소드 수정 ::: ▼▼▼ 
+				//int calculatedGapWidth = getCalculatedGapWidth(longestAnswer, fontSize);
+				int calculatedGapWidth;
+				if (Utils.isQNote) {
+					calculatedGapWidth = Utils.getCalculatedGapWidthQNote(longestAnswer);
+				} else {
+					calculatedGapWidth = this.getCalculatedGapWidth(longestAnswer, fontSize);
+				}				
+				
 				Element gapElement = gap.getElement();
 				Boolean gapHasWrapper = this.hasDraggableWrapper(gapElement);
 
@@ -167,19 +200,42 @@ public class TextView extends HTML implements IDisplay, IWCAG, MathJaxElement, I
 	@Override
 	public void connectGaps(Iterator<GapInfo> giIterator) {
 		int gapWidth = module.getGapWidth();
+		
+		//kslee 커스텀  추가 ::: ▼▼▼ 
+		int gapHeight = this.module.getGapHeight();
+		boolean isMultipleLines = this.module.getMultipleLines();
+		
 		while (giIterator.hasNext()) {
 			GapInfo gi = giIterator.next();
 			try {
-				GapWidget gap = new GapWidget(gi, listener);
+				//GapWidget gap = new GapWidget(gi, listener);
+				GapWidget gap = new GapWidget(gi, this.module.gapStyles(), this.listener, this.module.getId(), this.module.getPlayerSerivice());
+				
 				gap.setIgnorePlaceholder(module.ignoreDefaultPlaceholderWhenCheck());
 
 				if (gapWidth > 0) {
 					gap.setWidth(gapWidth + "px");
+					
+					if (gapHeight > 0) {
+						gap.setHeight(gapHeight + "px");
+					}
+
 				} else if (module.getGapType().equals("Editable")) {
 					String longestAnswer = gi.getLongestAnswer();
 					String fontSize = getFontSize(gap.getId());
-					int calculatedGapWidth = getCalculatedGapWidth(longestAnswer, fontSize);
-
+					
+					
+					Utils.consoleLog("::: TextView connectGaps Utils.isQNote " + Utils.isQNote);
+					//int calculatedGapWidth = getCalculatedGapWidth(longestAnswer, fontSize);
+					int calculatedGapWidth;
+					if (Utils.isQNote) {
+						calculatedGapWidth = Utils.getCalculatedGapWidthQNote(longestAnswer);
+					} else {
+						calculatedGapWidth = this.getCalculatedGapWidth(longestAnswer, fontSize);
+					}
+					
+					
+					Utils.consoleLog("::: TextView connectGaps calculatedGapWidth " + calculatedGapWidth + ", module.isOldGapSizeCalculation() " + this.module.isOldGapSizeCalculation());
 					if (calculatedGapWidth > 0) {
 						changeGapMinWidth(gap, calculatedGapWidth);
 					}
@@ -202,6 +258,9 @@ public class TextView extends HTML implements IDisplay, IWCAG, MathJaxElement, I
 	@Override
 	public void connectFilledGaps(Iterator<GapInfo> giIterator) {
 		int gapWidth = module.getGapWidth();
+		//kslee 커스텀  추가 ::: ▼▼▼ 
+		int gapHeight = this.module.getGapHeight();
+		
 		while (giIterator.hasNext()) {
 			GapInfo gi = giIterator.next();
 
@@ -209,14 +268,27 @@ public class TextView extends HTML implements IDisplay, IWCAG, MathJaxElement, I
 				continue;
 			}
 			try {
-				FilledGapWidget gap = new FilledGapWidget(gi, listener);
+
+				// kslee 커스텀 수정 ::: ▼▼▼
+				// FilledGapWidget gap = new FilledGapWidget(gi, listener);
+				FilledGapWidget gap = new FilledGapWidget(gi, this.module.gapStyles(), this.listener, this.module.getId(), this.module.getPlayerSerivice());
+
 				if (gapWidth > 0) {
 					gap.setWidth(gapWidth + "px");
 				} else {
 					String longestAnswer = gi.getLongestAnswer();
 					String fontSize = getFontSize(gap.getId());
-					int calculatedGapWidth = getCalculatedGapWidth(longestAnswer, fontSize);
-					
+					// kslee 커스텀 수정 ::: ▼▼▼
+					// int calculatedGapWidth = getCalculatedGapWidth(longestAnswer, fontSize);
+					Utils.consoleLog("Utils.isQNote " + Utils.isQNote);
+					int calculatedGapWidth;
+					if (Utils.isQNote) {
+						calculatedGapWidth = Utils.getCalculatedGapWidthQNote(longestAnswer);
+					} else {
+						calculatedGapWidth = this.getCalculatedGapWidth(longestAnswer, fontSize);
+					}
+
+					Utils.consoleLog("calculatedGapWidth " + calculatedGapWidth);
 					if (calculatedGapWidth > 0) {
 						changeGapMinWidth(gap, calculatedGapWidth);
 					}
@@ -252,6 +324,19 @@ public class TextView extends HTML implements IDisplay, IWCAG, MathJaxElement, I
 		this.updateParentProperty(gapElement);
 	}
 
+	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	private void changeGapStyleMinimum(GapWidget gap, int gapWidth) {
+		if (Utils.isQNote) {
+			Element gapElement = gap.getElement();
+			if (gapElement != null) {
+				DOM.setStyleAttribute(gapElement, "padding", "0px 0px");
+				DOM.setStyleAttribute(gapElement, "text-align", "center");
+				this.updateParentProperty(gapElement);
+			}
+		}
+	}
+	
+	//kslee 커스텀  메소드 수정 ::: 알수 없어서 예전으로 원복 !!▼▼▼ 
 	private void updateParentProperty(Element child) {
 		com.google.gwt.dom.client.Element parentElement = child.getParentElement();
 
@@ -289,7 +374,26 @@ public class TextView extends HTML implements IDisplay, IWCAG, MathJaxElement, I
 		$viewCopy.remove();
 		return unwrappedWidth;
 	}-*/;
+	
+	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	private void setMathGapMaxlength(GapWidget gap, String answer, boolean bMax) {
+		if (Utils.isQNote) {
+			Element gapElement = gap.getElement();
+			if (gapElement != null) {
+				int maxLength;
+				if (bMax) {
+					maxLength = Math.max(Utils.minMaxlength, answer.length());
+				} else {
+					maxLength = Math.min(Utils.minMaxlength, answer.length());
+				}
 
+				Utils.consoleLog("maxLength : " + maxLength + ", answer : " + answer);
+				DOM.setElementAttribute(gapElement, "maxlength", maxLength + "");
+			}
+		}
+	}
+	
+	//kslee 커스텀  메소드 수정::: ▼▼▼ 
 	@Override
 	public void connectMathGap(Iterator<GapInfo> giIterator, String id, ArrayList<Boolean> savedDisabledState) {
 		// Stop if Text view is no longer part of the DOM
@@ -299,27 +403,46 @@ public class TextView extends HTML implements IDisplay, IWCAG, MathJaxElement, I
 			if (gi.getId().equals(id)) {
 				try {
 					int counter = Integer.parseInt(id.split("-")[1]) - 1;
+					
+					Utils.consoleLog("Restored by DF: TextView connectMathGap id : [" + id + "]");
+					String longestAnswer = gi.getLongestAnswer();
+					int gapWidth = this.module.getGapWidth();
+					GapWidget gap;
+					
 					if (mathGapIds.contains(id)) {
 						if (savedDisabledState.size() > counter) {
-							GapWidget gap = (GapWidget) getChild(counter);
-							gap.setDisabled(savedDisabledState.get(counter));
-
-							textElements.set(counter, gap);
-							gapsWidgets.set(counter, gap);
+							gap = (GapWidget) this.getChild(counter);
+							gap.setDisabled((Boolean) savedDisabledState.get(counter));
+							if (gapWidth == 0) {
+								this.setMathGapMaxlength(gap, longestAnswer, true);
+							} else {
+								this.changeGapStyleMinimum(gap, gapWidth);
+								this.setMathGapMaxlength(gap, longestAnswer, false);
+							}
+							this.textElements.set(counter, gap);
+							this.gapsWidgets.set(counter, gap);
 						}
 					} else {
-						GapWidget gap = new GapWidget(gi, listener);
-						gap.setIgnorePlaceholder(module.ignoreDefaultPlaceholderWhenCheck());
+						gap = new GapWidget(gi, this.module.gapStyles(), this.listener, this.module.getId(),
+								this.module.getPlayerSerivice());
+						gap.setIgnorePlaceholder(this.module.ignoreDefaultPlaceholderWhenCheck());
 						if (savedDisabledState.size() > 0) {
-							gap.setDisabled(savedDisabledState.get(counter));
+							gap.setDisabled((Boolean) savedDisabledState.get(counter));
 						} else {
-							gap.setDisabled(module.isDisabled());
+							gap.setDisabled(this.module.isDisabled());
 						}
 
-						textElements.add(gap);
-						navigationTextElements.add(gap);
-						gapsWidgets.add(gap);
-						mathGapIds.add(id);
+						if (gapWidth == 0) {
+							this.setMathGapMaxlength(gap, longestAnswer, true);
+						} else {
+							this.changeGapStyleMinimum(gap, gapWidth);
+							this.setMathGapMaxlength(gap, longestAnswer, false);
+						}
+
+						this.textElements.add(gap);
+						this.navigationTextElements.add(gap);
+						this.gapsWidgets.add(gap);
+						this.mathGapIds.add(id);
 					}
 				} catch (Exception e) {
 					Window.alert("Can't create module: " + gi.getId());
@@ -534,6 +657,24 @@ public class TextView extends HTML implements IDisplay, IWCAG, MathJaxElement, I
 			}
 		}
 	}
+	
+	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	public void setIndexValue (String id, String index) {
+		Utils.consoleLog("TextView setIndexValue");
+		
+		for (TextElementDisplay gap : textElements) {
+			
+			Utils.consoleLog("\"Restored by DF: TextView setIndexValue id[" + id + "] index[" + index + "]");
+			
+			if (gap.hasId(id)) {
+				gap.setIndex(Integer.parseInt(index));
+				if (!index.equals("0")) {
+					gap.removeDefaultStyle();
+				}
+				return;
+			}
+		}
+	}	
 
 	@Override
 	public int getChildrenCount() {
@@ -584,26 +725,31 @@ public class TextView extends HTML implements IDisplay, IWCAG, MathJaxElement, I
 		this.module.setText(text);
 	}
 
+	//kslee 커스텀  메소드 수정 ::: ▼▼▼ 
 	@Override
 	public void refreshMath () {
-		MathJax.refreshMathJax(getElement());
-		this.addDisplayStyleToMathJaxElements();
+		//MathJax.refreshMathJax(getElement());
+		MathJax.refreshMathJax(this.getElement(), PlayerEntryPoint.subject, Utils.isQNote);
 	}
 
+	//kslee 커스텀  메소드 수정 ::: ▼▼▼ 
 	@Override
 	public void refreshGapMath(String id) {
 		for (TextElementDisplay element: this.textElements) {
 			if (element.hasId(id) && element instanceof DraggableGapWidget) {
 				Element e = ((DraggableGapWidget) element).getElement();
-				MathJax.refreshMathJax(e);
+				//MathJax.refreshMathJax(e);
+				MathJax.refreshMathJax(e, PlayerEntryPoint.subject, Utils.isQNote);
 				break;
 			}
 		}
 		this.addDisplayStyleToMathJaxElements();
 	}
 
+	//kslee 커스텀  메소드 수정 ::: ▼▼▼ 
 	public void rerenderMathJax () {
-		MathJax.rerenderMathJax(getElement());
+		//MathJax.rerenderMathJax(getElement());
+		MathJax.rerenderMathJax(this.getElement(), Utils.isQNote);
 		// If mathjax was re rendered then gaps lost handlers to thers DOM elements.
 		this.reconnectHandlers();
 		this.addDisplayStyleToMathJaxElements();

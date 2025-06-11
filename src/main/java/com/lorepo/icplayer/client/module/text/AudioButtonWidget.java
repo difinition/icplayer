@@ -191,4 +191,11 @@ public class AudioButtonWidget extends Button implements TextElementDisplay {
     public void showAnswers() {
 
     }
+
+  //kslee 커스텀  메소드 추가 ::: ▼▼▼
+	@Override
+	public void setIndex(int index) {
+		// TODO Auto-generated method stub
+		
+	}
 }

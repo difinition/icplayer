@@ -186,7 +186,9 @@ public class AbsolutePositioningModule extends BasicPropertyProvider implements 
 		this.semiResponsivePositions.copyConfiguration(lastSeenLayout);
 	}
 	
-	protected String getSemiResponsiveID() {
+	//kslee 커스텀  메소드수정 ::: ▼▼▼  protected >> public
+	public String getSemiResponsiveID() {
+	//protected String getSemiResponsiveID() {
 		return this.semiResponsivePositions.getSemiResponsiveLayoutID();
 	}
 	

@@ -21,12 +21,13 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.ToggleButton;
 import com.lorepo.icplayer.client.module.api.event.DefinitionEvent;
 import com.lorepo.icplayer.client.module.choice.ChoicePresenter.IOptionDisplay;
+import com.lorepo.icplayer.client.module.text.AudioInfo;
 import com.lorepo.icplayer.client.module.text.LinkInfo;
 import com.lorepo.icplayer.client.module.text.LinkWidget;
 import com.lorepo.icplayer.client.module.text.TextParser;
 import com.lorepo.icplayer.client.module.text.TextParser.ParserResult;
 import com.lorepo.icplayer.client.utils.DevicesUtils;
-import com.lorepo.icplayer.client.module.text.AudioInfo;
+import com.lorepo.icplayer.client.utils.Utils;
 import com.google.gwt.dom.client.EventTarget;
 
 public class OptionView extends ToggleButton implements IOptionDisplay{
@@ -39,32 +40,82 @@ public class OptionView extends ToggleButton implements IOptionDisplay{
 	
 	private boolean isTouched = false;
 	
-	public OptionView(ChoiceOption option, boolean isMulti){
-		super();
-		this.choiceOption = option;
-		initUI(isMulti);
+	//kslee 커스텀  필드추가 ::: ▼▼▼ 
+	private String stylePrimaryName = "";
+
+	//kslee 커스텀 수정::: OptionView ▼▼▼ 
+	//public OptionView(ChoiceOption option, boolean isMulti){
+	//	super();
+	//	this.choiceOption = option;
+	//	initUI(isMulti);
+	//	setListener(this.getElement());
+	//}
+	public OptionView(ChoiceOption option, boolean isMulti, String layoutStyle, int order, String orderType) {
+		choiceOption = option;
+		initUI(isMulti, layoutStyle, order + 1, orderType);
 		setListener(this.getElement());
 	}
+	//kslee 커스텀 수정::: OptionView ▲▲▲ 
 
-	
-	private void initUI(boolean isMulti) {
-		
+	//kslee 커스텀 수정::: OptionView ▼▼▼ 
+	//	private void initUI(boolean isMulti) {
+	//		
+	//		TextParser parser = new TextParser();
+	//		parserResult = parser.parse(choiceOption.getText());
+	//		audioInfos = parserResult.audioInfos;
+	//		this.setHTML(parserResult.parsedText);
+	//
+	//		if(isMulti){
+	//			setStylePrimaryName("ic_moption");
+	//		}
+	//		else{
+	//			setStylePrimaryName("ic_soption");
+	//		}
+	//
+	//		setElementId();
+	//	}
+	private void initUI(boolean isMulti, String layoutStyle, int order, String orderType) {
 		TextParser parser = new TextParser();
-		parser.setBaseURL(choiceOption.getBaseURL());
 		parser.setContentBaseURL(choiceOption.getContentBaseURL());
 		parserResult = parser.parse(choiceOption.getText());
 		audioInfos = parserResult.audioInfos;
-		this.setHTML(parserResult.parsedText);
-
-		if(isMulti){
-			setStylePrimaryName("ic_moption");
+		Utils.consoleLog("Utils.isQNote : " + Utils.isQNote + " : " + Utils.baseURL);
+		Utils.consoleLog("parserResult : " + parserResult.parsedText);
+		if (Utils.isQNote) {
+			parserResult.parsedText = parserResult.parsedText.replaceAll("../resources/", Utils.baseURL + "../resources/");
 		}
-		else{
-			setStylePrimaryName("ic_soption");
+		this.setHTML(parserResult.parsedText);
+		Utils.consoleLog("initUI Utils.isQNote : " + Utils.isQNote);
+		Utils.consoleLog("initUI orderType: " + orderType);
+
+		if (Utils.isQNote) {
+			if (orderType.equals("")) {
+				if (isMulti) {
+					setStylePrimaryName("ic_moption");
+				} else {
+					setStylePrimaryName("ic_soption");
+				}
+			} else {
+				stylePrimaryName = "ic_moption";
+				if (layoutStyle.equals("absolute")) {
+					stylePrimaryName = "ic_moption";
+					setStyleName(getStylePrimaryName("ic_moption_absolute", order, orderType));
+				} else {
+					setStyleName("ic_moption");
+				}
+			}
+		} else {
+			if (isMulti) {
+				stylePrimaryName = "ic_moption";
+			} else {
+				stylePrimaryName = "ic_soption";
+			}
+			setStylePrimaryName(stylePrimaryName);
 		}
 
 		setElementId();
 	}
+	//kslee 커스텀 수정::: OptionView ▲▲▲ 
 	
 	public boolean isEnable() {
 		return super.isEnabled(); 
@@ -87,6 +138,20 @@ public class OptionView extends ToggleButton implements IOptionDisplay{
 			}
 		});
 	}-*/;
+	
+	//kslee 커스텀  메소드 추가::: getStylePrimaryName ▼▼▼ 
+	private String getStylePrimaryName(String defaultStyle, int order, String orderType) {
+		String retVal;
+		if (orderType.equals("")) {
+			retVal = defaultStyle;
+		} else if (!orderType.contains("check") && !orderType.contains("rect") && !orderType.contains("cross") && !orderType.contains("triangle")) {
+			retVal = defaultStyle + "_" + orderType + "_" + order;
+		} else {
+			retVal = defaultStyle + "_" + orderType;
+		}
+		Utils.consoleLog("retVal : " + orderType + " , " + retVal);
+		return retVal;
+	}
 	
 	@Override
 	public void onBrowserEvent(Event event) {

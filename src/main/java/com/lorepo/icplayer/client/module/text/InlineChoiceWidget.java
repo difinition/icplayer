@@ -427,4 +427,11 @@ public class InlineChoiceWidget extends ListBox implements TextElementDisplay, N
 			addStyleDependentName("correct-answer");
 		}
 	}
+
+	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	@Override
+	public void setIndex(int index) {
+		// TODO Auto-generated method stub
+		
+	}
 }

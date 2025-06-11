@@ -22,9 +22,13 @@ import com.google.gwt.regexp.shared.MatchResult;
 import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.TextBox;
-import com.lorepo.icplayer.client.module.text.TextPresenter.TextElementDisplay;
+import com.lorepo.icf.utils.StringUtils;
+import com.lorepo.icplayer.client.PlayerEntryPoint;
+import com.lorepo.icplayer.client.framework.module.StyleUtils;
+import com.lorepo.icplayer.client.module.api.player.IPlayerServices;
 import com.lorepo.icplayer.client.module.text.TextPresenter.NavigationTextElement;
-
+import com.lorepo.icplayer.client.module.text.TextPresenter.TextElementDisplay;
+import com.lorepo.icplayer.client.utils.Utils;
 
 
 public class GapWidget extends TextBox implements TextElementDisplay, NavigationTextElement {
@@ -42,12 +46,46 @@ public class GapWidget extends TextBox implements TextElementDisplay, Navigation
 	
 	protected final GapInfo gapInfo;
 	
-	public GapWidget(GapInfo gi, ITextViewListener listener){
+	//kslee 커스텀  필드추가 ::: ▼▼▼ 
+	@SuppressWarnings("unused")
+	private String moduleID;
+	@SuppressWarnings("unused")
+	private IPlayerServices playerService;
+	
+	//kslee 커스텀  생성자 수정 ::: ▼▼▼ 
+	//public GapWidget(GapInfo gi, ITextViewListener listener){
+	//	super(DOM.getElementById(gi.getId()));
+	//	gapInfo = gi;
+	//	
+	//	this.initialize(listener);
+	//}
+	public GapWidget(GapInfo gi, String inlineStyles, ITextViewListener listener, String moduleID, IPlayerServices playerService) {
 		super(DOM.getElementById(gi.getId()));
-		gapInfo = gi;
-		
+		this.moduleID = moduleID;
+		this.playerService = playerService;
+		this.gapInfo = gi;
+
+		try {
+			Utils.consoleLog("PlayerEntryPoint.subject : " + PlayerEntryPoint.subject);
+			if (!PlayerEntryPoint.subject.equals("MATH") && !PlayerEntryPoint.subject.equals("MAT")) {
+				this.setStylePrimaryName("ic_gap");
+			} else if (!PlayerEntryPoint.grade.equals("1") && !PlayerEntryPoint.grade.equals("2")) {
+				this.setStylePrimaryName("ic_gap_math_3456");
+			} else {
+				this.setStylePrimaryName("ic_gap_math_12");
+			}
+		} catch (Exception var7) {
+			this.setStylePrimaryName("ic_gap");
+		}
+
+		Utils.consoleLog("inlineStyles : " + inlineStyles);
+		if (StringUtils.nullOrTrimmed(inlineStyles).length() > 0) {
+			StyleUtils.applyInlineStyle(this, inlineStyles);
+		}
+
 		this.initialize(listener);
 	}
+	
 	
 	public void reconnectHandlers (ITextViewListener listener) {
 		/**
@@ -81,32 +119,63 @@ public class GapWidget extends TextBox implements TextElementDisplay, Navigation
 	    return this.gapHasBeenAccessed;
 	}
 
-	private final void initialize (ITextViewListener listener) {
-
-		setStylePrimaryName("ic_gap");
-
+	//kslee 커스텀  메소드 수정 ::: ▼▼▼ 
+	//	private final void initialize (ITextViewListener listener) {
+	//
+	//		setStylePrimaryName("ic_gap");
+	//
+	//		if (this.gapInfo.getMaxLength() > 0) {
+	//			int max_length = this.gapInfo.getMaxLength();
+	//			max_length = Math.max(max_length, this.gapInfo.getPlaceHolder().length());
+	//			String answer;
+	//			Iterator<String> get_answers = this.gapInfo.getAnswers();
+	//			while (get_answers.hasNext()) {
+	//				answer = get_answers.next();
+	//				if (answer.length() > max_length) {
+	//					max_length = answer.length();
+	//				}
+	//			}
+	//			setMaxLength(max_length);
+	//		}
+	//		if (this.gapInfo.isNumericOnly()) {
+	//			this.getElement().setPropertyString("type","tel");
+	//			this.getElement().setPropertyString("step","any");
+	//		}
+	//
+	//		onAttach();
+	//
+	//		this.connectHandlers(listener);		
+	//	}
+	private final void initialize(ITextViewListener listener) {
+		this.setStylePrimaryName("ic_gap");
 		if (this.gapInfo.getMaxLength() > 0) {
 			int max_length = this.gapInfo.getMaxLength();
 			max_length = Math.max(max_length, this.gapInfo.getPlaceHolder().length());
-			String answer;
 			Iterator<String> get_answers = this.gapInfo.getAnswers();
+
 			while (get_answers.hasNext()) {
-				answer = get_answers.next();
+				String answer = (String) get_answers.next();
 				if (answer.length() > max_length) {
 					max_length = answer.length();
 				}
 			}
-			setMaxLength(max_length);
+
+			if (Utils.isQNote) {
+				max_length = Math.max(Utils.minMaxlength, max_length);
+			}
+
+			Utils.consoleLog("max_length : " + max_length);
+			this.setMaxLength(max_length);
 		}
+
 		if (this.gapInfo.isNumericOnly()) {
-			this.getElement().setPropertyString("type","tel");
-			this.getElement().setPropertyString("step","any");
+			this.getElement().setPropertyString("type", "tel");
+			this.getElement().setPropertyString("step", "any");
 		}
-		this.getElement().setPropertyString("autocomplete","off");
 
-		onAttach();
-
-		this.connectHandlers(listener);		
+		this.getElement().setPropertyString("autocomplete", "off");
+		this.onAttach();
+		this.connectHandlers(listener);
 	}
 	
 	protected void removeHandlers () {
@@ -282,6 +351,10 @@ public class GapWidget extends TextBox implements TextElementDisplay, Navigation
 		this.setWorkMode();
 		this.gapHasBeenAccessed = false;
 		removeStyleDependentName("correct-answer");
+	}
+	
+	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	public void setIndex(int index) {
 	}
 
 	@Override
