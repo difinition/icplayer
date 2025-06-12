@@ -428,7 +428,7 @@ public class PlayerController implements IPlayerController {
 	}
 	
 	private void onPageFinishedLoading(Object producedItem, PageController pageController) {
-		Utils.consoleLog("onPageFinishedLoading");
+		Utils.consoleLog("::: PlayerController onPageFinishedLoading 01 producedItem["+producedItem+"] pageController["+pageController+"]");
 		Page page = (Page) producedItem;
 		String isReportable = getReportableService().getStates().get(page.getId());
 		if (isReportable != null) {
@@ -438,6 +438,8 @@ public class PlayerController implements IPlayerController {
 				page.setAsNonReportable();
 			}
 		}
+		
+		Utils.consoleLog("::: PlayerController onPageFinishedLoading 02 go pageLoaded >> page["+page+"] pageController["+pageController+"]");
 		pageLoaded(page, pageController);
 		visitedPages.add(page);
 		if (pageLoadListener != null){
@@ -459,11 +461,12 @@ public class PlayerController implements IPlayerController {
 	}-*/;
 
 	private void pageLoaded(Page page, PageController pageController) {
+		Utils.consoleLog("::: PlayerController pageLoaded 01 page["+page+"] pageController["+pageController+"] pageController2["+this.pageController2+"] ::: ");
 		this.keyboardController.save();
 		this.keyboardController.reset();
 		
 		//kslee 커스텀 로직 추가 ::: pageLoaded메소드 isLoadSeperate 관련 조건분기 추가 ▼▼▼
-		Utils.consoleLog("AAAA pageLoaded : " + (this.headerController != null) + " ," + (pageController != this.pageController2));
+		Utils.consoleLog("::: PlayerController pageLoaded 02 : " + (this.headerController != null) + " ," + (pageController != this.pageController2));
 		if (Utils.isLoadSeperate) {
 			pageController.setPageIdx(this.mContentsIndex);
 		}
@@ -471,12 +474,14 @@ public class PlayerController implements IPlayerController {
 
 		pageController.setPage(page);
 		if (this.headerController != null && pageController != this.pageController2) {
+			Utils.consoleLog("::: PlayerController pageLoaded 03 :::");
 		    this.setHeader(page);
 		}
 		this.keyboardController.addHeaderToNavigation(this.headerController);
 		this.keyboardController.addMainToNavigation(this.pageController1);
 		this.keyboardController.addSecondToNavigation(this.pageController2);
 		if (this.footerController != null && pageController != this.pageController2) {
+			Utils.consoleLog("::: PlayerController pageLoaded 04 :::");
 			this.setFooter(page);
 		}
 		this.keyboardController.addFooterToNavigation(this.footerController);

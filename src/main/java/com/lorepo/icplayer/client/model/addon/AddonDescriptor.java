@@ -10,6 +10,7 @@ import com.lorepo.icf.utils.IXMLSerializable;
 import com.lorepo.icf.utils.StringUtils;
 import com.lorepo.icf.utils.XMLUtils;
 import com.lorepo.icplayer.client.module.api.player.IAddonDescriptor;
+import com.lorepo.icplayer.client.utils.Utils;
 
 
 /**
@@ -141,6 +142,9 @@ public class AddonDescriptor implements IAddonDescriptor, IXMLSerializable{
 	
 			Element element = (Element)optionNodes.item(i);
 			String src = XMLUtils.getAttributeAsString(element, "src");
+			//kslee 커스텀 디버그용 수정 ::: ▼▼▼ 
+			Utils.consoleLog("::: AddonDescriptor loadResources src["+src+"] ::: ");
+
 			resources.add(src);
 		}
 	}

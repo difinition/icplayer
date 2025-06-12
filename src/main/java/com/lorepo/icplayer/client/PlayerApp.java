@@ -76,6 +76,9 @@ public class PlayerApp {
 //		this.entryPoint = entryPoint;
 //	}
 	public PlayerApp(String id, PlayerEntryPoint entryPoint, String type) {
+		
+        Utils.consoleLog("::: PlayerApp PlayerApp Start 생성자  id["+ id +"] type["+ type +"] ::: ");
+		
 		this.divId = id;
 		this.entryPoint = entryPoint;
 		this.type = type;
@@ -112,10 +115,12 @@ public class PlayerApp {
 	 * @return
 	 */
 	public IScoreService getScoreService() {
+        Utils.consoleLog("::: PlayerApp getScoreService Start ::: ");
 		return playerController.getScoreService();
 	}
 
 	public boolean isContentModelLoaded() {
+        Utils.consoleLog("::: PlayerApp isContentModelLoaded Start isContentModelLoaded["+ isContentModelLoaded +"]::: ");
 		return isContentModelLoaded;
 	}
 
@@ -145,19 +150,21 @@ public class PlayerApp {
 //		});
 //	}
 	private void loadPage(final String url, int pageIndex, final boolean isCommonPage, boolean isQNote) {
+		Utils.consoleLog("::: PlayerApp loadPage Start ::: ");
+		
 		this.startPageIndex = pageIndex;
-		Utils.consoleLog("loadPage url 2 :" + url);
-		Utils.consoleLog("isQNote :" + isQNote);
-		Utils.consoleLog("isCommonPage :" + isCommonPage);
-		Utils.consoleLog("isLoadSeperate :" + Utils.isLoadSeperate);
+		Utils.consoleLog("::: PlayerApp loadPage loadPage url 2 :" + url);
+		Utils.consoleLog("::: PlayerApp loadPage isQNote :" + isQNote);
+		Utils.consoleLog("::: PlayerApp loadPage isCommonPage :" + isCommonPage);
+		Utils.consoleLog("::: PlayerApp loadPage isLoadSeperate :" + Utils.isLoadSeperate);
 		IXMLFactory contentFactory = Utils.isLoadSeperate ? ContentFactoryQNote.getInstance(this.pagesSubset) : ContentFactory.getInstance(this.pagesSubset);
-		Utils.consoleLog("contentFactory :" + contentFactory);
+		Utils.consoleLog("::: PlayerApp loadPage contentFactory :" + contentFactory);
 		int toCnt = Utils.getUrlCount(url);
 		this.loadedCnt = 0;
 		this.isContentModelLoaded = false;
 		contentFactory.load(url, new IProducingLoadingListener() {
 			public void onFinishedLoading(Object content) {
-				Utils.consoleLog("loadPage onFinishedLoading url: " + url);
+				Utils.consoleLog("::: PlayerApp loadPage loadPage onFinishedLoading url: " + url);
 				// PlayerApp.this.contentModel = (Content) content; 와 같은 방식으로 필요한 필드에 직접 접근해야 함
 				contentModel = (Content) content;
 				isContentModelLoaded = true;
@@ -181,12 +188,14 @@ public class PlayerApp {
 //		loadPage(url, pageIndex, false);
 //	}
 	public void load(String url, int pageIndex) {
+		Utils.consoleLog("::: PlayerApp load Start url["+ url +"] pageIndex["+ pageIndex +"] isQNote["+ Utils.isQNote +"] ::: ");
 		loadPage(url, pageIndex, false, Utils.isQNote);
 	}
 //kslee 커스텀 변경  ::: load 메소드 loadPage호출실 isQNote가 추가되며 인수4개로 변경 ▲▲▲
 
 //kslee 커스텀 추가  ::: loadLearnetic 메소드 추가 ▼▼▼
 	public void loadLearnetic(String url, int pageIndex) {
+		Utils.consoleLog("::: PlayerApp loadLearnetic Start url["+ url +"] pageIndex["+ pageIndex +"] isCommonPage=fix false isQNote["+ Utils.isQNote +"]=fix false ::: ");
 		loadPage(url, pageIndex, false, false);
 	}
 
@@ -206,26 +215,34 @@ public class PlayerApp {
 //		loadPage(url, pageIndex, true);
 //	}
 	public void loadCommonPage(String url, int pageIndex) {
+		Utils.consoleLog("::: PlayerApp loadCommonPage Start url["+ url +"] pageIndex["+ pageIndex +"] isCommonPage=fix true isQNote["+ Utils.isQNote +"]=fix false ::: ");
+
 		loadPage(url, pageIndex, true, false);
 	}
 //kslee 커스텀 변경  ::: loadCommonPage 메소드 loadPage호출실 isQNote가 추가되며 인수4개로 변경 ▲▲▲
 
 	public void setPages(String pagesSub) {
+		Utils.consoleLog("::: PlayerApp setPages Start pagesSub["+ pagesSub +"] ::: ");
 		if (pagesSub == null || pagesSub.isEmpty()) {
+			Utils.consoleLog("::: PlayerApp setPages 01 error ::: ");
 			throw new IllegalArgumentException();
 		}
 
 		ArrayList<Integer> selectedPages = new ArrayList<Integer>();
 		for (String page : pagesSub.split(",")) {
+			Utils.consoleLog("::: PlayerApp setPages 02 page["+ page +"] ::: ");
+
 			selectedPages.add(Integer.valueOf(page));
 		}
 
 		if (selectedPages.size() > 0) {
+			Utils.consoleLog("::: PlayerApp setPages 03 ::: ");
 			pagesSubset = selectedPages;
 		}
 	}
 
 	public void setAnalytics(String id) {
+		Utils.consoleLog("::: PlayerApp setAnalytics Start analyticsId["+ id +"]::: ");
 		analyticsId = id;
 	}
 
@@ -297,6 +314,9 @@ public class PlayerApp {
 	}-*/;
 
 	public static native void setPageTopAndStaticHeader(int top) /*-{
+
+		console.log("::: PlayerApp native setPageTopAndStaticHeader headerHeight[" + headerHeight + "]::: ");
+
 		var page = $wnd.$(".ic_page");
 		var pagePanel = page.parent();
 		page.css("top", top);
@@ -446,6 +466,8 @@ public class PlayerApp {
 
 	// moveStaticElementsWhenScaled should be called only once to start animation
 	public static void prepareStaticScaledElements() {
+		Utils.consoleLog("::: PlayerApp prepareStaticScaledElements Start ::: ");
+		
 		if (!isAnimationRunning) {
 			isAnimationRunning = moveStaticElementsWhenScaled();
 		} else {
@@ -605,11 +627,17 @@ public class PlayerApp {
 	 * @return Content base URL when given in ContextMetadata, otherwise null
 	 */
 	private String getContentBaseURL() {
+		Utils.consoleLog("::: PlayerApp getContentBaseURL Start ::: ");
 		JavaScriptObject contextMetadata = getContextMetadata();
 		if (contextMetadata != null) {
 			String contentBaseURL = JavaScriptUtils.getArrayItemByKey(contextMetadata, "contentBaseURL");
-			return contentBaseURL == "" ? null : contentBaseURL;
+			String returnStr = contentBaseURL == "" ? null : contentBaseURL;
+			
+			Utils.consoleLog("::: PlayerApp getContentBaseURL 01 contentBaseURL [" + returnStr + "] ::: ");
+			
+			return returnStr;
 		}
+		Utils.consoleLog("::: PlayerApp getContentBaseURL 02 contentBaseURL [null] ::: ");
 		return null;
 	}
 
@@ -618,6 +646,7 @@ public class PlayerApp {
 	}
 
 	public JavaScriptObject getExternalVariables() {
+		Utils.consoleLog("::: PlayerApp getExternalVariables Start ::: ");
 		return this.entryPoint.getExternalVariables();
 	}
 
@@ -626,6 +655,7 @@ public class PlayerApp {
 	 */
 	@SuppressWarnings("static-access")
 	private void initPlayer(final boolean isCommonPage) {
+		Utils.consoleLog("::: PlayerApp initPlayer Start ::: ");
 		registerGetIframe(this);
 		getIFrameSize(isCommonPage, this);
 		this._initPlayer(isCommonPage);
@@ -633,6 +663,7 @@ public class PlayerApp {
 	}
 
 	public static native void setLangAttribute(String lang) /*-{
+		console.log("::: PlayerApp native setLangAttribute lang[" + lang + "]");
 		$wnd.$("html").attr("lang", lang);
 	}-*/;
 
@@ -640,7 +671,7 @@ public class PlayerApp {
 	 * Init player after content is loaded
 	 */
 	private void _initPlayer(final boolean isCommonPage) {
-		Utils.consoleLog("_initPlayer : " + isCommonPage);
+		Utils.consoleLog("::: PlayerApp _initPlayer Start isCommonPage["+isCommonPage+"]::: ");
 		
 		PlayerView playerView = new PlayerView();
 		playerController = new PlayerController(this.contentModel, playerView, bookMode, entryPoint);
@@ -654,6 +685,7 @@ public class PlayerApp {
 		playerController.addPageLoadListener(new ILoadListener() {
 			@Override
 			public void onFinishedLoading(Object obj) {
+				Utils.consoleLog("::: PlayerApp _initPlayer addPageLoadListener 01 : obj[" + obj + "]");
 				if (contentModel.getMetadataValue("staticHeader").compareTo("true") == 0
 						&& playerController.hasHeader()) {
 					makeHeaderStatic();
@@ -670,7 +702,16 @@ public class PlayerApp {
 					finalPlayerView.setDisableNavigationPanels(true);
 				}
 
-				entryPoint.onPageLoaded();
+				Utils.consoleLog("::: PlayerApp _initPlayer addPageLoadListener 02 : type[" + type + "]");
+				if (type.equals("question")) {
+					entryPoint.onPageLoaded();
+				} else if (type.equals("jimun")) {
+					entryPoint.onPageLoadedJimun();
+				} else if (type.equals("jimun")) {
+					entryPoint.onPageLoadedAnswer();
+				} else if (type.equals("solve")) {
+					entryPoint.onPageLoadedSolve();
+				}
 			}
 
 			@Override
@@ -699,17 +740,20 @@ public class PlayerApp {
 		loader.load(new ILoadListener() {
 			@Override
 			public void onFinishedLoading(Object obj) {
+				Utils.consoleLog("::: PlayerApp _initPlayer load onFinishedLoading 03 : obj[" + obj + "]");
 				loadFirstPage(isCommonPage);
 			}
 
 			@Override
 			public void onError(String error) {
+				Utils.consoleLog("::: PlayerApp _initPlayer load onFinishedLoading 04 error Loading ContentData have failed");
 				JavaScriptUtils.log("Loading ContentData have failed, error: " + error);
 			}
 		});
 	}
 
 	private void loadActualLayoutCSSStyles() {
+		Utils.consoleLog("::: PlayerApp loadActualLayoutCSSStyles Start ::: ");
 		String actualCSSID = this.contentModel.getActualSemiResponsiveLayoutID();
 		CssStyle actualStyle = contentModel.getStyle(actualCSSID);
 		String cssValue = actualStyle.getValue();
@@ -718,6 +762,7 @@ public class PlayerApp {
 	}
 
 	private void loadAttachedLibraries() {
+		Utils.consoleLog("::: PlayerApp loadAttachedLibraries Start ::: ");
 		Map<String, ScriptAsset> attachedLibraries = playerController.getAssetsService().getAttachedLibraries();
 		String baseUrl = contentModel.getBaseUrl();
 		String contentBaseURL = getContentBaseURL();
@@ -732,17 +777,23 @@ public class PlayerApp {
 	}
 
 	private void makeHeaderStatic() {
+		Utils.consoleLog("::: PlayerApp makeHeaderStatic ::: ");
 		int headerHeight = getHeaderHeight();
+		Utils.consoleLog("::: PlayerApp makeHeaderStatic headerHeight[" + headerHeight + "] ::: ");
 		setPageTopAndStaticHeader(headerHeight);
 		isStaticHeader = true;
 	}
 
 	private void makeFooterStatic() {
+		Utils.consoleLog("::: PlayerApp makeFooterStatic ::: ");
+		
 		removeStaticFooter();
 
 		final int screenHeight = getScreenHeight();
 		final int pageHeight = getPageHeight();
 
+		Utils.consoleLog("::: PlayerApp makeFooterStatic screenHeight[" + screenHeight + "] pageHeight[" + pageHeight + "] ::: ");
+		
 		// when changing layout on device orientation change, old width can be to big
 		// for new layout
 		setFooterWidth();
@@ -757,7 +808,11 @@ public class PlayerApp {
 	}-*/;
 
 	private void loadFirstPage(boolean isCommonPage) {
+		Utils.consoleLog("::: PlayerApp loadFirstPage Start isCommonPage[" + isCommonPage + "] ::: ");
+		
 		if (loadedState != null) {
+			Utils.consoleLog("::: PlayerApp loadFirstPage 01 loadedState[" + loadedState + "] ::: ");
+			
 			playerController.getPlayerServices().getStateService().loadFromString(loadedState.get("state"));
 			playerController.getPlayerServices().getScoreService().loadFromString(loadedState.get("score"));
 			playerController.getPlayerServices().getTimeService().loadFromString(loadedState.get("time"));
@@ -771,6 +826,7 @@ public class PlayerApp {
 			}
 		}
 		if (pagesOpenActivitiesScores != null) {
+			Utils.consoleLog("::: PlayerApp loadFirstPage 02 pagesOpenActivitiesScores[" + pagesOpenActivitiesScores + "] ::: ");
 			playerController.getPlayerServices().getScoreService().setOpenActivitiesScores(this.pagesOpenActivitiesScores);
 		}
 
@@ -782,14 +838,19 @@ public class PlayerApp {
 		}
 
 		if (isCommonPage) {
+			Utils.consoleLog("::: PlayerApp loadFirstPage 03  ::: ");
 			playerController.switchToCommonPage(startPageIndex);
 		} else {
+			Utils.consoleLog("::: PlayerApp loadFirstPage 04  ::: ");
 			playerController.initHeaders();
 			playerController.switchToPage(startPageIndex);
 		}
+		Utils.consoleLog("::: PlayerApp loadFirstPage End  ::: ");
 	}
 
 	private void setPageReportableFromMap(IPage page, HashMap<String, String> isReportableMap) {
+		Utils.consoleLog("::: PlayerApp setPageReportableFromMap Start ::: ");
+		
 		String key = page.getId();
 		String isReportableStr = isReportableMap.get(key);
 		if (isReportableStr == null) {
@@ -801,13 +862,17 @@ public class PlayerApp {
 		} else {
 			page.setAsNonReportable();
 		}
+		
+		Utils.consoleLog("::: PlayerApp setPageReportableFromMap End  ::: ");
 	}
 
 	public IPlayerServices getPlayerServices() {
+		Utils.consoleLog("::: PlayerApp getPlayerServices Start ::: ");
 		return playerController.getPlayerServices();
 	}
 
 	public void updateScore() {
+		Utils.consoleLog("::: PlayerApp updateScore Start ::: ");
 		playerController.updateScore();
 	}
 
@@ -847,17 +912,20 @@ public class PlayerApp {
 	}
 
 	public void setState(String state) {
-		Utils.consoleLog("playerApp setState 1 : " + state);
+		Utils.consoleLog("::: PlayerApp setState Start state[" + state + "] ::: ");
 		
 		HashMap<String, String> data = JSONUtils.decodeHashMap(state);
-		Utils.consoleLog("playerApp setState 2 : " + data);
+		Utils.consoleLog("::: PlayerApp setState 01 data[" + data + "] ::: ");
 		
 		if (data.containsKey("state") && data.containsKey("score")) {
+			Utils.consoleLog("::: PlayerApp setState 02 loadedState [" + data + "] ::: ");
 			loadedState = data;
 		}
+		Utils.consoleLog("::: PlayerApp setState End ::: ");
 	}
 
 	public String getState() {
+		Utils.consoleLog("::: PlayerApp getState Start ::: ");
 		playerController.updateState();
 		String state = playerController.getPlayerServices().getStateService().getAsString();
 		String score = playerController.getPlayerServices().getScoreService().getAsString();
@@ -878,18 +946,23 @@ public class PlayerApp {
 	}
 
 	public void setBookMode() {
+		Utils.consoleLog("::: PlayerApp setBookMode Start ::: ");
 		bookMode = true;
 	}
 
 	public void showCover(boolean show) {
+		Utils.consoleLog("::: PlayerApp showCover Start ::: ");
 		showCover = show;
 	}
 
 	public JavaScriptObject getSemiResponsiveLayouts() {
+		Utils.consoleLog("::: PlayerApp getSemiResponsiveLayouts Start ::: ");
 		return this.contentModel.getSemiResponsiveLayoutsAsJS();
 	}
 
 	public boolean changeLayout(String layoutID) {
+		Utils.consoleLog("::: PlayerApp getSemiResponsiveLayouts Start layoutID["+layoutID+"]::: ");
+		
 		boolean isLayoutChanged = false;
 		boolean isAble = this.playerController.getPlayerServices().isAbleChangeLayout();
 		this.lastSentLayoutID = layoutID;
@@ -901,8 +974,7 @@ public class PlayerApp {
 				this.playerController.switchToPage(pageIndex);
 			}
 		}
-		handleUpdatingMathJax();
-
+		Utils.consoleLog("::: PlayerApp getSemiResponsiveLayouts End isLayoutChanged["+isLayoutChanged+"]::: ");
 		return isLayoutChanged;
 	}
 
@@ -929,15 +1001,18 @@ public class PlayerApp {
 	}
 
 	public void updateLayout() {
+		Utils.consoleLog("::: PlayerApp updateLayout Start ::: ");
 		changeLayout(this.lastSentLayoutID);
 	}
 
 	public boolean changeLayoutByName(String layoutName) {
+		Utils.consoleLog("::: PlayerApp changeLayoutByName Start layoutName["+layoutName+"]::: ");
 		String layoutID = this.contentModel.getLayoutIDByName(layoutName);
 		return this.changeLayout(layoutID);
 	}
 	
 	public void generatePrintableHTML(PrintableParams params) {
+		Utils.consoleLog("::: PlayerApp generatePrintableHTML Start ::: ");
 		printableParser = new PrintableContentParser();
 
 		if (this.printableOrder != null) {
@@ -958,23 +1033,29 @@ public class PlayerApp {
 	};
 
 	public void setPrintableOrder(JavaScriptObject order) {
+		Utils.consoleLog("::: PlayerApp setPrintableOrder Start ::: ");
 		this.printableOrder = PrintableOrderParser.toHashMap(order);
 	}
 
 	private String getCurrentUserStyles() {
+		Utils.consoleLog("::: PlayerApp getCurrentUserStyles Start ::: ");
 		String actualCSSID = this.contentModel.getActualSemiResponsiveLayoutID();
 		CssStyle actualStyle = contentModel.getStyle(actualCSSID);
 		String cssValue = actualStyle.getValue();
 		String css = URLUtils.resolveCSSURL(contentModel.getBaseUrl(), cssValue, getContentBaseURL());
+		
+		Utils.consoleLog("::: PlayerApp getCurrentUserStyles End css["+css+"]::: ");
 		return css;
 	}
 	
 	public String getCurrentStyles () {
+		Utils.consoleLog("::: PlayerApp getCurrentStyles Start ::: ");
 		ContentDataLoader loader = new ContentDataLoader(contentModel.getBaseUrl(), getContentBaseURL());
 		loader.setDefaultLayoutID(contentModel.getActualSemiResponsiveLayoutID());
 
 		loader.addAddons(contentModel.getAddonDescriptors().values());
 		
+		Utils.consoleLog("::: PlayerApp getCurrentStyles End CurrentStyles["+ loader.getAddonsCSS() + "\n" + this.getCurrentUserStyles() +"]::: ");
 		return loader.getAddonsCSS() + "\n" + this.getCurrentUserStyles();
 	}
 	
@@ -1016,6 +1097,8 @@ public class PlayerApp {
 //		}
 //	};
 	public void preloadAllPages(final ILoadListener listener) {
+		Utils.consoleLog("::: PlayerApp preloadAllPages Start ::: ");
+		
 		List<Page> pages = contentModel.getPages().getAllPages();
 		boolean allPagesLoaded = true;
 		
@@ -1026,9 +1109,11 @@ public class PlayerApp {
 				String url = URLUtils.resolveURL(baseUrl, page.getHref());
 				
 				if (Utils.isLoadSeperate) {
+					Utils.consoleLog("::: PlayerApp preloadAllPages 01  new PageFactoryQNote ::: ");
 					PageFactoryQNote factory = new PageFactoryQNote(page);
 					factory.load(url, new PagePreloadListener(listener));
 				} else {
+					Utils.consoleLog("::: PlayerApp preloadAllPages 02  new PageFactory ::: ");
 					PageFactory factory = new PageFactory(page);
 					factory.load(url, new PagePreloadListener(listener));
 				}
@@ -1038,6 +1123,7 @@ public class PlayerApp {
 		if (allPagesLoaded) {
 			listener.onFinishedLoading("All pages have been loaded!");
 		}
+		Utils.consoleLog("::: PlayerApp preloadAllPages End ::: ");
 	}
 //kslee 커스텀 변경  ::: preloadAllPages 메소드 PageFactoryQNote관련 변경 ▲▲▲
 
@@ -1048,6 +1134,7 @@ public class PlayerApp {
 			this.listener = listener;
 		}
 		public void onFinishedLoading(Object producedItem) {
+			Utils.consoleLog("::: PlayerApp PagePreloadListener onFinishedLoading Start ::: ");
 			List<Page> pages = contentModel.getPages().getAllPages();
 			boolean allPagesLoaded = true;
 			for (Page p : pages) {
@@ -1061,22 +1148,26 @@ public class PlayerApp {
 			}
 		}
 		public void onError(String error) {
+			Utils.consoleLog("::: PlayerApp PagePreloadListener onError Start ::: ");
 			listener.onError(error);
 		}
 	}
 //kslee 커스텀 추가  ::: PagePreloadListener 클래스 추가 ▲▲▲
 
 	public List<ScoreWithMetadata> getScoreWithMetadata() {
+		Utils.consoleLog("::: PlayerApp getScoreWithMetadata Start ::: ");
 		playerController.updateState();
 		return playerController.getScoreWithMetadataService().getScoreWithMetadata();
 	}
 
     public void setScoreWithMetadata(String state) {
+    	Utils.consoleLog("::: PlayerApp setScoreWithMetadata Start state["+state+"]::: ");
 		playerController.getScoreWithMetadataService().setScoreWithMetadata(state);
 		playerController.updateState();
 	}
 
 	public void clearBeforeReload() {
+    	Utils.consoleLog("::: PlayerApp clearBeforeReload Start ::: ");
 		clearGlobalAddonVariables();
 		removeStaticFooter();
 		clearMediaRecorders();
@@ -1089,6 +1180,7 @@ public class PlayerApp {
 	}
 
 	public void setNVDAAvailability(boolean shouldUseNVDA) {
+		Utils.consoleLog("::: PlayerApp setNVDAAvailability Start ::: ");
 		playerController.setNVDAAvailability(shouldUseNVDA);
 	}
 
@@ -1113,6 +1205,7 @@ public class PlayerApp {
 	}-*/;
 	
 	public void setOpenActivitiesScores(HashMap<String, PageOpenActivitiesScore> pagesOpenActivitiesScores) {
+		Utils.consoleLog("::: PlayerApp setOpenActivitiesScores Start ::: ");
 		this.pagesOpenActivitiesScores = pagesOpenActivitiesScores;
 		if (playerController != null) {
 			playerController.getPlayerServices().getScoreService().setOpenActivitiesScores(this.pagesOpenActivitiesScores);

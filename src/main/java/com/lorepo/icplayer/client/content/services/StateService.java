@@ -5,6 +5,7 @@ import java.util.HashMap;
 import com.lorepo.icf.utils.JSONUtils;
 import com.lorepo.icplayer.client.module.api.player.IPage;
 import com.lorepo.icplayer.client.module.api.player.IStateService;
+import com.lorepo.icplayer.client.utils.Utils;
 
 public class StateService implements IStateService{
 
@@ -26,8 +27,10 @@ public class StateService implements IStateService{
 	}
 	
 	
-	public void loadFromString(String state){
+	public void loadFromString(String state) {
+		Utils.consoleLog("::: StateService loadFromString 1 : state ["+state+"]");
 		sessionState = JSONUtils.decodeHashMap(state);
+		Utils.consoleLog("::: StateService loadFromString 2 : sessionState ["+this.sessionState+"]");
 	}
 
 

@@ -48,6 +48,7 @@ import com.lorepo.icplayer.client.module.api.player.IPlayerServices;
 import com.lorepo.icplayer.client.module.api.player.PageOpenActivitiesScore.ScoreInfo;
 import com.lorepo.icplayer.client.page.KeyboardNavigationController;
 import com.lorepo.icplayer.client.page.PageController;
+import com.lorepo.icplayer.client.utils.Utils;
 
 
 public class AddonPresenter implements IPresenter, IActivity, IStateful, ICommandReceiver, IWCAGPresenter, IWCAG, IWCAGModuleView, IGradualShowAnswersPresenter, IOpenEndedContentPresenter, IScoreWithMetadataPresenter {
@@ -66,11 +67,19 @@ public class AddonPresenter implements IPresenter, IActivity, IStateful, IComman
 	private InterfaceVersion interfaceVersion = InterfaceVersion.DEFAULT;
 	private ResetVersion resetVersion = ResetVersion.DEFAULT;
 	
-	public AddonPresenter(AddonModel model, IPlayerServices services){
+	//kslee 커스텀  필드추가 ::: ▼▼▼ 
+	private String pageURL;
+	
+	//kslee 커스텀  메소드 수정 ::: ▼▼▼ 
+	//public AddonPresenter(AddonModel model, IPlayerServices services){
+	public AddonPresenter(AddonModel model, IPlayerServices services, String pageURL){
 		this.model = model;
 		this.services = services;
 		this.addonDescriptor = services.getModel().getAddonDescriptor(model.getAddonId());
+		//kslee 커스텀  메소드 수정 ::: ▼▼▼
+		this.pageURL = pageURL;
 		connectHandlers();
+		Utils.consoleLog("AddonPresenter.java AddonPresenter() model.getId[" + model.getId() + "] pageURL[" + pageURL + "]");
 	}
 
 	private void connectHandlers() {

@@ -260,9 +260,10 @@ public class ButtonPresenter implements IPresenter, IStateful, ICommandReceiver,
 	public boolean isSelectable(boolean isTextToSpeechOn) {
 		boolean isHidden = this.getView().getStyle().getVisibility().equals("hidden");
 		boolean isNone = this.getView().getStyle().getDisplay().equals("none");
+		boolean isEnabled = this.view.isEnabled() || isTextToSpeechOn;
 		boolean isGroupDivHidden  = KeyboardNavigationController.isParentGroupDivHidden(view.getElement());
 		
-		boolean isVisible = !isHidden && !isNone && !isGroupDivHidden;
+		boolean isVisible = !isHidden && !isNone && isEnabled && !isGroupDivHidden;
 		return (isTextToSpeechOn || haveStandaloneKeyboardNavigationSupport()) && isVisible;
 	}
 	

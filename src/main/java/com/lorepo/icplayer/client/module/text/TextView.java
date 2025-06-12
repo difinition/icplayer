@@ -130,13 +130,22 @@ public class TextView extends HTML implements IDisplay, IWCAG, MathJaxElement, I
 	@Override
 	public void connectInlineChoices (List<InlineChoiceInfo> InlineChoiceList) {
 		final int gapWidth = module.getGapWidth();
+		//kslee 커스텀  메소드 추가 ::: ▼▼▼
+		final int gapHeight = this.module.getGapHeight();
 
 		for (InlineChoiceInfo ic: InlineChoiceList) {
 			inlineChoiceInfoArrayList.add(ic);
+			
+			Utils.consoleLog("::: TextView.java connectInlineChoices : ic.getValue()[" + ic.getValue() + "] ic.getAnswer()[" + ic.getAnswer() + "]");
+			
 			InlineChoiceWidget gap = new InlineChoiceWidget(ic, listener,this);
 			gap.setLang(this.module.getLangAttribute());
 			if (gapWidth > 0) {
 				gap.setWidth(gapWidth + "px");
+				//kslee 커스텀  메소드 추가 ::: ▼▼▼
+				if (gapHeight > 0) {
+					gap.setHeight(gapHeight + "px");
+				}
 			}
 
 			gap.setDisabled(module.isDisabled());
@@ -165,7 +174,7 @@ public class TextView extends HTML implements IDisplay, IWCAG, MathJaxElement, I
 				String longestAnswer = gi.getLongestAnswer();
 				String fontSize = getFontSize(gap.getId());
 				
-				Utils.consoleLog("Utils.isQNote [" + Utils.isQNote + "] :::");
+				Utils.consoleLog("TextView.java connectDraggableGaps Utils.isQNote [" + Utils.isQNote + "] :::");
 				
 				//kslee 커스텀  메소드 수정 ::: ▼▼▼ 
 				//int calculatedGapWidth = getCalculatedGapWidth(longestAnswer, fontSize);
@@ -308,6 +317,12 @@ public class TextView extends HTML implements IDisplay, IWCAG, MathJaxElement, I
 
 	private void changeGapMinWidth(GapWidget gap, int width) {
 		String minWidth = Double.toString(1.1 * width) + "px";
+		
+		// kslee 커스텀 메소드 추가 ::: ▼▼▼
+		if (Utils.isQNote) {
+			minWidth = width + "px";
+		}	
+		
 		Element gapElement = gap.getElement();
 
 		if (gapElement == null) return;
@@ -664,7 +679,7 @@ public class TextView extends HTML implements IDisplay, IWCAG, MathJaxElement, I
 		
 		for (TextElementDisplay gap : textElements) {
 			
-			Utils.consoleLog("\"Restored by DF: TextView setIndexValue id[" + id + "] index[" + index + "]");
+			Utils.consoleLog("::: Restored by DF: TextView setIndexValue id[" + id + "] index[" + index + "]");
 			
 			if (gap.hasId(id)) {
 				gap.setIndex(Integer.parseInt(index));
@@ -728,6 +743,7 @@ public class TextView extends HTML implements IDisplay, IWCAG, MathJaxElement, I
 	//kslee 커스텀  메소드 수정 ::: ▼▼▼ 
 	@Override
 	public void refreshMath () {
+		Utils.consoleLog("::: TextView.java refreshMath : subject[" + PlayerEntryPoint.subject + "]  isQNote[" + Utils.isQNote + "]");
 		//MathJax.refreshMathJax(getElement());
 		MathJax.refreshMathJax(this.getElement(), PlayerEntryPoint.subject, Utils.isQNote);
 	}
@@ -735,6 +751,7 @@ public class TextView extends HTML implements IDisplay, IWCAG, MathJaxElement, I
 	//kslee 커스텀  메소드 수정 ::: ▼▼▼ 
 	@Override
 	public void refreshGapMath(String id) {
+		Utils.consoleLog("::: TextView.java refreshGapMath : id[" + id + "] ::: ");
 		for (TextElementDisplay element: this.textElements) {
 			if (element.hasId(id) && element instanceof DraggableGapWidget) {
 				Element e = ((DraggableGapWidget) element).getElement();

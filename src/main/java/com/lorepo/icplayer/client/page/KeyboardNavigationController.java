@@ -17,6 +17,7 @@ import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.ResetButton;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.lorepo.icf.utils.JavaScriptUtils;
 import com.lorepo.icf.utils.NavigationModuleIndentifier;
 import com.lorepo.icplayer.client.PlayerEntryPoint;
 import com.lorepo.icplayer.client.module.IButton;
@@ -29,6 +30,7 @@ import com.lorepo.icplayer.client.module.api.IPresenter;
 import com.lorepo.icplayer.client.module.button.ButtonModule;
 import com.lorepo.icplayer.client.module.button.ButtonView;
 import com.lorepo.icplayer.client.module.button.ButtonModule.ButtonType;
+import com.lorepo.icplayer.client.utils.Utils;
 
 /*
 	Usage:
@@ -776,6 +778,8 @@ public final class KeyboardNavigationController implements IKeyboardNavigationCo
 	}
 
 	public void restore () {
+		Utils.consoleLog("::: KeyboardNavigationController restore :: presenters size["+this.getPresenters().size()+"]::: ");
+        
 		if (this.savedEntry == null) {
 			return;
 		}
@@ -783,6 +787,8 @@ public final class KeyboardNavigationController implements IKeyboardNavigationCo
 		for (int i = 0; i < this.getPresenters().size(); i++) {
 			IPresenter presenter = (IPresenter) this.getPresenters().get(i).presenter;
 			IPresenter savedPresenter = (IPresenter) this.savedEntry.presenter;
+			
+			Utils.consoleLog("::: KeyboardNavigationController restore i["+i+"] :: presenter.getModel()[" + presenter.getModel() + "] savedPresenter.getModel()[" + savedPresenter.getModel() + "]::: ");
 
 			if (presenter.getModel() == savedPresenter.getModel()) {
 				this.actualSelectedModuleIndex = i;
@@ -879,21 +885,25 @@ public final class KeyboardNavigationController implements IKeyboardNavigationCo
 	}
 	
 	public void addHeaderToNavigation (PageController controller) {
+		Utils.consoleLog("::: KeyboardNavigationController addHeaderToNavigation controller[" + controller + "] ::: ");
 		this.headerController = controller;
 		addToNavigation(controller, true);
 	}
 	
 	public void addFooterToNavigation (PageController controller) {
+		Utils.consoleLog("::: KeyboardNavigationController addFooterToNavigation controller[" + controller + "] ::: ");
 		this.footerController = controller;
 		addToNavigation(controller, true);
 	}
 	
 	public void addMainToNavigation (PageController controller) {
+		Utils.consoleLog("::: KeyboardNavigationController addMainToNavigation controller[" + controller + "] ::: ");
 		this.mainPageController = controller;
 		addToNavigation(controller, false);
 	}
 	
 	public void addSecondToNavigation (PageController controller) {
+		Utils.consoleLog("::: KeyboardNavigationController addSecondToNavigation controller[" + controller + "] ::: ");
 		addToNavigation(controller, false);
 	}
 	

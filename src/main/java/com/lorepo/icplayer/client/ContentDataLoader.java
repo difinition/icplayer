@@ -14,8 +14,10 @@ import com.lorepo.icplayer.client.addonsLoader.AddonLoaderFactory;
 import com.lorepo.icplayer.client.addonsLoader.IAddonLoader;
 import com.lorepo.icplayer.client.model.addon.AddonDescriptor;
 import com.lorepo.icplayer.client.model.page.Page;
+import com.lorepo.icplayer.client.utils.Utils;
 import com.lorepo.icplayer.client.xml.IProducingLoadingListener;
 import com.lorepo.icplayer.client.xml.page.PageFactory;
+import com.lorepo.icplayer.client.xml.page.PageFactoryQNote;
 
 
 /**
@@ -53,6 +55,8 @@ public class ContentDataLoader {
 	}
 	
 	public void addAddons(Collection<AddonDescriptor> descriptors) {
+		Utils.consoleLog("::: ContentDataLoader addAddons Start descriptors["+descriptors+"]:::");
+
 		this.descriptors = descriptors;
 	}
 	
@@ -65,6 +69,8 @@ public class ContentDataLoader {
 	}
 
 	public void load(ILoadListener listener) {
+		Utils.consoleLog("::: ContentDataLoader load Start :::");
+
 		this.listener = listener;
 		
 		if (descriptors.size() > 0 || pages.size() > 0) {
@@ -72,6 +78,7 @@ public class ContentDataLoader {
 			
 			Iterator<AddonDescriptor> iterator = descriptors.iterator();
 			while (iterator.hasNext()) {
+				Utils.consoleLog("::: ContentDataLoader load 01 :::");
 				loadDescriptor(iterator.next());
 			}
 
@@ -102,10 +109,13 @@ public class ContentDataLoader {
 	}
 
 	private void loadDescriptor(final AddonDescriptor descriptor) {
+		Utils.consoleLog("::: ContentDataLoader loadDescriptor Start :::");
+
 		IAddonLoader loader = addonsLoaderFactory.getAddonLoader(descriptor);
 		loader.load(new ILoadListener() {
 			@Override
 			public void onFinishedLoading(Object obj) {
+				Utils.consoleLog("::: ContentDataLoader loadDescriptor onFinishedLoading Start Code["+descriptor.getCode()+"] AddonId["+descriptor.getAddonId()+"]:::");
 				DOMInjector.injectJavaScript(descriptor.getCode());
 				resourceLoaded();
 			}
@@ -119,26 +129,77 @@ public class ContentDataLoader {
 		});
 	}
 
+// kslee 커스텀 메소드 수정됨	
+//	private void loadPage(Page page) {
+//		String url = URLUtils.resolveURL(baseUrl, page.getHref());
+//		page.setContentBaseURL(this.contentBaseURL);
+//
+//		PageFactory factory = new PageFactory((Page) page);
+//		if (this.defaultLayoutID != null) {
+//			factory.setDefaultLayoutID(defaultLayoutID);
+//		}
+//		factory.load(url, new IProducingLoadingListener() {
+//			@Override
+//			public void onFinishedLoading(Object producedItem) {
+//				resourceLoaded();
+//			}
+//
+//			@Override
+//			public void onError(String error) {
+//				JavaScriptUtils.log("Error loading page: " + error);
+//				listener.onError(error);
+//			}
+//		});
+//	}
 	private void loadPage(Page page) {
+		Utils.consoleLog("::: ContentDataLoader loadPage Start :::");
+
 		String url = URLUtils.resolveURL(baseUrl, page.getHref());
 		page.setContentBaseURL(this.contentBaseURL);
 
-		PageFactory factory = new PageFactory((Page) page);
-		if (this.defaultLayoutID != null) {
-			factory.setDefaultLayoutID(defaultLayoutID);
-		}
-		factory.load(url, new IProducingLoadingListener() {
-			@Override
-			public void onFinishedLoading(Object producedItem) {
-				resourceLoaded();
+		Utils.consoleLog("::: ContentDataLoader loadPage Utils.isQNote[" + Utils.isQNote + "] page[" + page + "] url [" + url + "] :::");
+
+		if (Utils.isLoadSeperate) {
+			PageFactoryQNote factory = new PageFactoryQNote(page);
+			if (this.defaultLayoutID != null) {
+				factory.setDefaultLayoutID(this.defaultLayoutID);
 			}
 
-			@Override
-			public void onError(String error) {
-				JavaScriptUtils.log("Error loading page: " + error);
-				listener.onError(error);
+			factory.load(url, new IProducingLoadingListener() {
+				@Override
+				public void onFinishedLoading(Object producedItem) {
+					resourceLoaded();
+				}
+
+				@Override
+				public void onError(String error) {
+					JavaScriptUtils.log("Error loading page: " + error);
+					if (listener != null) {
+						listener.onError(error);
+					}
+				}
+			});
+		} else {
+			PageFactory factory = new PageFactory(page);
+			if (this.defaultLayoutID != null) {
+				factory.setDefaultLayoutID(this.defaultLayoutID);
 			}
-		});
+
+			factory.load(url, new IProducingLoadingListener() {
+				@Override
+				public void onFinishedLoading(Object producedItem) {
+					resourceLoaded();
+				}
+
+				@Override
+				public void onError(String error) {
+					JavaScriptUtils.log("Error loading page: " + error);
+					if (listener != null) {
+						listener.onError(error);
+					}
+				}
+			});
+		}
 	}
 	
 	private void addCSSFromAddons() {
@@ -150,6 +211,7 @@ public class ContentDataLoader {
 	}
 
 	private void resourceLoaded() {
+		Utils.consoleLog("::: ContentDataLoader resourceLoaded Start :::");
 		count--;
 		if (count == 0) {
 			addCSSFromAddons();

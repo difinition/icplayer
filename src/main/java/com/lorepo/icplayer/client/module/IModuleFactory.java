@@ -12,6 +12,10 @@ public interface IModuleFactory {
 	public IModuleModel createModel(String xmlNodeName);
 	public IModuleView createView(IModuleModel module);
 	public GroupView createView(Group group);
-	public IPresenter createPresenter(IModuleModel model);
+	
+	//kslee 커스텀  메소드 수정 ::: ▼▼▼ 
+	//public IPresenter createPresenter(IModuleModel model);
+	public IPresenter createPresenter(IModuleModel module, String pageURL);
+	
 	public GroupPresenter createPresenter(Group group); 
 }

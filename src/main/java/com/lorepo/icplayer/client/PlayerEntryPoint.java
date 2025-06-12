@@ -57,6 +57,7 @@ public class PlayerEntryPoint implements EntryPoint {
 	 */
 	@Override
 	public void onModuleLoad() {
+    	Utils.consoleLog("::: PlayerEntryPoint onModuleLoad Start ::: ");
 		externalVariables = JavaScriptObject.createObject();
 		initJavaScriptAPI(this);
 	}
@@ -68,12 +69,12 @@ public class PlayerEntryPoint implements EntryPoint {
 
 				entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::load(Ljava/lang/String;I)(url, index);
 			};
-
-            // kslee native 메소드 추가  ::: player.load2 포함 45개 추가 ▼▼▼
-            player.load2 = function(url, subject, grade, index, bQNote, bloadSeperate) {
+			
+			// kslee 메소드 추가 ▼▼▼
+			player.load2 = function(url, subject, grade, index, bQNote, bloadSeperate, isLoad2Val7) {
                 index = index || 0;
-                entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::load2(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IZZ)(
-                    url, subject, grade, index, bQNote, bloadSeperate
+                entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::load2(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IZZZ)(
+                    url, subject, grade, index, bQNote, bloadSeperate, isLoad2Val7
                 );
             };
             
@@ -478,29 +479,43 @@ public class PlayerEntryPoint implements EntryPoint {
 	private JavaScriptObject createAppPlayer(String node_id) {
 		//kslee 커스텀 수정 ::: createAppPlayer 메소드 PlayerApp생성자 type 추가되어 인수 3개로 수정됨
 		//this.theApplication = new PlayerApp(node_id, this);
+		
+		Utils.consoleLog("::: PlayerEntryPoint.java createAppPlayer : node_id[" + node_id + "]");
+		
 		this.theApplication = new PlayerApp(node_id, this, "question");
 		return JavaScriptObject.createFunction();
 	}
 
 	//kslee 커스텀 추가 ::: createAppPlayerJimun 메소드 추가됨
 	private JavaScriptObject createAppPlayerJimun(String node_id) {
+		
+		Utils.consoleLog("::: PlayerEntryPoint.java createAppPlayerJimun : node_id[" + node_id + "]");
+		
 		this.theApplicationJimun = new PlayerApp(node_id, this, "jimun");
 		return JavaScriptObject.createFunction();
 	}
 
 	//kslee 커스텀 추가 ::: createAppPlayerAnswer 메소드 추가됨
 	private JavaScriptObject createAppPlayerAnswer(String node_id) {
+		
+		Utils.consoleLog("::: PlayerEntryPoint.java createAppPlayerAnswer : node_id[" + node_id + "]");
+		
 		this.theApplicationAnswer = new PlayerApp(node_id, this, "answer");
 		return JavaScriptObject.createFunction();
 	}
 
 	//kslee 커스텀 추가 ::: createAppPlayerSolve 메소드 추가됨
 	private JavaScriptObject createAppPlayerSolve(String node_id) {
+		
+		Utils.consoleLog("::: PlayerEntryPoint.java createAppPlayerSolve : node_id[" + node_id + "]");
+		
 		this.theApplicationSolve = new PlayerApp(node_id, this, "solve");
 		return JavaScriptObject.createFunction();
 	}
 
 	private JavaScriptObject createBookPlayer(String node_id, boolean useCover) {
+		Utils.consoleLog("::: PlayerEntryPoint createBookPlayer Start node_id["+node_id+"] useCover["+useCover+"]::: ");
+		
 		//kslee 커스텀 수정 ::: createBookPlayer 메소드 PlayerApp생성자 type 추가되어 인수 3개로 수정됨
 		//this.theApplication = new PlayerApp(node_id, this);
 		this.theApplication = new PlayerApp(node_id, this, "question");
@@ -510,10 +525,13 @@ public class PlayerEntryPoint implements EntryPoint {
 	}
 	
 	private boolean isAbleChangeLayout() {
+    	Utils.consoleLog("::: PlayerEntryPoint isAbleChangeLayout Start ::: ");
 		return this.theApplication.getPlayerServices().isAbleChangeLayout(); 
 	}
 	
 	private void load(String url, int pageIndex) {
+    	Utils.consoleLog("::: PlayerEntryPoint load Start url["+url+"] pageIndex["+pageIndex+"]::: ");
+		
 		if (pageIndex < 0) {
 			pageIndex = 0;
 		}
@@ -521,14 +539,27 @@ public class PlayerEntryPoint implements EntryPoint {
 		this.theApplication.load(url, pageIndex);
 	}
 
-    //kslee 커스텀 추가 ::: load2메소드 포함 10개 메소드 추가됨 ▼▼▼ 
-    private void load2(String url, String subject, String grade, int pageIndex, boolean bQNote, boolean bloadSeperate) {
+    //kslee 추가 ::: ▼▼▼ 
+    private void load2(String url, String subject, String grade, int pageIndex, boolean bQNote, boolean bloadSeperate, boolean isLoad2Val7) {
+    	
+    	Utils.consoleLog("::: PlayerEntryPoint.java load2 01 : url           [" + url + "]");
+    	Utils.consoleLog("::: PlayerEntryPoint.java load2 02 : subject       [" + subject + "]");
+    	Utils.consoleLog("::: PlayerEntryPoint.java load2 03 : grade         [" + grade + "]");
+    	Utils.consoleLog("::: PlayerEntryPoint.java load2 04 : pageIndex     [" + pageIndex + "]");
+    	Utils.consoleLog("::: PlayerEntryPoint.java load2 05 : bQNote        [" + bQNote + "]");
+    	Utils.consoleLog("::: PlayerEntryPoint.java load2 06 : bloadSeperate [" + bloadSeperate + "]");
+    	Utils.consoleLog("::: PlayerEntryPoint.java load2 07 : isLoad2Val7   [" + isLoad2Val7 + "]");
+    	
         if (pageIndex < 0) {
             pageIndex = 0;
         }
 
         Utils.isQNote = bQNote;
         Utils.isLoadSeperate = bloadSeperate;
+
+        // load2에서 호출하는 7번째 변수 isLoad2Val7
+        Utils.isLoad2Val7 = isLoad2Val7;
+        
         PlayerEntryPoint.subject = subject;
         PlayerEntryPoint.grade = grade;
         this.clearBeforeReload();
@@ -536,6 +567,7 @@ public class PlayerEntryPoint implements EntryPoint {
     }
 	
     private void loadJimun(String url, int pageIndex) {
+    	Utils.consoleLog("::: PlayerEntryPoint loadJimun Start url["+url+"] pageIndex["+pageIndex+"]::: ");
         if (pageIndex < 0) {
            pageIndex = 0;
         }
@@ -543,6 +575,7 @@ public class PlayerEntryPoint implements EntryPoint {
      }
 
      private void loadAnswer(String url, int pageIndex) {
+     	Utils.consoleLog("::: PlayerEntryPoint loadAnswer Start url["+url+"] pageIndex["+pageIndex+"]::: ");
         if (pageIndex < 0) {
            pageIndex = 0;
         }
@@ -550,6 +583,7 @@ public class PlayerEntryPoint implements EntryPoint {
      }
 
      private void loadSolve(String url, int pageIndex) {
+      	Utils.consoleLog("::: PlayerEntryPoint loadSolve Start url["+url+"] pageIndex["+pageIndex+"]::: ");
         if (pageIndex < 0) {
            pageIndex = 0;
         }
@@ -557,6 +591,8 @@ public class PlayerEntryPoint implements EntryPoint {
      }
 
      private void loadLearnetic(String url, int pageIndex) {
+       	Utils.consoleLog("::: PlayerEntryPoint loadLearnetic Start url["+url+"] pageIndex["+pageIndex+"]::: ");
+       	
         Utils.isQNote = false;
         if (pageIndex < 0) {
            pageIndex = 0;
@@ -569,18 +605,22 @@ public class PlayerEntryPoint implements EntryPoint {
      }
 
      private void unload() {
+        Utils.consoleLog("::: PlayerEntryPoint unload Start ::: ");
         this.theApplication.unload();
      }
 
      private void unloadJimun() {
+        Utils.consoleLog("::: PlayerEntryPoint unloadJimun Start ::: ");
         this.theApplicationJimun.unload();
      }
 
      private void unloadAnswer() {
+        Utils.consoleLog("::: PlayerEntryPoint unloadAnswer Start ::: ");
         this.theApplicationAnswer.unload();
      }
 
      private void unloadSolve() {
+        Utils.consoleLog("::: PlayerEntryPoint unloadSolve Start ::: ");
         this.theApplicationSolve.unload();
      }
      //kslee 커스텀 추가 ::: load2메소드 포함 10개 메소드 추가됨 ▲▲▲  
@@ -596,6 +636,7 @@ public class PlayerEntryPoint implements EntryPoint {
 
     //kslee 커스텀 추가 ::: loadCommonPageJimun, Answer, Solve 3개 메소드 추가됨▼▼▼
     private void loadCommonPageJimun(String url, int pageIndex) {
+    	Utils.consoleLog("::: PlayerEntryPoint loadCommonPageJimun Start url["+url+"] pageIndex["+pageIndex+"]::: ");
         if (pageIndex < 0) {
            pageIndex = 0;
         }
@@ -603,6 +644,7 @@ public class PlayerEntryPoint implements EntryPoint {
      }
  
      private void loadCommonPageAnswer(String url, int pageIndex) {
+    	 Utils.consoleLog("::: PlayerEntryPoint loadCommonPageAnswer Start url["+url+"] pageIndex["+pageIndex+"]::: ");
         if (pageIndex < 0) {
            pageIndex = 0;
         }
@@ -610,6 +652,7 @@ public class PlayerEntryPoint implements EntryPoint {
      }
  
      private void loadCommonPageSolve(String url, int pageIndex) {
+    	 Utils.consoleLog("::: PlayerEntryPoint loadCommonPageSolve Start url["+url+"] pageIndex["+pageIndex+"]::: ");
         if (pageIndex < 0) {
            pageIndex = 0;
         }
@@ -618,6 +661,7 @@ public class PlayerEntryPoint implements EntryPoint {
     //kslee 커스텀 추가 ::: loadCommonPageJimun, Answer, Solve 3개 메소드 추가됨▲▲▲
 	
 	private void setConfig(JavaScriptObject config) {
+       	Utils.consoleLog("::: PlayerEntryPoint setConfig Start ::: ");
 		this.theApplication.setConfig(config);
 	}
 	
@@ -636,6 +680,7 @@ public class PlayerEntryPoint implements EntryPoint {
     //kslee 커스텀 추가 ::: setConfigJimun, Answer, Solve 3개 메소드 추가됨▲▲▲
 
 	private void forceScoreUpdate() {
+		Utils.consoleLog("::: PlayerEntryPoint forceScoreUpdate Start ::: ");
 		this.theApplication.updateScore();
 	}
 
@@ -672,6 +717,7 @@ public class PlayerEntryPoint implements EntryPoint {
     //kslee 커스텀 추가 ::: setAnalyticsJimun, Answer, Solve 3개 메소드 추가됨▲▲▲  	
 	
 	private void setState(String state) {
+		Utils.consoleLog("::: PlayerEntryPoint setState Start state["+state+"]::: ");
 		this.theApplication.setState(state);
 	}
 
@@ -690,6 +736,7 @@ public class PlayerEntryPoint implements EntryPoint {
     //kslee 커스텀 추가 ::: setStateJimun, Answer, Solve 3개 메소드 추가됨▲▲▲  	
 	
 	private void setPages(String pagesSub) {
+		Utils.consoleLog("::: PlayerEntryPoint setPages Start pagesSub["+pagesSub+"]::: ");
 		this.theApplication.setPages(pagesSub);
 	}
 	
@@ -708,6 +755,7 @@ public class PlayerEntryPoint implements EntryPoint {
     //kslee 커스텀 추가 ::: setPagesJimun, Answer, Solve 3개 메소드 추가됨▲▲▲  
 
 	private String getState() {
+		Utils.consoleLog("::: PlayerEntryPoint getState Start getState["+this.theApplication.getState()+"]::: ");
 		return this.theApplication.getState();
 	}
 	
@@ -727,6 +775,7 @@ public class PlayerEntryPoint implements EntryPoint {
 	
 
 	private JavaScriptObject getSemiResponsiveLayouts() {
+    	Utils.consoleLog("::: PlayerEntryPoint getSemiResponsiveLayouts Start ::: ");
 		return this.theApplication.getSemiResponsiveLayouts();
 	}
 
@@ -746,6 +795,7 @@ public class PlayerEntryPoint implements EntryPoint {
 	
 	
 	private JavaScriptObject getPlayerServices() {
+		Utils.consoleLog("::: PlayerEntryPoint getPlayerServices Start ::: ");
 		return this.theApplication.getPlayerServices().getAsJSObject();
 	}
 	
@@ -764,6 +814,7 @@ public class PlayerEntryPoint implements EntryPoint {
     //kslee 커스텀 추가 ::: getPlayerServicesJimun, Answer, Solve 3개 메소드 추가됨▲▲▲  	
 	
 	private boolean changeLayout(String layoutID) {
+    	Utils.consoleLog("::: PlayerEntryPoint changeLayout Start layoutID[" + layoutID + "]::: ");
 		return this.theApplication.changeLayout(layoutID);
 	}
 
@@ -783,6 +834,7 @@ public class PlayerEntryPoint implements EntryPoint {
 	    
 	    
 	private void sendLayoutChangedEvent(String value) {
+		Utils.consoleLog("::: PlayerEntryPoint sendLayoutChangedEvent Start value[" + value + "]::: ");
 	    this.theApplication
 			.getPlayerServices()
 			.getEventBusService()
@@ -809,7 +861,7 @@ public class PlayerEntryPoint implements EntryPoint {
 	}-*/;
 
 	public void onPageLoaded() {
-	    Utils.consoleLog("onPageLoaded");
+		Utils.consoleLog("::: PlayerEntryPoint onPageLoaded Start ::: ");
 		fireCallback(this.pageLoadedListener);
 		final int currentPageIndex = this.theApplication.getPlayerServices()
 				.getCurrentPageIndex();
@@ -842,6 +894,7 @@ public class PlayerEntryPoint implements EntryPoint {
 
 	// js에 없음
 	public void onScrollTo(int top) {
+	    Utils.consoleLog("::: PlayerEntryPoint onScrollTo Start top[" + top + "]:::");
 		fireScrollTo(this.pageScrollToListener, top);
 	}
 	
@@ -866,6 +919,7 @@ public class PlayerEntryPoint implements EntryPoint {
 	}-*/;
 	
 	public void onExternalEvent(String eventType, String data) {
+	    Utils.consoleLog("::: PlayerEntryPoint onExternalEvent eventType[" + eventType + "] data[" + data + "]:::");
 		fireExternalEvent(this.externalEventListener, eventType, data);
 	}
 
@@ -890,6 +944,7 @@ public class PlayerEntryPoint implements EntryPoint {
 	
 	//kslee js에 없음
 	public void fireOutstretchHeightEvent() {
+	    Utils.consoleLog("::: PlayerEntryPoint fireOutstretchHeightEvent Start:::");
 		fireCallback(this.outstretchHeightListener);
 	}
 
@@ -909,10 +964,12 @@ public class PlayerEntryPoint implements EntryPoint {
     //kslee 커스텀 추가 ::: fireOutstretchHeightEventJimun, Answer, Solve 3개 메소드 추가됨▲▲▲  	
 
 	public JavaScriptObject getContextMetadata() {
+	    Utils.consoleLog("::: PlayerEntryPoint getContextMetadata Start:::");
 		return this.contextMetadata;
 	}
 
 	public void setExternalVariables(JavaScriptObject contextData) {
+	    Utils.consoleLog("::: PlayerEntryPoint setExternalVariables Start:::");
 		if (JavaScriptUtils.isObject(contextData))
 			this.externalVariables = contextData;
 		else
@@ -923,14 +980,17 @@ public class PlayerEntryPoint implements EntryPoint {
 	}
 
 	public JavaScriptObject getExternalVariables() {
+	    Utils.consoleLog("::: PlayerEntryPoint getExternalVariables Start:::");
 		return this.externalVariables;
 	}
 	
 	private void generatePrintableHTML(final JavaScriptObject callback, boolean randomizePages, boolean randomizeModules, boolean showAnswers, int dpi) {
+	    Utils.consoleLog("::: PlayerEntryPoint generatePrintableHTML 01 Start:::");
 		generatePrintableHTML(callback, randomizePages, randomizeModules, showAnswers, dpi, -1);
 	}
 	
 	private void generatePrintableHTML(final JavaScriptObject callback, boolean randomizePages, boolean randomizeModules, boolean showAnswers, int dpi, int seed) {
+	    Utils.consoleLog("::: PlayerEntryPoint generatePrintableHTML 02 Start:::");
 		PrintableContentParser.ParsedListener listener = new PrintableContentParser.ParsedListener() {
 			@Override
 			public void onParsed(String result) {
@@ -945,6 +1005,7 @@ public class PlayerEntryPoint implements EntryPoint {
 		params.dpi = dpi;
 		params.seed = seed;
 		theApplication.generatePrintableHTML(params);
+	    Utils.consoleLog("::: PlayerEntryPoint generatePrintableHTML 02 End:::");
 	}
 
 	private static native void fireParsedCallback(JavaScriptObject callback, String result)/*-{
@@ -954,6 +1015,7 @@ public class PlayerEntryPoint implements EntryPoint {
 	}-*/;
 
 	private String getCurrentStyles () {
+	    Utils.consoleLog("::: PlayerEntryPoint getCurrentStyles Start:::");
 		return theApplication.getCurrentStyles();
 	}
 	
@@ -962,12 +1024,14 @@ public class PlayerEntryPoint implements EntryPoint {
 
 			@Override
 			public void onFinishedLoading(Object obj) {
+			    Utils.consoleLog("::: PlayerEntryPoint preloadAllPages onFinishedLoading Start:::");
 				fireCallback(callback);
 				
 			}
 
 			@Override
 			public void onError(String error) {
+			    Utils.consoleLog("::: PlayerEntryPoint preloadAllPages onError Start:::");
 				JavaScriptUtils.log("Loading pages error: " + error);
 			}
 			
@@ -975,6 +1039,7 @@ public class PlayerEntryPoint implements EntryPoint {
 	}
 
 	private JavaScriptObject getScoreWithMetadata() {
+	    Utils.consoleLog("::: PlayerEntryPoint getScoreWithMetadata Start:::");
 		JavaScriptObject jsScores = JavaScriptUtils.createEmptyJsArray();
 		List<ScoreWithMetadata> scores = theApplication.getScoreWithMetadata();
 		for (ScoreWithMetadata score: scores) {
@@ -984,10 +1049,12 @@ public class PlayerEntryPoint implements EntryPoint {
 	}
 
 	private void setScoreWithMetadata(String state) {
+		Utils.consoleLog("::: PlayerEntryPoint setScoreWithMetadata Start state[" + state + "]:::");
 		this.theApplication.setScoreWithMetadata(state);
 	}
 	
 	private void cleanBeforeClose() {
+		Utils.consoleLog("::: PlayerEntryPoint cleanBeforeClose Start :::");
 		clearBeforeReload();
 		resetGWTLoadedStatues();
 	}
@@ -998,6 +1065,7 @@ public class PlayerEntryPoint implements EntryPoint {
 	}-*/;
 
 	private void clearBeforeReload() {
+		Utils.consoleLog("::: PlayerEntryPoint clearBeforeReload Start :::");
 		if (theApplication != null && theApplication.isContentModelLoaded()) {
 			clearMetadata();
 			theApplication.clearBeforeReload();
@@ -1005,6 +1073,7 @@ public class PlayerEntryPoint implements EntryPoint {
 	}
 
 	private void clearMetadata() {
+		Utils.consoleLog("::: PlayerEntryPoint clearMetadata Start :::");
 		pageLoadedListener = null;
 		externalEventListener = null;
 		pageScrollToListener = null;
@@ -1015,26 +1084,32 @@ public class PlayerEntryPoint implements EntryPoint {
 	}
 
 	private void setPrintableOrder(JavaScriptObject order) {
+		Utils.consoleLog("::: PlayerEntryPoint setPrintableOrder Start :::");
 		this.theApplication.setPrintableOrder(order);
 	}
 
 	private void setNVDAAvailability(boolean shouldUseNVDA) {
+		Utils.consoleLog("::: PlayerEntryPoint setNVDAAvailability Start :::");
 		this.theApplication.setNVDAAvailability(shouldUseNVDA);
 	}
 
 	private void setOpenActivitiesScores(JavaScriptObject scores) {
+		Utils.consoleLog("::: PlayerEntryPoint setOpenActivitiesScores Start :::");
 		this.theApplication.setOpenActivitiesScores(OpenActivitiesScoresParser.toHashMap(scores));
 	}
 
 	private void setIncludeCredentials(boolean withCredentials) {
+		Utils.consoleLog("::: PlayerEntryPoint setIncludeCredentials Start withCredentials[" + withCredentials + "]:::");
 		ExtendedRequestBuilder.setGlobalIncludeCredentials(withCredentials);
 	}
 
 	private void setSigningPrefix(String signingPrefix) {
+		Utils.consoleLog("::: PlayerEntryPoint setSigningPrefix Start signingPrefix[" + signingPrefix + "]:::");
 		ExtendedRequestBuilder.setSigningPrefix(signingPrefix);
 	}
 
 	private void addPageToWhitelist(String pageURL) {
+		Utils.consoleLog("::: PlayerEntryPoint addPageToWhitelist Start pageURL[" + pageURL + "]:::");
 		ExtendedRequestBuilder.addPageToWhitelist(pageURL);
 	}
 

@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
@@ -19,6 +20,7 @@ import com.lorepo.icf.utils.JavaScriptUtils;
 import com.lorepo.icf.utils.URLUtils;
 import com.lorepo.icf.utils.XMLUtils;
 import com.lorepo.icplayer.client.model.addon.AddonDescriptor;
+import com.lorepo.icplayer.client.utils.Utils;
 
 public class LocalAddonsLoader implements IAddonLoader {
 	private static LocalAddonsLoader instance;
@@ -32,12 +34,14 @@ public class LocalAddonsLoader implements IAddonLoader {
 	}
 	
 	private final String ADDONS_DISTRIBUTION_XML = "addons.min.xml";
+	//private boolean requestSend = false;
 	private boolean requestToLoadAddonsXMLSent = false;
 	private boolean addonsXMLFetched = false;
 	private boolean firstAddonRequestSent = false;
 	private boolean firstAddonXMLFetched = false;
 	private AddonDescriptor currentAddonDescriptor;
 	private HashMap<String, Element> addonsXMLs = new HashMap<String, Element>();
+	private String fetchURL = URLUtils.resolveURL(GWT.getModuleBaseURL() + "build/dist/", ADDONS_DISTRIBUTION_XML);
 	private String addonsXMLFetchURL = URLUtils.resolveURL(GWT.getModuleBaseURL() + "build/dist/", ADDONS_DISTRIBUTION_XML);
 	private List<WaitingDescriptor> queue = new LinkedList<WaitingDescriptor>();
 	private String errorString;
@@ -46,6 +50,23 @@ public class LocalAddonsLoader implements IAddonLoader {
 
 	@Override
 	public void load(ILoadListener callbacks) {
+		Utils.consoleLog("::: LocalAddonsLoader load Start :::");
+		Utils.consoleLog("::: LocalAddonsLoader load 01 getAddonId    [" + currentAddonDescriptor.getAddonId() + "]:::");
+		Utils.consoleLog("::: LocalAddonsLoader load 02 getCode       [" + currentAddonDescriptor.getCode() + "]:::");
+		Utils.consoleLog("::: LocalAddonsLoader load 03 getHref       [" + currentAddonDescriptor.getHref() + "]:::");
+		Utils.consoleLog("::: LocalAddonsLoader load 04 getViewHTML   [" + currentAddonDescriptor.getViewHTML() + "]:::");
+		Utils.consoleLog("::: LocalAddonsLoader load 05 getPreviewHTML[" + currentAddonDescriptor.getPreviewHTML() + "]:::");
+		Utils.consoleLog("::: LocalAddonsLoader load 06 isLoaded      [" + currentAddonDescriptor.isLoaded() + "]:::");
+		
+		//if (this.requestSend) {
+		//	if(this.addonsXMLFetched) {
+		//		this.flushAddon(this.currentAddonDescriptor, callbacks);
+		//	} else {
+		//		this.addToWaitingQue(this.currentAddonDescriptor, callbacks);
+		//	}
+		//} else {
+		//	this.requestLoad(callbacks);
+		//}
 		if (this.firstAddonRequestSent) {
 			if (this.firstAddonXMLFetched) {
 				if (this.requestToLoadAddonsXMLSent) {
@@ -66,6 +87,7 @@ public class LocalAddonsLoader implements IAddonLoader {
 	}
 	
 	private void loadAddonsXML(ILoadListener callbacks) {
+		Utils.consoleLog("::: LocalAddonsLoader loadAddonsXML Start :::");
 		try {
 			this.addToWaitingQue(this.currentAddonDescriptor, callbacks);
 			this.sendRequestToLoadAddonsXML(this.addonsXMLFetchURL);
@@ -82,11 +104,15 @@ public class LocalAddonsLoader implements IAddonLoader {
 	}
 	
 	public void setAddonDescriptor(AddonDescriptor descriptor) {
+		Utils.consoleLog("::: LocalAddonsLoader setAddonDescriptor Start :::");
 		this.currentAddonDescriptor = descriptor;
 	}
 
 	public void setFetchUrl(String addonsXMLFetchURL) {
+	//public void setFetchUrl(String fetchURL) {
+		Utils.consoleLog("::: LocalAddonsLoader setFetchUrl Start addonsXMLFetchURL[" + addonsXMLFetchURL + "]:::");
 		this.addonsXMLFetchURL = addonsXMLFetchURL;
+		//this.fetchURL = fetchURL;
 	};
 	
 	private void sendRequestToLoadAddonsXML(String url) throws RequestException {
@@ -117,6 +143,7 @@ public class LocalAddonsLoader implements IAddonLoader {
 	}
 	
 	private void flushWaitingAddons() {
+		Utils.consoleLog("::: LocalAddonsLoader flushWaitingAddons Start :::");
 		for(WaitingDescriptor descriptor : this.queue){
 			this.flushAddon(descriptor.descriptor, descriptor.listener);
 		}	
@@ -124,21 +151,28 @@ public class LocalAddonsLoader implements IAddonLoader {
 	}
 	
 	private void flushAddon(final AddonDescriptor descriptor, final ILoadListener callbacks) {
+		Utils.consoleLog("::: LocalAddonsLoader flushAddon Start AddonId ["+ descriptor.getAddonId() +"]:::");
 		Element xml = this.addonsXMLs.get(descriptor.getAddonId());
 		descriptor.load(xml, null);
 		callbacks.onFinishedLoading(descriptor);
 	}
 	
 	private void addToWaitingQue(AddonDescriptor descriptor, ILoadListener callbacks) {
+		Utils.consoleLog("::: LocalAddonsLoader addToWaitingQue Start :::");
 		this.queue.add(new WaitingDescriptor(descriptor, callbacks));
 	}
 
 	private void parseAddonsXML(String text) {
+		Utils.consoleLog("::: LocalAddonsLoader parseAddonsXML Start text[" + text + "]:::");
+		
 		Document dom = XMLParser.parse(text);
 		NodeList addonsNodes = dom.getDocumentElement().getElementsByTagName("addon");
 		for(int i = 0; i < addonsNodes.getLength(); i++){
 			Element addonXML = (Element) addonsNodes.item(i);
 			String addonID = XMLUtils.getAttributeAsString(addonXML, "id");
+			
+			Utils.consoleLog("::: LocalAddonsLoader parseAddonsXML i["+i+"] addonID[" + addonID + "]:::");
+			
 			this.addonsXMLs.put(addonID, addonXML);
 		}
 	}
@@ -153,15 +187,20 @@ public class LocalAddonsLoader implements IAddonLoader {
 	}
 
 	private String getResolvedURL(String url) {
+		Utils.consoleLog("::: LocalAddonsLoader parseAddonsXML Start url[" + url + "]:::");
+		
 		String resolvedURL;
 		
 		if( url.contains("://") || url.startsWith("/") ){
+			Utils.consoleLog("::: LocalAddonsLoader parseAddonsXML 01 url[" + url + "]:::");
 			resolvedURL = url;
 		}
 		else{
 			resolvedURL = GWT.getHostPageBaseURL() + url;
+			Utils.consoleLog("::: LocalAddonsLoader parseAddonsXML 02 resolvedURL[" + resolvedURL + "]:::");
 		}
 		
+		Utils.consoleLog("::: LocalAddonsLoader parseAddonsXML 03 resolvedURL[" + resolvedURL + "]:::");
 		return resolvedURL;
 	}
 	

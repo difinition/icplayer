@@ -40,6 +40,8 @@ function Addonvideo_create() {
     presenter.isAudioDescriptionEnabled = null;
     presenter.prevTime = -0.001;
     presenter.usedStop = false;
+    // HLS 전용으로 사용했던 <video> 엘리먼트 캐시
+    presenter.cachedVideoEl = null;
     presenter.stylesBeforeFullscreen = {
         changedStyles: false,
         style: null,
@@ -504,7 +506,7 @@ function Addonvideo_create() {
         MathJax.Hub.signal.hooks["End Process"].Remove(presenter.mathJaxHook);
     };
 
-    presenter.onDestroy = function () {
+    presenter.destroy = function () {
         var view = document.getElementsByClassName('ic_page');
 
         if (presenter.hlsPlayer != null) {
@@ -676,14 +678,14 @@ function Addonvideo_create() {
     };
 
     presenter.changePlayingSpeed = function(diff) {
-            const playingSpeedOptions = [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2];
-            let currentIndex = playingSpeedOptions.indexOf(presenter.videoObject.playbackRate);
-            if (currentIndex == -1) return;
-            currentIndex += diff;
-            if (currentIndex < 0) currentIndex = 0;
-            if (currentIndex >= playingSpeedOptions.length) currentIndex = playingSpeedOptions.length - 1;
-            presenter.videoObject.playbackRate = playingSpeedOptions[currentIndex];
-        }
+        const playingSpeedOptions = [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2];
+        let currentIndex = playingSpeedOptions.indexOf(presenter.videoObject.playbackRate);
+        if (currentIndex == -1) return;
+        currentIndex += diff;
+        if (currentIndex < 0) currentIndex = 0;
+        if (currentIndex >= playingSpeedOptions.length) currentIndex = playingSpeedOptions.length - 1;
+        presenter.videoObject.playbackRate = playingSpeedOptions[currentIndex];
+    }
 
 
     presenter.keyboardController = function (keycode, isShift, event, keysDownCodes) {
@@ -1055,7 +1057,19 @@ function Addonvideo_create() {
             return;
         }
 
-        presenter.controlBar.removeBurgerMenu(BURGER_MENU);
+        // 컨트롤바가 없거나 기본 컨트롤이 비활성화된 경우 리턴
+        if (!presenter.configuration.defaultControls || !presenter.controlBar) {
+            return;
+        }
+
+        // 기존 버거 메뉴 제거 시도 (에러 방지)
+        try {
+            if (presenter.controlBar.removeBurgerMenu) {
+                presenter.controlBar.removeBurgerMenu(BURGER_MENU);
+            }
+        } catch(e) {
+            console.warn('Failed to remove burger menu:', e);
+        }
 
         var currentElement = presenter.configuration.files[presenter.currentMovie],
             /**
@@ -1076,7 +1090,9 @@ function Addonvideo_create() {
             };
         });
 
-        presenter.controlBar.addBurgerMenu(BURGER_MENU, elementsForBurger);
+        if (presenter.controlBar.addBurgerMenu) {
+            presenter.controlBar.addBurgerMenu(BURGER_MENU, elementsForBurger);
+        }
     };
 
     presenter.addVideoSpeedController = function () {
@@ -1095,6 +1111,30 @@ function Addonvideo_create() {
 
         presenter.controlBar.resetPlaybackRateSelectValue();
         presenter.setPlaybackRate(1.0);
+    };
+
+    /**
+     * waitForVideoJs 헬퍼 함수 추가
+     * video.js 라이브러리가 로드될 때까지 폴링한 뒤 콜백 실행
+     * @param {Function} onReady : videojs() 가 사용 가능한 시점에 호출할 함수
+     * @param {number} interval : 재시도 간격(ms)
+     * @param {number} maxTimeout : 최대 대기 시간(ms)
+     */
+    presenter.waitForVideoJs = function(onReady, interval, maxTimeout) {
+       interval   = interval   || 50;
+       maxTimeout = maxTimeout || 3000;
+       var startTime = Date.now();
+       (function check() {
+           if (typeof window.videojs !== 'function') {
+               if (Date.now() - startTime < maxTimeout) {
+                   setTimeout(check, interval);
+               } else {
+                   console.warn('[waitForVideoJs] video.js 로드 대기: ' + maxTimeout + 'ms');
+               }
+           } else {
+               onReady();
+           }
+       })();
     };
 
     presenter.run = function (view, model) {
@@ -1123,9 +1163,9 @@ function Addonvideo_create() {
         presenter.$videoObject = $(presenter.videoObject);
 
         Object.defineProperty(presenter.videoObject, 'playing', {
-           get: function () {
-               return !!(this.currentTime > 0 && !this.paused && !this.ended && this.readyState > 2);
-           }
+            get: function () {
+                return !!(this.currentTime > 0 && !this.paused && !this.ended && this.readyState > 2);
+            }
         });
 
         presenter.setDimensions();
@@ -1147,7 +1187,19 @@ function Addonvideo_create() {
 
         presenter.addTabindex(presenter.configuration.isTabindexEnabled);
 
-        if (presenter.isHLS()) presenter.loadHLSPlayer();
+        // 첫 HLS 진입 시 videoObject 캐시
+        if (presenter.isHLS() && !presenter.cachedVideoEl) {
+            presenter.cachedVideoEl = presenter.videoObject;
+        }
+
+        // video.js 준비된 후에만 HLS 분기 처리
+        presenter.waitForVideoJs(function() {
+            var hlsMode = presenter.isHLS();
+            console.log('[run] video.js loaded, isHLS():', hlsMode);
+            if (hlsMode) {
+                presenter.loadHLSPlayer();
+            }
+        });
 
         presenter.connectHandlers();
         presenter.reload();
@@ -1195,7 +1247,7 @@ function Addonvideo_create() {
             event.stopPropagation();
         });
 
-        $(window).on('click', function (event) {
+        $('#aidt_viewer-container').on('click', function (event) {
             if (presenter.configuration.defaultControls && presenter.controlBar.isSelectorOpen) {
                 presenter.controlBar.isSelectorOpen = false;
                 presenter.controlBar.hideControls();
@@ -1206,50 +1258,73 @@ function Addonvideo_create() {
     }
 
     presenter.isHLS = function() {
-        if (window.videojs === undefined) return false;
-        if (presenter.isHLSValue == null) {
-            presenter.isHLSValue = false;
-            for (var i = 0; i < presenter.configuration.files.length; i++) {
-                var videoFile = presenter.configuration.files[i];
-                if (videoFile["m3u8 video"].trim().length > 0) presenter.isHLSValue = true;
-            }
-        }
-        return presenter.isHLSValue;
+        // video.js 라이브러리가 로드되지 않았으면 HLS 불가
+        if (typeof window.videojs !== 'function') return false;
+
+        // 현재 선택된 파일의 m3u8 URL 을 보고 HLS 여부 판단
+        var currentFile = presenter.configuration && presenter.configuration.files && presenter.configuration.files[presenter.currentMovie];
+        if (!currentFile) return false;
+
+        var url = (currentFile['m3u8 video'] || '').trim();
+        return url.length > 0;
     }
 
     presenter.loadHLSPlayer = function() {
-        presenter.$videoObject.addClass('video-js vjs-theme-sea vjs-big-play-centered');
-        presenter.$videoObject.attr({
-            preload: presenter.isHLS() ? 'metadata' : 'auto',
-            fluid: "true",
-            "data-setup": '{}'
-        });
-        var videoID = 'videojs-player-' + presenter.configuration.addonID;
-        presenter.$videoObject.attr('id', videoID);
-        presenter.hlsPlayer = window.videojs(videoID);
-        presenter.hlsPlayer.ready(() => {
-            presenter.hlsPlayer.on('click', presenter.stopPropagationOnClickEvent);
-            presenter.hlsPlayer.on('error', function () {
+        var file = presenter.configuration.files[presenter.currentMovie];
+        var hlsUrl = file['m3u8 video'].trim();
+        // 사용할 <video> 엘리먼트 결정 (캐시된 게 있으면 우선, 아니면 새로 찾은 것)
+        var videoEl = presenter.cachedVideoEl || presenter.videoContainer.find('video')[0];
+
+        if (hlsUrl) {
+            // 첫 HLS 진입 시 엘리먼트 캐시
+            if (!presenter.cachedVideoEl) {
+                presenter.cachedVideoEl = videoEl;
+            }
+
+            // 기존 <source> 싹 지우고 HLS 전용 소스 삽입
+            $(videoEl).empty();
+            var srcEl = document.createElement('source');
+            srcEl.src  = hlsUrl;
+            srcEl.type = 'application/x-mpegURL';
+            videoEl.appendChild(srcEl);
+        }
+        // hlsUrl이 없는 경우에도 cachedVideoEl이 있으면 'videoEl'에 이미 HLS 설정된 상태
+        // 기존 HLS 인스턴스 dispose
+        if (presenter.hlsPlayer) {
+            presenter.hlsPlayer.dispose();
+            presenter.hlsPlayer = null;
+        }
+
+        presenter._hasSetMetaData = false;
+        presenter._finalDurationBound = false;
+
+        presenter.$videoObject = $(videoEl);
+        presenter.$videoObject
+            .addClass('video-js vjs-theme-sea vjs-big-play-centered')
+            .attr({ preload: 'metadata', fluid: true, 'data-setup': '{}' });
+
+        presenter.hlsPlayer = window.videojs(videoEl, {}, function() {
+            // videoObject 는 그대로 videoEl
+            presenter.videoObject = videoEl;
+            presenter.$videoObject  = $(videoEl);
+
+            // loadedmetadata 이벤트 1회 바인딩
+            this.off('loadedmetadata', presenter.setMetaDataOnMetaDataLoadedEvent);
+            this.one('loadedmetadata', presenter.setMetaDataOnMetaDataLoadedEvent);
+
+            // 재생,일시정지 등 이벤트
+            this.on('play',  setVideoStateOnPlayEvent);
+            this.on('pause', setVideoStateOnPauseEvent);
+            this.on('playing', presenter.onVideoPlaying);
+
+            this.on('click', presenter.stopPropagationOnClickEvent);
+            this.on('error', function () {
                 presenter.handleErrorCode(this.error);
             });
-            presenter.hlsPlayer.on('loadedmetadata', presenter.setMetaDataOnMetaDataLoadedEvent);
-            presenter.hlsPlayer.on('play', setVideoStateOnPlayEvent);
-            presenter.hlsPlayer.on('pause', setVideoStateOnPauseEvent);
-            presenter.hlsPlayer.on('playing', presenter.onVideoPlaying);
 
-            presenter.hlsPlayer.on('loadedmetadata', function onLoadedMetadata() {
-                presenter.isVideoLoaded = true;
-                presenter.callTasksFromDeferredQueue();
-
-                $(presenter.videoObject).unbind("canplay");
-
-                if (presenter.areSubtitlesHidden) {
-                    presenter.hideSubtitles();
-                } else {
-                    presenter.showSubtitles();
-                }
-                }
-            );
+            // 비동기 로딩 후 대기 중인 작업 실행
+            presenter.isVideoLoaded = true;
+            presenter.callTasksFromDeferredQueue();
         });
     }
 
@@ -1357,6 +1432,42 @@ function Addonvideo_create() {
             'source': presenter.configuration.addonID,
             'item': (presenter.currentMovie + 1),
             'value': 'playing',
+            'score': ''
+        };
+
+        presenter.eventBus.sendEvent('ValueChanged', eventData);
+    };
+
+    //이석웅 추가
+    presenter.sendOnPlayingConfirmEvent = function () {
+        var eventData = {
+            'source': presenter.configuration.addonID,
+            'item': (presenter.currentMovie + 1),
+            'value': 'playing_confirm',
+            'score': ''
+        };
+
+        presenter.eventBus.sendEvent('ValueChanged', eventData);
+    };
+
+    //이석웅 추가
+    presenter.sendOnPauseEvent = function () {
+        var eventData = {
+            'source': presenter.configuration.addonID,
+            'item': (presenter.currentMovie + 1),
+            'value': 'pause',
+            'score': ''
+        };
+
+        presenter.eventBus.sendEvent('ValueChanged', eventData);
+    };
+
+    //이석웅 추가
+    presenter.sendOnStopEvent = function () {
+        var eventData = {
+            'source': presenter.configuration.addonID,
+            'item': (presenter.currentMovie + 1),
+            'value': 'stop',
             'score': ''
         };
 
@@ -1582,6 +1693,8 @@ function Addonvideo_create() {
         var state = JSON.parse(stateString);
         var currentTime = state.currentTime;
 
+        console.log("State: ", state, state.isCurrentlyVisible);
+
         if (state.videoURLS) {  //This was added later than rest of state
             for (var i in state.videoURLS) {
                 if (state.videoURLS.hasOwnProperty(i)) {
@@ -1735,9 +1848,9 @@ function Addonvideo_create() {
         }
         if (!presenter.videoObject.hasOwnProperty('playing')) {
             Object.defineProperty(presenter.videoObject, 'playing', {
-               get: function () {
-                   return !!(this.currentTime > 0 && !this.paused && !this.ended && this.readyState > 2);
-               }
+                get: function () {
+                    return !!(this.currentTime > 0 && !this.paused && !this.ended && this.readyState > 2);
+                }
             });
         }
 
@@ -1921,21 +2034,21 @@ function Addonvideo_create() {
 
     presenter.escapeAltText = function(text) {
         function replacer(match, p1, offset, string) {
-          return '[' + p1.replace(/\|/g, escapedSeparator) + ']';
+            return '[' + p1.replace(/\|/g, escapedSeparator) + ']';
         }
         return text.replace(/\[(.*?)\]/g, replacer);
     };
-    
+
     presenter.unescapeAndConvertAltText = function(text) {
         function replacer(match, p1, offset, string) {
-          var parts = p1.split(escapedSeparator);
-          if (parts.length === 2) {
-              return '\\alt{' + parts[0] + '|' + parts[1] + '}';
-          }
-          if (parts.length === 3) {
-              return '\\alt{' + parts[0] + '|' + parts[1] + '}[lang ' + parts[2] + ']';
-          }
-          return '[' + parts.join('|') + ']';
+            var parts = p1.split(escapedSeparator);
+            if (parts.length === 2) {
+                return '\\alt{' + parts[0] + '|' + parts[1] + '}';
+            }
+            if (parts.length === 3) {
+                return '\\alt{' + parts[0] + '|' + parts[1] + '}[lang ' + parts[2] + ']';
+            }
+            return '[' + parts.join('|') + ']';
         }
         return text.replace(/\[(.*?)\]/g, replacer);
     };
@@ -1987,16 +2100,29 @@ function Addonvideo_create() {
         presenter.videoContainer.css('height', presenter.calculateVideoContainerHeight(presenter.videoContainer, presenter.configuration.height) + 'px');
 
         video.css("width", "100%")
-            .attr('height', presenter.videoContainer.height());
+            .attr('height', (presenter.videoContainer.height() == 100 )? height : presenter.videoContainer.height());
 
+//        console.log("setDimensions", height, presenter.configuration.height, presenter.calculateVideoContainerHeight(presenter.videoContainer, presenter.configuration.height) )
+//        console.log("setDimensions2", $(video).height() );
+//        console.log("setDimensions3", $(presenter.videoContainer).height() );
+//        presenter.configuration.dimensions = {
+//            video: {
+//                width: width,
+//                height: height
+//            },
+//            container: {
+//                width: width,
+//                height: height
+//            }
+//        };
         presenter.configuration.dimensions = {
             video: {
-                width: $(video).width(),
-                height: $(video).height()
+                width: ($(video).width() == 100 ) ? width : $(video).width(),
+                height: ($(video).height() == 100 ) ? height : $(video).height()
             },
             container: {
-                width: $(presenter.videoContainer).width(),
-                height: $(presenter.videoContainer).height()
+                width: ($(presenter.videoContainer).width() == 100) ? width : $(presenter.videoContainer).width(),
+                height: ($(presenter.videoContainer).height() == 100 ) ? height : $(presenter.videoContainer).height()
             }
         };
     };
@@ -2227,16 +2353,16 @@ function Addonvideo_create() {
     });
 
     presenter.stop = deferredSyncQueue.decorate(function () {
-            presenter.showPlayButton();
-            presenter.seek(0);
-            presenter.prevTime = -0.001;
-            presenter.videoObject.pause();
-            presenter.usedStop = true;
-            if(presenter.descriptions.length > 0){
-                setAudioDescriptionDisabled();
-            }
-            presenter.removeClassFromView('playing');
-            presenter.posterPlayButton.removeClass('video-poster-pause');
+        presenter.showPlayButton();
+        presenter.seek(0);
+        presenter.prevTime = -0.001;
+        presenter.videoObject.pause();
+        presenter.usedStop = true;
+        if(presenter.descriptions.length > 0){
+            setAudioDescriptionDisabled();
+        }
+        presenter.removeClassFromView('playing');
+        presenter.posterPlayButton.removeClass('video-poster-pause');
     });
 
     presenter.pause = deferredSyncQueue.decorate(function () {

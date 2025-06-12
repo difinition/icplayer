@@ -233,9 +233,13 @@ public class ModuleFactory implements IModuleFactory{
 	
 	
 	@Override
-	public IPresenter createPresenter(IModuleModel module){
+	//kslee 커스텀  메소드 수정 ::: ▼▼▼
+	//public IPresenter createPresenter(IModuleModel module){
+	public IPresenter createPresenter(IModuleModel module, String pageURL) {
 		if(module instanceof AddonModel){
-			return new AddonPresenter((AddonModel) module, services);
+			//kslee 커스텀  메소드 수정 ::: ▼▼▼
+			//return new AddonPresenter((AddonModel) module, services);
+			return new AddonPresenter((AddonModel)module, this.services, pageURL);
 		}
 		else if (module instanceof ButtonModule) {
 			return new ButtonPresenter((ButtonModule) module, services);

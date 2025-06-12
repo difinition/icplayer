@@ -35,6 +35,9 @@ public class ContentFactoryQNote extends XMLVersionAwareFactoryQNote {
    private static String mainFetchURL;
 
    protected ContentFactoryQNote(ArrayList<Integer> pagesSubset) {
+	   
+      Utils.consoleLog("::: ContentFactoryQNote ContentFactoryQNote Start 생성자 ::: ");
+
       this.setPagesSubset(pagesSubset);
       this.addParser(new ContentParser_v0());
       this.addParser(new ContentParser_v1());
@@ -44,20 +47,23 @@ public class ContentFactoryQNote extends XMLVersionAwareFactoryQNote {
    }
 
    public void setPagesSubset(ArrayList<Integer> pagesSubset) {
+      Utils.consoleLog("::: ContentFactoryQNote setPagesSubset Start ::: ");
       this.pagesSubset = pagesSubset;
    }
 
    private void addParser(IContentParser parser) {
+      Utils.consoleLog("::: ContentFactoryQNote addParser Start ::: ");
       parser.setPagesSubset(this.pagesSubset);
       super.addParser(parser);
    }
 
    public static IXMLFactory getInstance(ArrayList<Integer> pagesSubset) {
-      Utils.consoleLog("ContentFactoryQNote getInstance");
+   Utils.consoleLog("::: ContentFactoryQNote getInstance Start ::: ");
       return new ContentFactoryQNote(pagesSubset);
    }
 
    public static IXMLFactory getInstanceWithAllPages() {
+      Utils.consoleLog("::: ContentFactoryQNote getInstanceWithAllPages Start ::: ");
       return getInstance(new ArrayList());
    }
 
@@ -84,71 +90,79 @@ public class ContentFactoryQNote extends XMLVersionAwareFactoryQNote {
     * 
     * */
    protected RequestFinishedCallback getContentLoadCallback(final IProducingLoadingListener listener) {
-       return new RequestFinishedCallback() {
+		return new RequestFinishedCallback() {
 
-           @Override
-           public void onResponseReceived(String fetchURL, Request request, Response response) {
-               Utils.consoleLog("getContentLoadCallback response.getStatusCode() : " + fetchURL + ", " + response.getStatusCode());
+			@Override
+			public void onResponseReceived(String fetchURL, Request request, Response response) {
+				Utils.consoleLog("::: ContentFactoryQNote getContentLoadCallback onResponseReceived 01 : fetchURL[" + fetchURL + "] StatusCode[" + response.getStatusCode() + "]");
 
-               if (response.getStatusCode() != 200 && response.getStatusCode() != 0) {
-                   listener.onError("Wrong status: " + response.getText());
-                   return;
-               }
+				if (response.getStatusCode() != 200 && response.getStatusCode() != 0) {
+					Utils.consoleLog( "::: ContentFactoryQNote getContentLoadCallback onResponseReceived 02 : Wrong status[" + response.getText() + "]");
+					listener.onError("Wrong status: " + response.getText());
+				} else {
 
-               try {
-                   Content content;
-                   if (loadedCount == 0) {
-                       mContent = produce(response.getText(), fetchURL);
-                       mainFetchURL = fetchURL;
-                       Utils.consoleLog("main xml : " + response.getText());
-                   } else {
-                       Utils.consoleLog("mContent1 : " + response.getText());
+					Content content;
+					if (loadedCount == 0) {
+						mContent = produce(response.getText(), fetchURL);
+						mainFetchURL = fetchURL;
 
-                       content = produce(response.getText(), fetchURL);
+						Utils.consoleLog("::: ContentFactoryQNote getContentLoadCallback onResponseReceived 03 : main xml [" + response.getText() + "]");
+					} else {
+						Utils.consoleLog("::: ContentFactoryQNote getContentLoadCallback onResponseReceived 04 : mContent1[" + response.getText() + "]");
 
-                       if (loadedCount == 1 && !Utils.isQNote) {
-                           setAddonsFromContent(response.getText(), fetchURL);
-                       }
+						try {
+							content = produce(response.getText(), fetchURL);
 
-                       if (!Utils.isQNote) {
-                           setAssetsFromContent(response.getText(), fetchURL);
-                           setCSSFromContent(response.getText(), fetchURL);
-                       }
+							if (loadedCount == 1 && !Utils.isQNote) {
+								setAddonsFromContent(response.getText(), fetchURL);
+							}
 
-                       //addPage(content.getTableOfContents(), content.getCommonTableOfContents(), pagesSubset);
-                       addPage(content.getTableOfContents(), content.getCommonTableOfContents(), loadedCount);
-                   }
+							if (!Utils.isQNote) {
+								setAssetsFromContent(response.getText(), fetchURL);
+								setCSSFromContent(response.getText(), fetchURL);
+							}
 
-                   Utils.consoleLog("load loadedCount : " + loadedCount + ", " + pagesCount + ", " + fetchUrlPages[loadedCount]);
+							// addPage(content.getTableOfContents(), content.getCommonTableOfContents(),
+							// pagesSubset);
+							addPage(content.getTableOfContents(), content.getCommonTableOfContents(), loadedCount);
+						} catch (Exception e) {
+							Utils.consoleLog("trace e : " + e);
+							listener.onFinishedLoading(null);
+						}
+					}
 
-                   if (loadedCount + 1 < pagesCount) {
-                       loadedCount++;
-                       
-                       //kslee fetchUrlPages >> fetchUrls 로 수정
-                       //send(fetchUrlPages[loadedCount], listener);
-                       send(fetchUrls[loadedCount], listener);
-                   } else if (loadedCount + 1 == pagesCount) {
-                       content = produce(response.getText(), fetchURL);
-                       mContent = produce(mContent.toXML(), fetchUrls[0]);
-                       Utils.consoleLog("getContentLoadCallback mContent.toXML() : " + mContent.toXML());
-                       listener.onFinishedLoading(mContent);
-                       loadedCount++;
-                   }
+					Utils.consoleLog("::: ContentFactoryQNote getContentLoadCallback onResponseReceived 05 : fetchURL[" + fetchURL + "] StatusCode[" + response.getStatusCode() + "]");
 
-               } catch (Exception e) {
-                   Utils.consoleLog("trace e : " + e);
-                   listener.onFinishedLoading(null);
-               }
-           }
+					if (loadedCount + 1 < pagesCount) {
+						loadedCount++;
 
-           @Override
-           public void onError(Request request, Throwable exception) {
-               listener.onFinishedLoading(null);
-           }
-       };
-   }
+						// kslee fetchUrlPages >> fetchUrls 로 수정
+						// send(fetchUrlPages[loadedCount], listener);
+						Utils.consoleLog("::: ContentFactoryQNote getContentLoadCallback onResponseReceived 06 : send loadedCount[" + fetchUrls[loadedCount] + "]");
+						send(fetchUrls[loadedCount], listener);
+					} else if (loadedCount + 1 == pagesCount) {
+						content = produce(response.getText(), fetchURL);
+						
+						Utils.consoleLog( "::: ContentFactoryQNote getContentLoadCallback onResponseReceived 07 : 왜?? fetchUrls[0][" + fetchUrls[0] + "]");
+						
+						mContent = produce(mContent.toXML(), fetchUrls[0]);
+						Utils.consoleLog( "::: ContentFactoryQNote getContentLoadCallback onResponseReceived 08 : mContent.toXML()[" + mContent.toXML() + "]");
+						listener.onFinishedLoading(mContent);
+						loadedCount++;
+					}
+				}
+			}
+
+			@Override
+			public void onError(Request request, Throwable exception) {
+				listener.onFinishedLoading(null);
+			}
+		};
+	}
 
    private void setAddonsFromContent(String sContentMainXML, String sContentURL) {
+      Utils.consoleLog("::: ContentFactoryQNote setAddonsFromContent 01 : sContentMainXML[" + sContentMainXML + "] sContentURL[" + sContentURL + "]");
+
       Document mainXML = XMLParser.parse(this.mContent.toXML());
       Document contentMainXML = XMLParser.parse(sContentMainXML);
       HashMap<String, Boolean> essentialAddon = new HashMap();
@@ -160,18 +174,25 @@ public class ContentFactoryQNote extends XMLVersionAwareFactoryQNote {
          Node node = addonDescriptor.item(i);
          Element ele = (Element)node;
          String addonId = ele.getAttribute("addonId");
+
+         Utils.consoleLog("::: ContentFactoryQNote setAddonsFromContent 02 : i[" + i + "] addonId[" + addonId + "]");
+
          if (essentialAddon.containsKey(addonId)) {
             essentialAddon.put(addonId, false);
          }
 
-         ele.setAttribute("href", "../icplayer/addons/" + addonId + ".xml");
+         String tmpHref = "../icplayer/addons/" + addonId + ".xml";
+
+         Utils.consoleLog("::: ContentFactoryQNote setAddonsFromContent 03 : i[" + i + "] href[" + tmpHref + "]");
+
+         ele.setAttribute("href", tmpHref);
       }
 
       try {
-         Iterator var13 = essentialAddon.keySet().iterator();
+    	  Iterator<String> it = essentialAddon.keySet().iterator();
 
-         while(var13.hasNext()) {
-            String addonID = (String)var13.next();
+         while(it.hasNext()) {
+            String addonID = (String)it.next();
             Document xmlDocument = XMLParser.createDocument();
             Element xmlElement = xmlDocument.createElement("addon-descriptor");
             if ((Boolean)essentialAddon.get(addonID)) {
@@ -180,7 +201,7 @@ public class ContentFactoryQNote extends XMLVersionAwareFactoryQNote {
                addonDescriptor.item(0).getParentNode().appendChild(xmlElement);
             }
          }
-      } catch (Exception var12) {
+      } catch (Exception ignored) {
       }
 
       NodeList addons = mainXML.getElementsByTagName("addons");
@@ -188,52 +209,60 @@ public class ContentFactoryQNote extends XMLVersionAwareFactoryQNote {
 
       try {
          addons.item(0).getParentNode().replaceChild(contentAddons.item(0), addons.item(0));
-         Utils.consoleLog("setAddonsFromContent  : " + addons.toString());
+         Utils.consoleLog("::: ContentFactoryQNote setAddonsFromContent 04 : addonsStr[" + addons.toString() + "]");
       } catch (Exception var11) {
       }
 
       String xmlString = mainXML.toString();
-      Utils.consoleLog("setAddonsFromContent xmlString : " + xmlString);
+      Utils.consoleLog("::: ContentFactoryQNote setAddonsFromContent 05 : mainFetchURL[" + mainFetchURL + "]");
+      Utils.consoleLog("::: ContentFactoryQNote setAddonsFromContent 06 : xmlString[" + xmlString + "]");
       this.mContent = this.produce(xmlString, mainFetchURL);
-      Utils.consoleLog("setAddonsFromContent mainXML : " + mainXML.toString());
+      
+      Utils.consoleLog("::: ContentFactoryQNote setAddonsFromContent End ::: ");
+      
    }
 
    private void setAssetsFromContent(String sContentMainXML, String sContentURL) {
-      try {
+
+    Utils.consoleLog("::: ContentFactoryQNote setAssetsFromContent Start ::: ");
+
+	try {
          Document mainXML = XMLParser.parse(this.mContent.toXML());
          Document contentMainXML = XMLParser.parse(sContentMainXML);
          NodeList assets = mainXML.getElementsByTagName("assets");
          NodeList contentAssets = contentMainXML.getElementsByTagName("asset");
          String prefixURL = sContentURL.split("/pages/")[0];
-         Utils.consoleLog("setAssetsFromContent assets : " + assets.toString());
-         Utils.consoleLog("setAssetsFromContent contentAssets : " + contentAssets.toString());
+         Utils.consoleLog("::: ContentFactoryQNote setAssetsFromContent 01 assets[" + assets.toString() + "]");
+         Utils.consoleLog("::: ContentFactoryQNote setAssetsFromContent 02 contentAssets[" + contentAssets.toString() + "]");
          Node node = assets.item(0);
-         Utils.consoleLog("setAssetsFromContent newNode.getChildNodes().getLength() : " + contentAssets.getLength());
-         Utils.consoleLog("setAssetsFromContent newNode.getChildNodes().toString() : " + contentAssets);
+         Utils.consoleLog("::: ContentFactoryQNote setAssetsFromContent 03 newNode.getChildNodes().getLength()[" + contentAssets.getLength() + "]");
+         Utils.consoleLog("::: ContentFactoryQNote setAssetsFromContent 04 newNode.getChildNodes().toString()[" + contentAssets + "]");
 
          while(contentAssets.getLength() > 0) {
             Node asset = contentAssets.item(0);
-            Utils.consoleLog("setAssetsFromContent newNode.getChildNodes().item(i) : " + asset + " : " + contentAssets.getLength());
+            Utils.consoleLog("::: ContentFactoryQNote setAssetsFromContent 05 newNode.getChildNodes().item(i) asset[" + asset + " : " + contentAssets.getLength() + "]");
             node.appendChild(asset);
          }
 
          String xmlString = mainXML.toString();
          this.mContent = this.produce(xmlString, mainFetchURL);
-         Utils.consoleLog("setAssetsFromContent mainXML : " + mainXML.toString());
+         Utils.consoleLog("::: ContentFactoryQNote setAssetsFromContent 06 mainXML [" + mainXML.toString() + "]");
       } catch (Exception var10) {
       }
 
    }
 
    private void setCSSFromContent(String sContentMainXML, String sContentURL) {
+	  Utils.consoleLog("::: ContentFactoryQNote setCSSFromContent Start ::: ");
+
       Document mainXML = XMLParser.parse(this.mContent.toXML());
       Document contentMainXML = XMLParser.parse(sContentMainXML);
       NodeList styles = mainXML.getElementsByTagName("styles");
       NodeList contentStyles = contentMainXML.getElementsByTagName("styles");
       String prefixURL = sContentURL.split("/pages/")[0];
-      Utils.consoleLog("setCSSFromContent sContentURL : " + sContentURL);
-      Utils.consoleLog("setCSSFromContent prefixURL : " + prefixURL);
-      Utils.consoleLog("setCSSFromContent styles : " + styles.toString());
+      Utils.consoleLog("::: ContentFactoryQNote setCSSFromContent 01 sContentURL[" + sContentURL + "]");
+      Utils.consoleLog("::: ContentFactoryQNote setCSSFromContent 02 prefixURL[" + prefixURL + "]");
+      Utils.consoleLog("::: ContentFactoryQNote setCSSFromContent 03 styles[" + styles.toString() + "]");
 
       for(int i = 0; i < styles.getLength(); ++i) {
          Node node = styles.item(i);
@@ -242,18 +271,20 @@ public class ContentFactoryQNote extends XMLVersionAwareFactoryQNote {
       }
 
       String xmlString = mainXML.toString().replaceAll("\\.\\./resources/", prefixURL + "/resources/");
-      Utils.consoleLog("setCSSFromContent xmlString : " + xmlString);
+      Utils.consoleLog("::: ContentFactoryQNote setCSSFromContent 04 xmlString[" + xmlString + "]");
       this.mContent = this.produce(xmlString, mainFetchURL);
-      Utils.consoleLog("setCSSFromContent mainXML : " + mainXML.toString());
+      Utils.consoleLog("::: ContentFactoryQNote setCSSFromContent 05 mainXML[" + mainXML.toString() + "]");
    }
 
    private void addPage(IContentNode pageNode, IContentNode commonNode, int index) {
-      Utils.consoleLog("addPage fetchUrlPages: " + this.fetchUrlPages[index]);
-      Utils.consoleLog("addPage pageNode: " + pageNode.toXML());
+      Utils.consoleLog("::: ContentFactoryQNote addPage Start :::");
+
+      Utils.consoleLog("::: ContentFactoryQNote addPage 01 fetchUrlPages[" + this.fetchUrlPages[index] + "]");
+      Utils.consoleLog("::: ContentFactoryQNote addPage 02 pageNode[" + pageNode.toXML() + "]");
       String strPages = "<pages>" + pageNode.toXML() + "</pages>";
       Document xmlPages = XMLParser.parse(strPages);
-      Utils.consoleLog("addPage fetchUrlPages[loadedCount] : " + this.fetchUrlPages[this.loadedCount]);
-      Utils.consoleLog("addPage XMLParser.parse(pageNode.toXML()): " + xmlPages.toString());
+      Utils.consoleLog("::: ContentFactoryQNote addPage 04 fetchUrlPages[loadedCount][" + this.fetchUrlPages[this.loadedCount] + "]");
+      Utils.consoleLog("::: ContentFactoryQNote addPage 05 XMLParser.parse(pageNode.toXML())[" + xmlPages.toString() + "]");
       Element xml = null;
       NodeList nodeList;
       if (this.fetchUrlPages[this.loadedCount] != "main.xml") {
@@ -262,8 +293,8 @@ public class ContentFactoryQNote extends XMLVersionAwareFactoryQNote {
          for(int i = 0; i < nodeList.getLength(); ++i) {
             Element page = (Element)nodeList.item(i);
             if (page.getAttribute("href") == this.fetchUrlPages[this.loadedCount]) {
-               Utils.consoleLog("addPage page: " + page.toString());
-               Utils.consoleLog("addPage page href: " + page.getAttribute("href"));
+               Utils.consoleLog("::: ContentFactoryQNote addPage 06 page[" + page.toString() + "]");
+               Utils.consoleLog("::: ContentFactoryQNote addPage 07 href[" + page.getAttribute("href") + "]");
                xml = XMLParser.parse(page.toString()).getDocumentElement();
                break;
             }
@@ -271,22 +302,23 @@ public class ContentFactoryQNote extends XMLVersionAwareFactoryQNote {
       } else {
          nodeList = xmlPages.getElementsByTagName("page");
          Element page = (Element)nodeList.item(0);
-         Utils.consoleLog("addPage page: " + page.toString());
-         Utils.consoleLog("addPage page href: " + page.getAttribute("href"));
+         Utils.consoleLog("::: ContentFactoryQNote addPage 08 addPage page[" + page.toString() + "]");
+         Utils.consoleLog("::: ContentFactoryQNote addPage 09 addPage href[" + page.getAttribute("href") + "]");
          xml = XMLParser.parse(page.toString()).getDocumentElement();
       }
 
-      Utils.consoleLog("addPage xml: " + xml);
-      Utils.consoleLog("addPage xml pageNode: " + pageNode);
+      Utils.consoleLog("::: ContentFactoryQNote addPage 11 xml[" + xml + "]");
+      Utils.consoleLog("::: ContentFactoryQNote addPage 12 pageNode[" + pageNode + "]");
       String href = XMLUtils.getAttributeAsString(xml, "href", "");
-      Utils.consoleLog("addPage href : " + href);
+      Utils.consoleLog("::: ContentFactoryQNote addPage 13 href[" + href + "]");
+      
       Utils.currentPageHref = href;
       String urlPath = "../../../" + Utils.getPath(this.fetchUrls[index]);
       if (this.fetchUrls[index].startsWith("http") || this.fetchUrls[index].startsWith("HTTP")) {
          urlPath = Utils.getPath(this.fetchUrls[index]);
       }
 
-      Utils.consoleLog("fetchUrls[index]t : " + index + ", " + this.fetchUrls[index] + ", " + urlPath);
+      Utils.consoleLog("::: ContentFactoryQNote addPage 14 fetchUrls[index][" + index + ", " + this.fetchUrls[index] + ", " + urlPath + "]");
       xml.setAttribute("href", urlPath + href);
       PageList page = new PageList();
       Page p = page.loadPage(xml);
@@ -299,9 +331,9 @@ public class ContentFactoryQNote extends XMLVersionAwareFactoryQNote {
             if (pageName == "header") {
                String commonPage = pageList.get(i).toXML();
                xml = XMLParser.parse(commonPage).getDocumentElement();
-               Utils.consoleLog("commonPage: " + commonPage);
+               Utils.consoleLog("::: ContentFactoryQNote addPage 15-1i["+i+"] commonPage[" + commonPage + "]");
                String commonHref = ((Page)pageList.get(i)).getHref();
-               Utils.consoleLog("commonPage commonHref: " + commonHref);
+               Utils.consoleLog("::: ContentFactoryQNote addPage 15-2i["+i+"] commonHref[" + commonHref + "]");
                xml.setAttribute("href", urlPath + commonHref);
                Page cp = page.loadPage(xml);
                commonPageList.add(cp);
@@ -312,30 +344,39 @@ public class ContentFactoryQNote extends XMLVersionAwareFactoryQNote {
       }
 
       this.mContent.addPage(p);
+      
+      Utils.consoleLog("::: ContentFactoryQNote addPage End :::");
    }
 
    public Content produce(String xmlString, String fetchUrl) {
+      Utils.consoleLog("::: ContentFactoryQNote produce Start :::");
+      Utils.consoleLog("::: ContentFactoryQNote produce 01 fetchUrl["+fetchUrl+"] :::");
+      Utils.consoleLog("::: ContentFactoryQNote produce 02 xmlString["+xmlString+"] :::");
+      
       try {
          Element xml = XMLParser.parse(xmlString).getDocumentElement();
          String version = XMLUtils.getAttributeAsString(xml, "version", "1");
-         Utils.consoleLog("version : " + version);
+         Utils.consoleLog("::: ContentFactoryQNote produce 03 version[" + version+"] :::");
          Content producedContent = (Content)((IParser)this.parsersMap.get(version)).parse(xml);
          producedContent.setBaseUrl(fetchUrl);
+         Utils.consoleLog("::: ContentFactoryQNote produce End 01 :::");
          return producedContent;
-      } catch (Exception var6) {
-         Utils.consoleLog("produce xmlString :" + xmlString);
-         Utils.consoleLog("produce fetchUrl :" + fetchUrl);
-         Utils.consoleLog("produce e :" + var6);
+      } catch (Exception e) {
+         Utils.consoleLog("::: ContentFactoryQNote produce 04 produce xmlString[" + xmlString+"] :::");
+         Utils.consoleLog("::: ContentFactoryQNote produce 05 produce fetchUrl[" + fetchUrl+"] :::");
+         Utils.consoleLog("::: ContentFactoryQNote produce 06 produce e[" + e +"] :::");
+         Utils.consoleLog("::: ContentFactoryQNote produce End 02 :::");
          return null;
       }
    }
 
    public void unload() {
+      Utils.consoleLog("::: ContentFactoryQNote unload Start :::");
       try {
          Utils.consoleLog("unload");
-      } catch (Exception var2) {
-         Utils.consoleLog("unload e : " + var2);
+      } catch (Exception e) {
+         Utils.consoleLog("unload e : " + e);
       }
-
+      Utils.consoleLog("::: ContentFactoryQNote unload End :::");
    }
 }

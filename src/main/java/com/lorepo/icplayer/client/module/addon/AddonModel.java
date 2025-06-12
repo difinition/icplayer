@@ -32,6 +32,8 @@ import com.lorepo.icplayer.client.printable.PrintableContentParser;
 import com.lorepo.icplayer.client.printable.PrintableController;
 import com.lorepo.icplayer.client.printable.Printable.PrintableMode;
 
+import com.lorepo.icplayer.client.utils.Utils;
+
 public class AddonModel extends BasicModuleModel implements IPrintableModuleModel {
 
 	private String addonId;
@@ -40,6 +42,9 @@ public class AddonModel extends BasicModuleModel implements IPrintableModuleMode
 	private PrintableContentParser.ParsedListener printableAsyncCallback = null;
 	private String printableAsyncID = "";
 	private String printableState = "";
+	
+	//kslee 커스텀  필드 추가 ::: ▼▼▼
+	private String pageURL = "";
 
 	public interface OnAddonReleaseAction {
 		public void onRelease();
@@ -148,11 +153,23 @@ public class AddonModel extends BasicModuleModel implements IPrintableModuleMode
 		return addonId;
 	}
 
-
 	public void setAddonId(String id) {
 		this.addonId = id;
 	}
-	
+
+	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	public String getPageURL() {
+		Utils.consoleLog("::: AddonModel.java getPageURL addonId["+ this.addonId +"]:::");
+		Utils.consoleLog("::: AddonModel.java getPageURL pageURL["+ this.pageURL +"]:::");
+		return this.pageURL;
+	}
+
+	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	public void setPageURL(String pageURL) {
+		Utils.consoleLog("::: Restored by DF: AddonModel.java setPageURL pageURL["+ this.pageURL +"]:::");
+		this.pageURL = pageURL;
+	}
+
 	public void addAddonParam(String name, String displayName, String type, String value) {
 		IAddonParam addonParam = createAddonParam(name, displayName, type);
 		addonParam.setValue(value);
@@ -173,6 +190,7 @@ public class AddonModel extends BasicModuleModel implements IPrintableModuleMode
 	}
 
 	public void addAddonParam(IAddonParam param) {
+
 		addonParams.add(param);
 		addProperty(param.getAsProperty());
 	}
@@ -337,6 +355,10 @@ public class AddonModel extends BasicModuleModel implements IPrintableModuleMode
 	public JavaScriptObject createJsModel(IPropertyProvider provider) {
 
 		JavaScriptObject jsModel = JavaScriptObject.createArray();
+
+		//kslee 커스텀  메소드 수정 ::: ▼▼▼ 
+		this.addPropertyToJSObject(jsModel, "pageURL", this.pageURL);
+		
 		for(int i=0; i < provider.getPropertyCount(); i++){
 			IProperty property = provider.getProperty(i);
 			if(property instanceof IListProperty){
@@ -358,25 +380,52 @@ public class AddonModel extends BasicModuleModel implements IPrintableModuleMode
 					this.addPropertyToJSObject(listModel, name, object);
 				}
 				addPropertyToJSObject(jsModel, property.getName(), listModel);
-			} else if (property instanceof IStaticRowProperty) {
+				
+			//kslee 커스텀  메소드 수정 ::: ▼▼▼ 	
+			//			} else if (property instanceof IStaticRowProperty) {
+			//				jsModel = JavaScriptObject.createObject();
+			//				IStaticRowProperty listProperty = (IStaticRowProperty) property;
+			//				JavaScriptObject listModel = JavaScriptObject.createObject();
+			//				for(int j = 0; j < listProperty.getChildrenCount(); j++){
+			//					if (listProperty.getChild(j).getPropertyCount() > 0) {
+			//						addPropertyToModel(listModel,listProperty.getChild(j).getProperty(0));
+			//					}
+			//				}
+			//				addPropertyToJSObject(jsModel, "value", listModel);
+			//				addPropertyToJSObject(jsModel, "name", property.getName());
+			//			} else if (property instanceof IEditableSelectProperty) {
+			//				IEditableSelectProperty castedProperty = (IEditableSelectProperty)property;
+			//				JavaScriptObject editableSelectModel = JavaScriptObject.createObject();
+			//				addPropertyToJSObject(editableSelectModel, "value", castedProperty.getChild(castedProperty.getSelectedIndex()).getValue());
+			//				addPropertyToJSObject(editableSelectModel, "name", castedProperty.getChild(castedProperty.getSelectedIndex()).getName());
+			//				addPropertyToJSObject(jsModel, property.getName(), editableSelectModel);
+			//			} else{
+			//				addPropertyToModel(jsModel, property);
+			//			}
+			} else if (!(property instanceof IStaticRowProperty)) {
+				if (property instanceof IEditableSelectProperty) {
+					JavaScriptObject listModel = JavaScriptObject.createArray();
+					IEditableSelectProperty castedProperty = (IEditableSelectProperty) property;
+					listModel = JavaScriptObject.createObject();
+					this.addPropertyToJSObject(listModel, "value", castedProperty.getChild(castedProperty.getSelectedIndex()).getValue());
+					this.addPropertyToJSObject(listModel, "name", castedProperty.getChild(castedProperty.getSelectedIndex()).getName());
+					this.addPropertyToJSObject(jsModel, property.getName(), listModel);
+				} else {
+					this.addPropertyToModel(jsModel, property);
+				}
+			} else {
 				jsModel = JavaScriptObject.createObject();
 				IStaticRowProperty listProperty = (IStaticRowProperty) property;
 				JavaScriptObject listModel = JavaScriptObject.createObject();
-				for(int j = 0; j < listProperty.getChildrenCount(); j++){
+
+				for (int j = 0; j < listProperty.getChildrenCount(); ++j) {
 					if (listProperty.getChild(j).getPropertyCount() > 0) {
-						addPropertyToModel(listModel,listProperty.getChild(j).getProperty(0));
+						this.addPropertyToModel(listModel, listProperty.getChild(j).getProperty(0));
 					}
 				}
-				addPropertyToJSObject(jsModel, "value", listModel);
-				addPropertyToJSObject(jsModel, "name", property.getName());
-			} else if (property instanceof IEditableSelectProperty) {
-				IEditableSelectProperty castedProperty = (IEditableSelectProperty)property;
-				JavaScriptObject editableSelectModel = JavaScriptObject.createObject();
-				addPropertyToJSObject(editableSelectModel, "value", castedProperty.getChild(castedProperty.getSelectedIndex()).getValue());
-				addPropertyToJSObject(editableSelectModel, "name", castedProperty.getChild(castedProperty.getSelectedIndex()).getName());
-				addPropertyToJSObject(jsModel, property.getName(), editableSelectModel);
-			} else{
-				addPropertyToModel(jsModel, property);
+
+				this.addPropertyToJSObject(jsModel, "value", listModel);
+				this.addPropertyToJSObject(jsModel, "name", property.getName());
 			}
 		}
 		return jsModel;

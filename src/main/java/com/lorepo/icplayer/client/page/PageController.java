@@ -30,6 +30,7 @@ import com.lorepo.icplayer.client.module.api.*;
 import com.lorepo.icplayer.client.module.api.event.*;
 import com.lorepo.icplayer.client.module.api.player.*;
 import com.lorepo.icplayer.client.page.Score.Result;
+import com.lorepo.icplayer.client.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -123,6 +124,8 @@ public class PageController implements ITextToSpeechController, IPageController 
 	}
 
 	public void setPage(Page page) {
+		Utils.consoleLog("::: PlayerController setPage 01 page[" + page + "] ::: ");
+		
 		if (playerServiceImpl != null) {
 			playerServiceImpl.resetEventBus();
 		}
@@ -138,6 +141,8 @@ public class PageController implements ITextToSpeechController, IPageController 
 			HashMap<String, String> state = playerService.getStateService().getStates();
 			setPageState(state);
 		}
+		
+		Utils.consoleLog("::: PlayerController setPage 02 currentPage[" + currentPage + "] ::: ");
 		ensureOpenActivitiesScoresExist();
 
 		pageView.refreshMathJax();
@@ -237,7 +242,11 @@ public class PageController implements ITextToSpeechController, IPageController 
 			String newInlineStyle = deletePositionImportantStyles(module.getInlineStyle());
 			module.setInlineStyle(newInlineStyle);
 			IModuleView moduleView = moduleFactory.createView(module);
-			IPresenter presenter = moduleFactory.createPresenter(module);
+			
+			//kslee 커스텀  메소드 수정 ::: ▼▼▼ 
+			//IPresenter presenter = moduleFactory.createPresenter(module);
+			IPresenter presenter = moduleFactory.createPresenter(module, this.currentPage.getBaseURL());
+			
 			GroupPresenter groupPresenter = findGroupPresenter(module); 
 			
 			if (groupPresenter != null) {

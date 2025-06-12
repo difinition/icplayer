@@ -32,8 +32,10 @@ import com.lorepo.icplayer.client.module.api.player.IPage;
 import com.lorepo.icplayer.client.module.api.player.IPlayerServices;
 import com.lorepo.icplayer.client.semi.responsive.SemiResponsiveStyles;
 import com.lorepo.icplayer.client.ui.Ruler;
+import com.lorepo.icplayer.client.utils.Utils;
 import com.lorepo.icplayer.client.xml.page.IPageBuilder;
 import com.lorepo.icplayer.client.xml.page.PageFactory;
+import com.lorepo.icplayer.client.xml.page.PageFactoryQNote;
 
 public class Page extends BasicPropertyProvider implements IStyledModule, IPage, IPageBuilder {
 
@@ -264,6 +266,9 @@ public class Page extends BasicPropertyProvider implements IStyledModule, IPage,
 
 	public void setBaseURL(String fetchUrl) {
 		this.baseURL = fetchUrl.substring(0, fetchUrl.lastIndexOf("/") + 1);
+		// kslee 커스텀 메소드 수정 ::: ▼▼▼
+		Utils.baseURL = this.baseURL;
+		Utils.consoleLog("Utils.baseURL : " + Utils.baseURL);
 	}
 
 	@Override
@@ -369,8 +374,16 @@ public class Page extends BasicPropertyProvider implements IStyledModule, IPage,
 	}
 
 	public void reload(Element rootElement) {
-		PageFactory factory = new PageFactory(this);
-		factory.produce(rootElement.toString(), this.baseURL);
+		//kslee 커스텀  메소드 수정 ::: ▼▼▼ 
+		//PageFactory factory = new PageFactory(this);
+		//factory.produce(rootElement.toString(), this.baseURL);
+		if (Utils.isLoadSeperate) {
+			PageFactoryQNote factory = new PageFactoryQNote(this);
+			factory.produce(rootElement.toString(), this.baseURL);
+		} else {
+			PageFactory factory = new PageFactory(this);
+			factory.produce(rootElement.toString(), this.baseURL);
+		}
 	}
 
 	@Override

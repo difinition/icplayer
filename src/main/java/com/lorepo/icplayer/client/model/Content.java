@@ -26,6 +26,7 @@ import com.lorepo.icplayer.client.module.api.player.IContent;
 import com.lorepo.icplayer.client.module.api.player.IContentNode;
 import com.lorepo.icplayer.client.module.api.player.IPage;
 import com.lorepo.icplayer.client.module.api.player.IPlayerServices;
+import com.lorepo.icplayer.client.utils.Utils;
 import com.lorepo.icplayer.client.xml.content.IContentBuilder;
 
 public class Content implements IContentBuilder, IContent {
@@ -196,7 +197,10 @@ public class Content implements IContentBuilder, IContent {
 
 	@Override
 	public String getMetadataValue(String key) {
-		return metadata.getValue(key);
+		Utils.consoleLog("::: Content getMetadataValue 01 : key[" + key + "]");
+		String returnVal = metadata.getValue(key); 
+		Utils.consoleLog("::: Content getMetadataValue 02 : returnVal[" + returnVal + "]");
+		return returnVal;
 	}
 
 
@@ -223,6 +227,10 @@ public class Content implements IContentBuilder, IContent {
 	 * @return
 	 */
 	public String toXML(){
+		
+		//Utils.consoleLog("::: Content toXML 01 : key[" + key + "]");
+		Utils.consoleLog("::: Content toXML 01 ::: ");
+		
 
 		String xml = "<?xml version='1.0' encoding='UTF-8' ?>";
 		String escapedName = StringUtils.escapeXML(name);
@@ -236,6 +244,10 @@ public class Content implements IContentBuilder, IContent {
 		// Addons
 		xml += "<addons>";
 		for(AddonDescriptor descriptor : addonDescriptors.values()){
+			
+			String tmpAddonId = descriptor.getAddonId();
+			Utils.consoleLog("::: Content toXML 02 : tmpAddonId[" + tmpAddonId + "] href[" + descriptor.getHref() + "]");
+			
 		    if (descriptor.getAddonId() != null && !descriptor.getAddonId().equals("null")) {
 			    xml += "<addon-descriptor addonId='"+descriptor.getAddonId()+"' href='"+descriptor.getHref()+"'/>";
 			}

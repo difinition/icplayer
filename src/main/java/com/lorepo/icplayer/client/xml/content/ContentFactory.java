@@ -9,6 +9,7 @@ import com.google.gwt.http.client.Response;
 import com.google.gwt.xml.client.XMLParser;
 import com.lorepo.icf.utils.XMLUtils;
 import com.lorepo.icplayer.client.model.Content;
+import com.lorepo.icplayer.client.utils.Utils;
 import com.lorepo.icplayer.client.xml.IProducingLoadingListener;
 import com.lorepo.icplayer.client.xml.IXMLFactory;
 import com.lorepo.icplayer.client.xml.RequestFinishedCallback;
@@ -24,6 +25,7 @@ public class ContentFactory extends XMLVersionAwareFactory {
 	private ArrayList<Integer> pagesSubset;
 	
 	protected ContentFactory(ArrayList<Integer> pagesSubset) {
+        Utils.consoleLog("::: ContentFactory ContentFactory Start 생성자 ::: ");
 		this.setPagesSubset(pagesSubset);
 		this.addParser(new ContentParser_v0());
 		this.addParser(new ContentParser_v1());
@@ -33,19 +35,23 @@ public class ContentFactory extends XMLVersionAwareFactory {
 	}
 	
 	public void setPagesSubset(ArrayList<Integer> pagesSubset) {
+        Utils.consoleLog("::: ContentFactory setPagesSubset Start  ::: ");
 		this.pagesSubset = pagesSubset;
 	}
 	
 	private void addParser(IContentParser parser) {
+		Utils.consoleLog("::: ContentFactory addParser Start  ::: ");
 		parser.setPagesSubset(this.pagesSubset);
 		super.addParser(parser);
 	}
 
 	public static IXMLFactory getInstance(ArrayList<Integer> pagesSubset) {
+		Utils.consoleLog("::: ContentFactory getInstance Start  ::: ");
 		return new ContentFactory(pagesSubset);
 	}
 	
 	public static IXMLFactory getInstanceWithAllPages() {
+		Utils.consoleLog("::: ContentFactory getInstanceWithAllPages Start  ::: ");
 		return ContentFactory.getInstance(new ArrayList<Integer>());
 	}
 	
@@ -54,6 +60,7 @@ public class ContentFactory extends XMLVersionAwareFactory {
 		return new RequestFinishedCallback() {
 			@Override
 			public void onResponseReceived(String fetchURL, Request request, Response response) {
+				Utils.consoleLog("::: ContentFactory getContentLoadCallback onResponseReceived Start  ::: ");
 				if (response.getStatusCode() == 200 || response.getStatusCode() == 0) {
 					Content content = produce(response.getText(), fetchURL);
 					listener.onFinishedLoading(content);
@@ -72,8 +79,13 @@ public class ContentFactory extends XMLVersionAwareFactory {
 
 	@Override
 	public Content produce(String xmlString, String fetchUrl) {
+		Utils.consoleLog("::: ContentFactory produce Start  ::: ");
+		Utils.consoleLog("::: ContentFactory produce 01 fetchUrl["+fetchUrl+"]  ::: ");
+		
 		Element xml = XMLParser.parse(xmlString).getDocumentElement();
 		String version = XMLUtils.getAttributeAsString(xml, "version", "1");
+		
+		Utils.consoleLog("::: ContentFactory produce 02 version["+version+"]  ::: ");
 		
 		Content producedContent = (Content) this.parsersMap.get(version).parse(xml);
 		producedContent.setBaseUrl(fetchUrl);
