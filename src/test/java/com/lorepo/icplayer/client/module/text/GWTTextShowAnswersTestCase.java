@@ -94,7 +94,7 @@ public class GWTTextShowAnswersTestCase extends GwtTest {
 		this.gapWidget4 = new InlineChoiceWidget(gapInfo4, null, textView4);
 		
 		
-		//kslee GapWidget 인수추가에 따른 수정
+		//::: Restored by DF: GapWidget 인수추가에 따른 수정
 		//this.gapWidget5 = new GapWidget(gapInfo5, null);
 		//this.gapWidget6 = new GapWidget(gapInfo6, null);
 		this.gapWidget5 = new GapWidget(gapInfo5, null, null, null, null);

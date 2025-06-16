@@ -28,7 +28,7 @@ public class PlayerAppTestCase {
 	@Test
 	public void setPagesWithCorrectString() {
 		PlayerEntryPoint entryPoint = new PlayerEntryPoint();
-		//kslee 커스텀 변경 
+		//::: Restored by DF: 커스텀 변경 
 		//PlayerApp player = new PlayerApp("player", entryPoint);
 		String type = "question";
 		PlayerApp player = new PlayerApp("player", entryPoint, type);
@@ -38,7 +38,7 @@ public class PlayerAppTestCase {
 	@Test(expected = IllegalArgumentException.class)
 	public void setPagesWithEmptyString() {
 		PlayerEntryPoint entryPoint1 = new PlayerEntryPoint();
-		//kslee 커스텀 변경
+		//::: Restored by DF: 커스텀 변경
 		//PlayerApp player = new PlayerApp("player", entryPoint1);
 		String type = "question";
 		PlayerApp player = new PlayerApp("player", entryPoint1, type);
@@ -48,7 +48,7 @@ public class PlayerAppTestCase {
 	@Test(expected = IllegalArgumentException.class)
 	public void setPagesWithNull() {
 		PlayerEntryPoint entryPoint1 = new PlayerEntryPoint();
-		//kslee 커스텀 변경
+		//::: Restored by DF: 커스텀 변경
 		//PlayerApp player = new PlayerApp("player", entryPoint1);
 		String type = "question";
 		PlayerApp player = new PlayerApp("player", entryPoint1, type);
@@ -58,7 +58,7 @@ public class PlayerAppTestCase {
 	@Test(expected = IllegalArgumentException.class)
 	public void setPagesWithAlpha() {
 		PlayerEntryPoint entryPoint1 = new PlayerEntryPoint();
-		//kslee 커스텀 변경
+		//::: Restored by DF: 커스텀 변경
 		//PlayerApp player = new PlayerApp("player", entryPoint1);
 		String type = "question";
 		PlayerApp player = new PlayerApp("player", entryPoint1, type);

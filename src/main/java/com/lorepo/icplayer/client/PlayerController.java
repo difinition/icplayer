@@ -86,7 +86,7 @@ public class PlayerController implements IPlayerController {
 	private int lastVisitedPageIndex = -1;
 	private int currentMainPageIndex = -1;
 
-//kslee 커스텀 추가  ::: mapAddon, isMultiPages, mContentsIndex, mBookMode, mView 필드 추가됨
+//::: Restored by DF: 커스텀 추가  ::: mapAddon, isMultiPages, mContentsIndex, mBookMode, mView 필드 추가됨
 	private HashMap<Integer, Boolean> mapAddon = new HashMap();
 	private boolean isMultiPages = false;
 	private int mContentsIndex = -1;
@@ -111,7 +111,7 @@ public class PlayerController implements IPlayerController {
 		this.keyboardController.run(entryPoint);
 		this.isIframeInCrossDomain = checkIsPlayerInCrossDomain();
 		this.getIFrameScroll(this);
-		//kslee 커스텀 로직변경 ::: PlayerController메소드 변경됨. 
+		//::: Restored by DF: 커스텀 로직변경 ::: PlayerController메소드 변경됨. 
 		//handleCurrentPageIdRequest() java메소드에서 currentMainPageIndex를 계산해서 결국 handleCurrentPageIdRequest(this)를 호출함!
 		//this.handleCurrentPageIdRequest(this);
 		this.handleCurrentPageIdRequest();
@@ -120,13 +120,13 @@ public class PlayerController implements IPlayerController {
 
 		this.adaptiveLearningService = new AdaptiveLearningService(this, content.getAdaptiveStructure());
 
-		//kslee 커스텀 필드초기화 ::: mBookMode, mView. 
+		//::: Restored by DF: 커스텀 필드초기화 ::: mBookMode, mView. 
 		this.mBookMode = bookMode;
 		this.mView = view;
 		
 	}
 
-//kslee 커스텀 추가  ::: setMultiPages 메소드 추가 ▼▼▼
+//::: Restored by DF: 커스텀 추가  ::: setMultiPages 메소드 추가 ▼▼▼
 	private void setMultiPages(ArrayList<Content> contents) {
 		try {
 			if (contents.size() > 1) {
@@ -240,10 +240,10 @@ public class PlayerController implements IPlayerController {
 		}
 	}
 
-	//kslee 커스텀 로직변경 ::: switchToPrevPage메소드 변경됨. mContentsIndex추가에 따른 로직추가
+	//::: Restored by DF: 커스텀 로직변경 ::: switchToPrevPage메소드 변경됨. mContentsIndex추가에 따른 로직추가
 	@Override
 	public void switchToPrevPage() {
-		//kslee 커스텀 로직변경 ▼▼▼
+		//::: Restored by DF: 커스텀 로직변경 ▼▼▼
 		//int index = this.currentMainPageIndex-1;
 		int index;
 		if (this.isMultiPages) {
@@ -251,7 +251,7 @@ public class PlayerController implements IPlayerController {
 		} else {
 			index = this.currentMainPageIndex - 1;
 		}
-		//kslee 커스텀 로직변경 ▲▲▲
+		//::: Restored by DF: 커스텀 로직변경 ▲▲▲
 		
 		if(this.pageController2 != null && index > 0) {
 			index -= 1;
@@ -271,13 +271,13 @@ public class PlayerController implements IPlayerController {
 	}
 
 
-//kslee 커스텀 로직변경 ::: switchToNextPage메소드 변경됨. mContentsIndex추가에 따른 로직추가
+//::: Restored by DF: 커스텀 로직변경 ::: switchToNextPage메소드 변경됨. mContentsIndex추가에 따른 로직추가
 	@Override
 	public void switchToNextPage() {
 
 		PageList pages = this.contentModel.getPages();
 
-		//kslee 커스텀 로직변경 ▼▼▼
+		//::: Restored by DF: 커스텀 로직변경 ▼▼▼
 		//int index = this.currentMainPageIndex + 1;
 		int index;
 		if (this.isMultiPages) {
@@ -285,7 +285,7 @@ public class PlayerController implements IPlayerController {
 		} else {
 			index = this.currentMainPageIndex + 1;
 		}
-		//kslee 커스텀 로직변경 ▲▲▲
+		//::: Restored by DF: 커스텀 로직변경 ▲▲▲
 
 		if(this.pageController2 != null && index + 1 < pages.getTotalPageCount()) {
 			index += 1;
@@ -377,7 +377,7 @@ public class PlayerController implements IPlayerController {
 	private void switchToPage(IPage page, IPage previousPage, final PageController pageController){
 		page.setContentBaseURL(getContentBaseURL());
 		pageController.getGradualShowAnswersService().hideAll();
-		//kslee 커스텀 로직 추가 ::: switchToPage메소드 visitedPages.add(page);
+		//::: Restored by DF: 커스텀 로직 추가 ::: switchToPage메소드 visitedPages.add(page);
 		this.visitedPages.add(page);
 		
 	    this.pageStamp = this.generatePageStamp(page.getId());
@@ -394,7 +394,7 @@ public class PlayerController implements IPlayerController {
 		if (previousPage != null && previousPage.getHref() == page.getHref()) {
 			onPageFinishedLoading((Object) previousPage, pageController);
 		
-		//kslee 커스텀 로직 추가 ::: switchToPage메소드 PageFactoryQNote 관련 조건분기 추가 ▼▼▼
+		//::: Restored by DF: 커스텀 로직 추가 ::: switchToPage메소드 PageFactoryQNote 관련 조건분기 추가 ▼▼▼
 		} else if (Utils.isLoadSeperate) {
 			PageFactoryQNote factory = new PageFactoryQNote((Page) page);
 			factory.load(url, new IProducingLoadingListener() {
@@ -409,7 +409,7 @@ public class PlayerController implements IPlayerController {
 					JavaScriptUtils.log("Can't load page: " + error);
 				}
 			});
-		//kslee 커스텀 로직 추가 ::: switchToPage메소드 PageFactoryQNote 관련 조건분기 추가 ▲▲▲
+		//::: Restored by DF: 커스텀 로직 추가 ::: switchToPage메소드 PageFactoryQNote 관련 조건분기 추가 ▲▲▲
 		} else {
 			PageFactory factory = new PageFactory((Page) page);
 			factory.load(url, new IProducingLoadingListener() {
@@ -465,12 +465,12 @@ public class PlayerController implements IPlayerController {
 		this.keyboardController.save();
 		this.keyboardController.reset();
 		
-		//kslee 커스텀 로직 추가 ::: pageLoaded메소드 isLoadSeperate 관련 조건분기 추가 ▼▼▼
+		//::: Restored by DF: 커스텀 로직 추가 ::: pageLoaded메소드 isLoadSeperate 관련 조건분기 추가 ▼▼▼
 		Utils.consoleLog("::: PlayerController pageLoaded 02 : " + (this.headerController != null) + " ," + (pageController != this.pageController2));
 		if (Utils.isLoadSeperate) {
 			pageController.setPageIdx(this.mContentsIndex);
 		}
-		//kslee 커스텀 로직 추가 ::: pageLoaded메소드 isLoadSeperate 관련 조건분기 추가 ▲▲▲
+		//::: Restored by DF: 커스텀 로직 추가 ::: pageLoaded메소드 isLoadSeperate 관련 조건분기 추가 ▲▲▲
 
 		pageController.setPage(page);
 		if (this.headerController != null && pageController != this.pageController2) {
@@ -799,7 +799,7 @@ public class PlayerController implements IPlayerController {
 		}
 	}
 
-// kslee 커스텀 추가 ::: handleCurrentPageIdRequest 메소드 추가 ▼▼▼
+// ::: Restored by DF: 커스텀 추가 ::: handleCurrentPageIdRequest 메소드 추가 ▼▼▼
 	public void handleCurrentPageIdRequest() {
 		if (this.currentMainPageIndex > -1) {
 			this.handleCurrentPageIdRequest(this);

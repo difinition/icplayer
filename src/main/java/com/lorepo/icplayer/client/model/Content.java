@@ -748,7 +748,7 @@ public class Content implements IContentBuilder, IContent {
 		}
 	}
 	
-	//kslee 커스텀 추가 ::: ▼▼▼
+	//::: Restored by DF: 커스텀 추가 ::: ▼▼▼
 	public IChapter getCommonTableOfContents() {
 		return this.commonPages;
 	}
@@ -763,5 +763,5 @@ public class Content implements IContentBuilder, IContent {
 	
 	public void addPage(IContentNode page) {
 		this.pages.add(page);
-	}	//kslee 커스텀 추가 ::: ▲▲▲
+	}	//::: Restored by DF: 커스텀 추가 ::: ▲▲▲
 }

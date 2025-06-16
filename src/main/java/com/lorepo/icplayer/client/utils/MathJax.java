@@ -8,7 +8,7 @@ public class MathJax {
 	/**
 	 * Refresh MathJax object if present
 	 */
-	//kslee 커스텀  메소드 수정 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 수정 ::: ▼▼▼ 
 	//public static native void refreshMathJax(Element e) /*-{
 	public static native void refreshMathJax(Element e, String subject, boolean isQNote) /*-{
 		var doesContainMathJax = e.innerText.match('.*?\\\(.*?\\\)') || e.innerText.match('.*?\\left\(.*?\\right\)');
@@ -134,10 +134,10 @@ public class MathJax {
 		return false;
 	}-*/;
 
-	//kslee 커스텀  메소드 수정 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 수정 ::: ▼▼▼ 
 	//public static native void rerenderMathJax (Element e) /*-{
 	public static native void rerenderMathJax (Element e, boolean var1) /*-{
-		console.log("Restored by DF: com.lorepo.icplayer.client.utils.MathJax rerenderMathJax");
+		console.log("::: Restored by DF: com.lorepo.icplayer.client.utils.MathJax rerenderMathJax");
 		console.log("boolean var1 ["+var1+"] 는 무엇?");
 		$wnd.MathJax.Hub.Rerender(e);
 	}-*/;

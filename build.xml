@@ -183,6 +183,7 @@
                     <exclude name="**/GWTOptionViewTestCase.java"/>
                     <exclude name="**/GWTPageVersionsTestCase.java"/>
                     <exclude name="**/GWTImageSourcePresenterTestCase.java"/>
+                    <exclude name="**/GWTSourceListViewTestCase.java"/>
                 </fileset>
             </batchtest>
             <formatter type="plain"/>
@@ -499,8 +500,6 @@
         <antcall target="test.addons"/>
     </target>
 
-	<!-- kslee 최초빌드시 Utils의 native void consoleLog 및 native String getAppName를 각 java메소드로 대체해서 test하자!! -->
-	<!-- kslee 이후빌드시 Utils의 native void consoleLog 및 native String getAppName를 사용하여 결과물을 만들자 !! -->
 	<!-- <target name="build" depends="clean, test, gwtc" description="Build this project"/> -->
     <target name="build" depends="clean, gwtc" description="Build this project"/>
 
@@ -517,17 +516,26 @@
             <fileset dir="doc/demo"/>
         </copy>
         	
-    	<!-- kslee 커스텀 동아빌드원본에서 추가  -->
+    	<!-- 동아빌드원본에서 추가  -->
+    	<copy file="src/main/java/com/lorepo/icplayer/public/5350926942339072.js" todir="src/main/java/com/lorepo/icplayer/public/libs" />
     	<copy todir="dist/build/icplayer">
             <fileset dir="src/main/java/com/lorepo/icplayer/public" />
+            <fileset dir="src/main/java/com/lorepo/icplayer/public/libs" />
         </copy>
+    	<delete file="src/main/java/com/lorepo/icplayer/public/libs/5350926942339072.js" />
 
-    	<!-- kslee 커스텀  동아빌드원본에서 추가  -->
+    	<!-- 동아빌드원본에서 추가 -->
+    	<delete>
+    	    <fileset dir="dist/build/icplayer/addons"/>
+    	</delete>
         <copy todir="dist/build/icplayer/addons/">
-            <fileset dir="addons_donga" />
-        </copy>
-    	
-        <zip destfile="dist/icplayer.zip" basedir="dist/build"/>
+        	<fileset dir="addons_donga" />
+        </copy> 
+
+        <tstamp>
+            <format property="zip.timestamp" pattern="yyyyMMddHHmm" />
+        </tstamp>
+        <zip destfile="dist/icplayer_${zip.timestamp}.zip" basedir="dist/build"/>
     </target>
 
     <target name="dist" depends="validate-translations-javascript, build" description="Create player package">

@@ -116,7 +116,7 @@ public class PlayerServices implements IPlayerServices {
 		return playerController.getCurrentPageIndex();
 	}
 
-	//kslee 커스텀 추가  ::: getCurrentPageId() 메소드 추가됨 
+	//::: Restored by DF: 커스텀 추가  ::: getCurrentPageId() 
 	@Override
 	public String getCurrentPageId() {
 		return this.playerController.getCurrentPageId();
@@ -471,7 +471,7 @@ public class PlayerServices implements IPlayerServices {
 		return this.playerController.getAdaptiveLearningService();
 	}
 
-	//kslee 커스텀 추가  ::: setDisable(boolean b) 메소드 추가됨
+	//::: Restored by DF: 커스텀 추가  ::: setDisable(boolean b)
 	@Override
 	public void setDisable(boolean b) {
 		ModuleList modules = this.pageController.getModules();

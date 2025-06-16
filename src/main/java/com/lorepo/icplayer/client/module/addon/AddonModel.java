@@ -43,7 +43,7 @@ public class AddonModel extends BasicModuleModel implements IPrintableModuleMode
 	private String printableAsyncID = "";
 	private String printableState = "";
 	
-	//kslee 커스텀  필드 추가 ::: ▼▼▼
+	//::: Restored by DF: 커스텀  필드 추가 ::: ▼▼▼
 	private String pageURL = "";
 
 	public interface OnAddonReleaseAction {
@@ -157,14 +157,14 @@ public class AddonModel extends BasicModuleModel implements IPrintableModuleMode
 		this.addonId = id;
 	}
 
-	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 추가 ::: ▼▼▼ 
 	public String getPageURL() {
 		Utils.consoleLog("::: AddonModel.java getPageURL addonId["+ this.addonId +"]:::");
 		Utils.consoleLog("::: AddonModel.java getPageURL pageURL["+ this.pageURL +"]:::");
 		return this.pageURL;
 	}
 
-	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 추가 ::: ▼▼▼ 
 	public void setPageURL(String pageURL) {
 		Utils.consoleLog("::: Restored by DF: AddonModel.java setPageURL pageURL["+ this.pageURL +"]:::");
 		this.pageURL = pageURL;
@@ -356,7 +356,7 @@ public class AddonModel extends BasicModuleModel implements IPrintableModuleMode
 
 		JavaScriptObject jsModel = JavaScriptObject.createArray();
 
-		//kslee 커스텀  메소드 수정 ::: ▼▼▼ 
+		//::: Restored by DF: 커스텀  메소드 수정 ::: ▼▼▼ 
 		this.addPropertyToJSObject(jsModel, "pageURL", this.pageURL);
 		
 		for(int i=0; i < provider.getPropertyCount(); i++){
@@ -381,7 +381,7 @@ public class AddonModel extends BasicModuleModel implements IPrintableModuleMode
 				}
 				addPropertyToJSObject(jsModel, property.getName(), listModel);
 				
-			//kslee 커스텀  메소드 수정 ::: ▼▼▼ 	
+			//::: Restored by DF: 커스텀  메소드 수정 ::: ▼▼▼ 	
 			//			} else if (property instanceof IStaticRowProperty) {
 			//				jsModel = JavaScriptObject.createObject();
 			//				IStaticRowProperty listProperty = (IStaticRowProperty) property;

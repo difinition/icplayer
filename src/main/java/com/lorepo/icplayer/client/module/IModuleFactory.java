@@ -13,7 +13,7 @@ public interface IModuleFactory {
 	public IModuleView createView(IModuleModel module);
 	public GroupView createView(Group group);
 	
-	//kslee 커스텀  메소드 수정 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 수정 ::: ▼▼▼ 
 	//public IPresenter createPresenter(IModuleModel model);
 	public IPresenter createPresenter(IModuleModel module, String pageURL);
 	

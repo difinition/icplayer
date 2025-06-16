@@ -428,7 +428,7 @@ public class InlineChoiceWidget extends ListBox implements TextElementDisplay, N
 		}
 	}
 
-	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 추가 ::: ▼▼▼ 
 	@Override
 	public void setIndex(int index) {
 		// TODO Auto-generated method stub

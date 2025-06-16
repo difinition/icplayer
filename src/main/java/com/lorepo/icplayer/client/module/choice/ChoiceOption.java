@@ -23,7 +23,7 @@ public class ChoiceOption extends BasicPropertyProvider{
 	private String baseURL;
 	private String contentBaseURL;
 	
-	//kslee 커스텀  필드추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  필드추가 ::: ▼▼▼ 
 	private int x;
 	private int y;
 	private int absoluteWidth;
@@ -33,7 +33,7 @@ public class ChoiceOption extends BasicPropertyProvider{
 	private String layoutID;
 	private Element element;	
 	
-	//kslee 커스텀  인위추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  인위추가 ::: ▼▼▼ 
 	private String defaultLayoutID = "default";
 	
 	public ChoiceOption(String id){
@@ -45,7 +45,7 @@ public class ChoiceOption extends BasicPropertyProvider{
 		addPropertyText();
 		addPropertyFeedback();
 		
-		//kslee 커스텀  필드 초기화 추가 ::: ▼▼▼ 
+		//::: Restored by DF: 커스텀  필드 초기화 추가 ::: ▼▼▼ 
 		this.feedback = "";
 		this.parentId = "";
 		this.x = -1;
@@ -57,7 +57,7 @@ public class ChoiceOption extends BasicPropertyProvider{
 		this.layoutID = this.defaultLayoutID;
 	}
 	
-	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 추가 ::: ▼▼▼ 
 	public void setLayoutID(String layoutID) {
 		this.layoutID = layoutID;
 		this.resetXY(this.element);
@@ -85,32 +85,32 @@ public class ChoiceOption extends BasicPropertyProvider{
 		return value;
 	}
 
-	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 추가 ::: ▼▼▼ 
 	public int getX() {
 		return this.x;
 	}
 
-	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 추가 ::: ▼▼▼ 
 	public int getY() {
 		return this.y;
 	}
 
-	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 추가 ::: ▼▼▼ 
 	public int getAbsoluteWidth() {
 		return this.absoluteWidth;
 	}
 
-	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 추가 ::: ▼▼▼ 
 	public int getAbsoluteHeight() {
 		return this.absoluteHeight;
 	}
 
-	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 추가 ::: ▼▼▼ 
 	public int getWidth() {
 		return this.width;
 	}
 
-	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 추가 ::: ▼▼▼ 
 	public int getHeight() {
 		return this.height;
 	}
@@ -347,7 +347,7 @@ public class ChoiceOption extends BasicPropertyProvider{
 	}
 
 
-	//kslee 커스텀 수정::: load ▼▼▼ 
+	//::: Restored by DF: 커스텀 수정::: load ▼▼▼ 
 	//	public void load(Element element, String baseUrl) {
 	//		
 	//		value = XMLUtils.getAttributeAsInt(element, "value");
@@ -438,7 +438,7 @@ public class ChoiceOption extends BasicPropertyProvider{
 	}
 	
 	
-	//kslee 커스텀 수정::: load ▼▼▼ 
+	//::: Restored by DF: 커스텀 수정::: load ▼▼▼ 
 	//	public Element toXML() {
 	//		Element optionElement = XMLUtils.createElement("option");
 	//		XMLUtils.setIntegerAttribute(optionElement, "value", value);

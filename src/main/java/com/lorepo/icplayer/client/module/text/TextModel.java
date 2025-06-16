@@ -70,7 +70,7 @@ public class TextModel extends BasicModuleModel implements IWCAGModuleModel, IPr
 	private boolean userActionEvents = false;
 	private boolean useEscapeCharacterInGap = false;
 	
-	//kslee 커스텀  필드추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  필드추가 ::: ▼▼▼ 
 	private String gapStyles;
 	private boolean multipleLines = false;
 	private int gapHeight = 0;
@@ -83,13 +83,13 @@ public class TextModel extends BasicModuleModel implements IWCAGModuleModel, IPr
 	private ArrayList<SpeechTextsStaticListItem> speechTextItems = new ArrayList<SpeechTextsStaticListItem>();
 	private String langAttribute = "";
 
-	//kslee 커스텀  필드추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  필드추가 ::: ▼▼▼ 
 	private String layoutID;
 	private Element node;
 	private String compareText;
 	private IPlayerServices playerService;	
 	
-	//kslee 커스텀  필드 인위추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  필드 인위추가 ::: ▼▼▼ 
 	private String defaultLayoutID = "default";
 	
 	IListProperty groupGapsListProperty = null;
@@ -104,7 +104,7 @@ public class TextModel extends BasicModuleModel implements IWCAGModuleModel, IPr
 	public TextModel() {
 		super("Text", DictionaryWrapper.get("text_module"));
 		
-		//kslee 커스텀  필드 초기화 추가 ::: ▼▼▼ 
+		//::: Restored by DF: 커스텀  필드 초기화 추가 ::: ▼▼▼ 
 	      this.layoutID = this.defaultLayoutID;
 	      this.node = null;
 	      this.compareText = "text";
@@ -135,7 +135,7 @@ public class TextModel extends BasicModuleModel implements IWCAGModuleModel, IPr
 		addPropertySpeechTexts();
 		addPropertyLangAttribute();
 		
-		//kslee 커스텀  필드 초기화 추가 ::: ▼▼▼ 
+		//::: Restored by DF: 커스텀  필드 초기화 추가 ::: ▼▼▼ 
 	      this.addPropertyGapStyles();
 	      this.addPropertyMultipleLines();
 	      this.addPropertyGapHeight();
@@ -152,17 +152,17 @@ public class TextModel extends BasicModuleModel implements IWCAGModuleModel, IPr
 		addGroupGapsItems(1);
 	}
 
-	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 추가 ::: ▼▼▼ 
 	public void setPlayerSerivice(IPlayerServices playerService) {
 		this.playerService = playerService;
 	}
 
-	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 추가 ::: ▼▼▼ 
 	public IPlayerServices getPlayerSerivice() {
 		return this.playerService;
 	}
 
-	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 추가 ::: ▼▼▼ 
 	public void setLayoutID(String layoutID) {
 		if (this.layoutID != layoutID) {
 			this.layoutID = layoutID;
@@ -198,36 +198,36 @@ public class TextModel extends BasicModuleModel implements IWCAGModuleModel, IPr
 		return gapWidth;
 	}
 
-	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 추가 ::: ▼▼▼ 
 	public int getGapHeight() {
 		return this.gapHeight;
 	}
 
-	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 추가 ::: ▼▼▼ 
 	public String getGroupID() {
 		return this.groupID;
 	}
 
-	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 추가 ::: ▼▼▼ 
 	public boolean getMultipleLines() {
 		return this.multipleLines;
 	}
 
-	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 추가 ::: ▼▼▼ 
 	public String getIsHandwritingInput() {
 		return this.isHandwritingInput;
 	}
 
-	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 추가 ::: ▼▼▼ 
 	public boolean getIsQuestionNumber() {
 		return this.isQuestionNumber;
 	}
 
-	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 추가 ::: ▼▼▼ 
 	private void resetText() {
 		if (this.node != null) {
 			
-			Utils.consoleLog("::: ks.lee Restored by DF: TextModel.java resetText : defaultLayoutID[" + defaultLayoutID + "]");
+			Utils.consoleLog("::: Restored by DF: TextModel.java resetText : defaultLayoutID[" + defaultLayoutID + "]");
 			
 			if (this.layoutID == this.defaultLayoutID) {
 				this.compareText = "text";
@@ -239,10 +239,10 @@ public class TextModel extends BasicModuleModel implements IWCAGModuleModel, IPr
 		}
 	}
 
-	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 추가 ::: ▼▼▼ 
 	private void resetWidth() {
 		
-		Utils.consoleLog("::: ks.lee Restored by DF: TextModel.java resetWidth :::");
+		Utils.consoleLog("::: Restored by DF: TextModel.java resetWidth :::");
 		
 		Utils.consoleLog(" this.getId() : " + this.getModuleName());
 		Utils.consoleLog(" this.getId() : " + this.getModuleTypeName());
@@ -262,7 +262,7 @@ public class TextModel extends BasicModuleModel implements IWCAGModuleModel, IPr
 				useMathGaps = XMLUtils.getAttributeAsBoolean(textElement, "math");
 				gapWidth = XMLUtils.getAttributeAsInt(textElement, "gapWidth");
 				
-				//kslee 커스텀  추가 ::: ▼▼▼ 
+				//::: Restored by DF: 커스텀  추가 ::: ▼▼▼ 
 				gapHeight = XMLUtils.getAttributeAsInt(textElement, "gapHeight");
 				
 				gapMaxLength = XMLUtils.getAttributeAsInt(textElement, "gapMaxLength");
@@ -276,7 +276,7 @@ public class TextModel extends BasicModuleModel implements IWCAGModuleModel, IPr
 				openLinksinNewTab = XMLUtils.getAttributeAsBoolean(textElement, "openLinksinNewTab", true);
 				rawText = XMLUtils.getCharacterDataFromElement(textElement);
 				
-				//kslee 커스텀  추가 ::: ▼▼▼ 
+				//::: Restored by DF: 커스텀  추가 ::: ▼▼▼ 
 	            this.rawText = XMLUtils.getCharacterDataFromElement(textElement);
 	            this.gapStyles = XMLUtils.getAttributeAsString(textElement, "gapStyles", "");
 	            this.groupID = XMLUtils.getAttributeAsString(textElement, "group", "");
@@ -297,7 +297,7 @@ public class TextModel extends BasicModuleModel implements IWCAGModuleModel, IPr
 				ignoreDefaultPlaceholderWhenCheck = XMLUtils.getAttributeAsBoolean(textElement, "ignoreDefaultPlaceholderWhenCheck", false);
 				allCharactersGapSizeStyle = XMLUtils.getAttributeAsBoolean(textElement, "allAnswersGapSizeCalculationStyle", true);
 				
-				//kslee 커스텀  수정 ::: ▼▼▼ 
+				//::: Restored by DF: 커스텀  수정 ::: ▼▼▼ 
 				//this.speechTextItems.get(TextModel.NUMBER_INDEX).setText(XMLUtils.getAttributeAsString(textElement, "number"));
 				//this.speechTextItems.get(TextModel.GAP_INDEX).setText(XMLUtils.getAttributeAsString(textElement, "gap"));
 				//this.speechTextItems.get(TextModel.DROPDOWN_INDEX).setText(XMLUtils.getAttributeAsString(textElement, "dropdown"));
@@ -350,7 +350,7 @@ public class TextModel extends BasicModuleModel implements IWCAGModuleModel, IPr
 		}
 	}
 
-	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 추가 ::: ▼▼▼ 
 	private boolean setIsActivity(String moduleId, boolean isActivity) {
 		String newstr = moduleId.replaceAll("[^A-Za-z]+", "");
 		Utils.consoleLog("newstr : " + newstr);
@@ -386,7 +386,7 @@ public class TextModel extends BasicModuleModel implements IWCAGModuleModel, IPr
 		parser.setKeepOriginalOrder(isKeepOriginalOrder);
 		parser.setGapWidth(gapWidth);
 		
-		// kslee 커스텀 메소드 추가 ::: ▼▼▼
+		// ::: Restored by DF: 커스텀 메소드 추가 ::: ▼▼▼
 		parser.setGapHeight(this.gapHeight);
 		parser.setGapStyles(this.gapStyles);
 		parser.setMultipleLines(this.multipleLines);  // seMultipleLines
@@ -451,7 +451,7 @@ public class TextModel extends BasicModuleModel implements IWCAGModuleModel, IPr
 		XMLUtils.setIntegerAttribute(text, "gapMaxLength", this.gapMaxLength);
 		XMLUtils.setIntegerAttribute(text, "gapWidth", this.gapWidth);
 		
-		//kslee 커스텀  추가 ::: ▼▼▼ 
+		//::: Restored by DF: 커스텀  추가 ::: ▼▼▼ 
 		XMLUtils.setIntegerAttribute(text, "gapHeight", this.gapHeight);
 		
 		XMLUtils.setBooleanAttribute(text, "isActivity", this.isActivity);
@@ -473,31 +473,31 @@ public class TextModel extends BasicModuleModel implements IWCAGModuleModel, IPr
 			text.setAttribute("langAttribute", this.langAttribute);
 		}
 		
-		//kslee 커스텀   추가 ::: ▼▼▼ 
+		//::: Restored by DF: 커스텀   추가 ::: ▼▼▼ 
 		try {
 			text.setAttribute("gapStyles", this.gapStyles);
 		} catch (Exception var10) {
 		}
 
-		//kslee 커스텀   추가 ::: ▼▼▼ 
+		//::: Restored by DF: 커스텀   추가 ::: ▼▼▼ 
 		try {
 			XMLUtils.setBooleanAttribute(text, "multipleLines", this.multipleLines);
 		} catch (Exception var9) {
 		}
 
-		//kslee 커스텀   추가 ::: ▼▼▼ 
+		//::: Restored by DF: 커스텀   추가 ::: ▼▼▼ 
 		try {
 			text.setAttribute("group", this.groupID);
 		} catch (Exception var8) {
 		}
 
-		//kslee 커스텀   추가 ::: ▼▼▼ 
+		//::: Restored by DF: 커스텀   추가 ::: ▼▼▼ 
 		try {
 			text.setAttribute("isHandwritingInput", this.isHandwritingInput);
 		} catch (Exception var7) {
 		}
 
-		//kslee 커스텀   추가 ::: ▼▼▼ 
+		//::: Restored by DF: 커스텀   추가 ::: ▼▼▼ 
 		try {
 			XMLUtils.setBooleanAttribute(text, "isQuestionNumber", this.isQuestionNumber);
 		} catch (Exception var6) {
@@ -755,7 +755,7 @@ public class TextModel extends BasicModuleModel implements IWCAGModuleModel, IPr
 		addProperty(property);
 	}
 	
-	// kslee 커스텀 메소드 추가 ::: ▼▼▼
+	// ::: Restored by DF: 커스텀 메소드 추가 ::: ▼▼▼
 	private void addPropertyGapHeight() {
 		IProperty property = new IProperty() {
 
@@ -790,7 +790,7 @@ public class TextModel extends BasicModuleModel implements IWCAGModuleModel, IPr
 		addProperty(property);
 	}
 
-	// kslee 커스텀 메소드 추가 ::: ▼▼▼
+	// ::: Restored by DF: 커스텀 메소드 추가 ::: ▼▼▼
 	private void addPropertyGroupID() {
 		IProperty property = new IProperty() {
 
@@ -1222,7 +1222,7 @@ public class TextModel extends BasicModuleModel implements IWCAGModuleModel, IPr
 		addProperty(property);
 	}
 	
-	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 추가 ::: ▼▼▼ 
 	private void addPropertyGapStyles() {
 		IProperty property = new IProperty() {
 
@@ -1257,7 +1257,7 @@ public class TextModel extends BasicModuleModel implements IWCAGModuleModel, IPr
 		addProperty(property);
 	}
 	
-	// kslee 커스텀 메소드 추가 ::: ▼▼▼
+	// ::: Restored by DF: 커스텀 메소드 추가 ::: ▼▼▼
 	private void addPropertyMultipleLines() {
 		IProperty property = new IBooleanProperty() {
 
@@ -1296,7 +1296,7 @@ public class TextModel extends BasicModuleModel implements IWCAGModuleModel, IPr
 		addProperty(property);
 	}
 
-	// kslee 커스텀 메소드 추가 ::: ▼▼▼
+	// ::: Restored by DF: 커스텀 메소드 추가 ::: ▼▼▼
 	private void addPropertyIsHandwritingInput() {
 		IProperty property = new IProperty() {
 
@@ -1330,7 +1330,7 @@ public class TextModel extends BasicModuleModel implements IWCAGModuleModel, IPr
 		addProperty(property);
 	}
 
-	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 추가 ::: ▼▼▼ 
 	private void addPropertyIsQuestionNumber() {
 		IProperty property = new IBooleanProperty() {
 
@@ -1656,12 +1656,12 @@ public class TextModel extends BasicModuleModel implements IWCAGModuleModel, IPr
 		return this.useEscapeCharacterInGap;
 	}
 	
-	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 추가 ::: ▼▼▼ 
 	public String gapStyles() {
 		return this.gapStyles;
 	}
 	
-	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 추가 ::: ▼▼▼ 
 	public Boolean multipleLines() {
 		return this.multipleLines;
 	}

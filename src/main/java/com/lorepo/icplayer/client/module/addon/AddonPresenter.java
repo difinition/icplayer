@@ -67,16 +67,16 @@ public class AddonPresenter implements IPresenter, IActivity, IStateful, IComman
 	private InterfaceVersion interfaceVersion = InterfaceVersion.DEFAULT;
 	private ResetVersion resetVersion = ResetVersion.DEFAULT;
 	
-	//kslee 커스텀  필드추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  필드추가 ::: ▼▼▼ 
 	private String pageURL;
 	
-	//kslee 커스텀  메소드 수정 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 수정 ::: ▼▼▼ 
 	//public AddonPresenter(AddonModel model, IPlayerServices services){
 	public AddonPresenter(AddonModel model, IPlayerServices services, String pageURL){
 		this.model = model;
 		this.services = services;
 		this.addonDescriptor = services.getModel().getAddonDescriptor(model.getAddonId());
-		//kslee 커스텀  메소드 수정 ::: ▼▼▼
+		//::: Restored by DF: 커스텀  메소드 수정 ::: ▼▼▼
 		this.pageURL = pageURL;
 		connectHandlers();
 		Utils.consoleLog("AddonPresenter.java AddonPresenter() model.getId[" + model.getId() + "] pageURL[" + pageURL + "]");

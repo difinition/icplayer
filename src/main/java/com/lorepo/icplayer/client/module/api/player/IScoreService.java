@@ -23,17 +23,17 @@ public interface IScoreService {
 	void setOpenActivitiesScores(HashMap<String, PageOpenActivitiesScore> scores);
 	ScoreInfo getOpenActivityScores(String pageID, String moduleID);
 	
-	//kslee 커스텀 변경 ::: 인수 3개에서 인수4개로 업데이트 됨 
+	//::: Restored by DF: 커스텀 변경 ::: 인수 3개에서 인수4개로 업데이트 됨 
 	//void updateOpenActivityScore(String pageID, String moduleID, String aiGrade);
 	void updateOpenActivityScore(String pageID, String moduleID, String aiGrade, String aiRelevance);
 	
 	int getPageScoreWithOnlyActiveOpenActivitiesById(String pageID);
 	void ensureOpenActivityScoreExist(String pageID, String moduleID, Integer maxScore);
 	
-	//kslee 커스텀 추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀 추가 ::: ▼▼▼ 
 	void setTextGroupID(String module, String groupID);
 	HashMap<String, String> getTextGroupID();
 	void setGroupTexts(String module, String text);
 	HashMap<String, HashMap<String, String>> getGroupTexts();
-	//kslee 커스텀 추가 ::: ▲▲▲	
+	//::: Restored by DF: 커스텀 추가 ::: ▲▲▲	
 }

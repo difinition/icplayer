@@ -233,11 +233,11 @@ public class ModuleFactory implements IModuleFactory{
 	
 	
 	@Override
-	//kslee 커스텀  메소드 수정 ::: ▼▼▼
+	//::: Restored by DF: 커스텀  메소드 수정 ::: ▼▼▼
 	//public IPresenter createPresenter(IModuleModel module){
 	public IPresenter createPresenter(IModuleModel module, String pageURL) {
 		if(module instanceof AddonModel){
-			//kslee 커스텀  메소드 수정 ::: ▼▼▼
+			//::: Restored by DF: 커스텀  메소드 수정 ::: ▼▼▼
 			//return new AddonPresenter((AddonModel) module, services);
 			return new AddonPresenter((AddonModel)module, this.services, pageURL);
 		}

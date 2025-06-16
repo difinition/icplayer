@@ -61,16 +61,16 @@ public class PlayerApp {
 	private HashMap<String, List<String>> printableOrder = new HashMap<String, List<String>>();
 	private PrintableContentParser printableParser;
 
-	//kslee 커스텀 추가  ::: contentModels 필드 추가됨 
+	//::: Restored by DF: 커스텀 추가  ::: contentModels 필드 추가됨 
 	private ArrayList<Content> contentModels;
-	//kslee 커스텀 추가  ::: areStaticScaledElementsFixed 필드 추가됨 
+	//::: Restored by DF: 커스텀 추가  ::: areStaticScaledElementsFixed 필드 추가됨 
 	private static boolean areStaticScaledElementsFixed = false;
-	//kslee 커스텀 추가  ::: loadedCnt 필드 추가됨 
+	//::: Restored by DF: 커스텀 추가  ::: loadedCnt 필드 추가됨 
 	private int loadedCnt = 0;
-	//kslee 커스텀 추가  ::: type 필드 추가됨 
+	//::: Restored by DF: 커스텀 추가  ::: type 필드 추가됨 
 	private String type = "question";
 	
-//kslee 커스텀 변경  ::: 생성자 type이 추가되며 인수3개로 변경 ▼▼▼
+//::: Restored by DF: 커스텀 변경  ::: 생성자 type이 추가되며 인수3개로 변경 ▼▼▼
 //	public PlayerApp(String id, PlayerEntryPoint entryPoint) {
 //		this.divId = id;
 //		this.entryPoint = entryPoint;
@@ -83,7 +83,7 @@ public class PlayerApp {
 		this.entryPoint = entryPoint;
 		this.type = type;
 	}
-//kslee 커스텀 변경  ::: 생성자 type이 추가되며 인수3개로 변경 ▲▲▲
+//::: Restored by DF: 커스텀 변경  ::: 생성자 type이 추가되며 인수3개로 변경 ▲▲▲
 
 	public static native int getIFrameSize(boolean isCommonPage, PlayerApp instance) /*-{
 		var frameSizesHandler = function(event) {
@@ -124,7 +124,7 @@ public class PlayerApp {
 		return isContentModelLoaded;
 	}
 
-//kslee 커스텀 변경  ::: loadPage 메소드 isQNote가 추가되며 인수4개로 변경 ▼▼▼
+//::: Restored by DF: 커스텀 변경  ::: loadPage 메소드 isQNote가 추가되며 인수4개로 변경 ▼▼▼
 	/**
 	 * Load content from given URL
 	 * 
@@ -175,7 +175,7 @@ public class PlayerApp {
 			}
 		});
 	}
-//kslee 커스텀 변경  ::: loadPage 메소드 isQNote가 추가되며 인수4개로 변경 ▲▲▲
+//::: Restored by DF: 커스텀 변경  ::: loadPage 메소드 isQNote가 추가되며 인수4개로 변경 ▲▲▲
 	
 	/**
 	 * Load content from given URL
@@ -183,7 +183,7 @@ public class PlayerApp {
 	 * @param url
 	 * @param pageIndex
 	 */
-//kslee 커스텀 변경  ::: load 메소드 loadPage호출실 isQNote가 추가되며 인수4개로 변경 ▼▼▼
+//::: Restored by DF: 커스텀 변경  ::: load 메소드 loadPage호출실 isQNote가 추가되며 인수4개로 변경 ▼▼▼
 //	public void load(String url, int pageIndex) {
 //		loadPage(url, pageIndex, false);
 //	}
@@ -191,15 +191,15 @@ public class PlayerApp {
 		Utils.consoleLog("::: PlayerApp load Start url["+ url +"] pageIndex["+ pageIndex +"] isQNote["+ Utils.isQNote +"] ::: ");
 		loadPage(url, pageIndex, false, Utils.isQNote);
 	}
-//kslee 커스텀 변경  ::: load 메소드 loadPage호출실 isQNote가 추가되며 인수4개로 변경 ▲▲▲
+//::: Restored by DF: 커스텀 변경  ::: load 메소드 loadPage호출실 isQNote가 추가되며 인수4개로 변경 ▲▲▲
 
-//kslee 커스텀 추가  ::: loadLearnetic 메소드 추가 ▼▼▼
+//::: Restored by DF: 커스텀 추가  ::: loadLearnetic 메소드 추가 ▼▼▼
 	public void loadLearnetic(String url, int pageIndex) {
 		Utils.consoleLog("::: PlayerApp loadLearnetic Start url["+ url +"] pageIndex["+ pageIndex +"] isCommonPage=fix false isQNote["+ Utils.isQNote +"]=fix false ::: ");
 		loadPage(url, pageIndex, false, false);
 	}
 
-//kslee 커스텀 추가  ::: unload 메소드 추가 ▼▼▼
+//::: Restored by DF: 커스텀 추가  ::: unload 메소드 추가 ▼▼▼
 	public void unload() {
 		removeIframe(this);
 	}
@@ -210,7 +210,7 @@ public class PlayerApp {
 	 * @param url
 	 * @param pageIndex
 	 */
-//kslee 커스텀 변경  ::: loadCommonPage 메소드 loadPage호출실 isQNote가 추가되며 인수4개로 변경 ▼▼▼
+//::: Restored by DF: 커스텀 변경  ::: loadCommonPage 메소드 loadPage호출실 isQNote가 추가되며 인수4개로 변경 ▼▼▼
 //	public void loadCommonPage(String url, int pageIndex) {
 //		loadPage(url, pageIndex, true);
 //	}
@@ -219,7 +219,7 @@ public class PlayerApp {
 
 		loadPage(url, pageIndex, true, false);
 	}
-//kslee 커스텀 변경  ::: loadCommonPage 메소드 loadPage호출실 isQNote가 추가되며 인수4개로 변경 ▲▲▲
+//::: Restored by DF: 커스텀 변경  ::: loadCommonPage 메소드 loadPage호출실 isQNote가 추가되며 인수4개로 변경 ▲▲▲
 
 	public void setPages(String pagesSub) {
 		Utils.consoleLog("::: PlayerApp setPages Start pagesSub["+ pagesSub +"] ::: ");
@@ -261,9 +261,9 @@ public class PlayerApp {
 		return $wnd.$('table.ic_player').css('height').replace('px', '');
 	}-*/;
 
-//kslee 커스텀 추가  ::: removeIframe native 메소드 추가 ▼▼▼
+//::: Restored by DF: 커스텀 추가  ::: removeIframe native 메소드 추가 ▼▼▼
 	public static native void removeIframe(PlayerApp instance)/*-{
-		console.log("Restored by DF: removeIframe");
+		console.log("Restored by DF: removeIframe :::");
 		if ($wnd.playerIFrame) {
 			// 실제 DOM에서 iframe 제거
 			$wnd.playerIFrame.remove();
@@ -1059,7 +1059,7 @@ public class PlayerApp {
 		return loader.getAddonsCSS() + "\n" + this.getCurrentUserStyles();
 	}
 	
-//kslee 커스텀 변경  ::: preloadAllPages 메소드 PageFactoryQNote관련 변경 ▼▼▼
+//::: Restored by DF: 커스텀 변경  ::: preloadAllPages 메소드 PageFactoryQNote관련 변경 ▼▼▼
 //	public void preloadAllPages(final ILoadListener listener) {
 //		List<Page> pages = contentModel.getPages().getAllPages();
 //		boolean allPagesLoaded = true;
@@ -1125,9 +1125,9 @@ public class PlayerApp {
 		}
 		Utils.consoleLog("::: PlayerApp preloadAllPages End ::: ");
 	}
-//kslee 커스텀 변경  ::: preloadAllPages 메소드 PageFactoryQNote관련 변경 ▲▲▲
+//::: Restored by DF: 커스텀 변경  ::: preloadAllPages 메소드 PageFactoryQNote관련 변경 ▲▲▲
 
-//kslee 커스텀 추가  ::: PagePreloadListener 클래스 추가 ▼▼▼
+//::: Restored by DF: 커스텀 추가  ::: PagePreloadListener 클래스 추가 ▼▼▼
 	private class PagePreloadListener implements IProducingLoadingListener {
 		private final ILoadListener listener;
 		PagePreloadListener(ILoadListener listener) {
@@ -1152,7 +1152,7 @@ public class PlayerApp {
 			listener.onError(error);
 		}
 	}
-//kslee 커스텀 추가  ::: PagePreloadListener 클래스 추가 ▲▲▲
+//::: Restored by DF: 커스텀 추가  ::: PagePreloadListener 클래스 추가 ▲▲▲
 
 	public List<ScoreWithMetadata> getScoreWithMetadata() {
 		Utils.consoleLog("::: PlayerApp getScoreWithMetadata Start ::: ");

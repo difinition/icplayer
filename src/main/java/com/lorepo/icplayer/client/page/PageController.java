@@ -71,7 +71,7 @@ public class PageController implements ITextToSpeechController, IPageController 
 	private boolean isReadingOn = false;
 	private Content contentModel;
 	private GradualShowAnswersService gradualShowAnswersService;
-	//kslee 커스텀 추가  ::: currentPageIdx 필드 추가됨 
+	//::: Restored by DF: 커스텀 추가  ::: currentPageIdx 필드 추가됨 
 	private int currentPageIdx = -1;
 	
 	public PageController(IPlayerController playerController) {
@@ -92,7 +92,7 @@ public class PageController implements ITextToSpeechController, IPageController 
 		moduleFactory = new ModuleFactory(playerService);
 	}
 	
-	//kslee 커스텀 추가  ::: setPageIdx(int pagesIdx) 메소드 추가됨 
+	//::: Restored by DF: 커스텀 추가  ::: setPageIdx(int pagesIdx) 메소드 추가됨 
 	public void setPageIdx(int pagesIdx) {
 		this.currentPageIdx = pagesIdx;
 	}
@@ -243,7 +243,7 @@ public class PageController implements ITextToSpeechController, IPageController 
 			module.setInlineStyle(newInlineStyle);
 			IModuleView moduleView = moduleFactory.createView(module);
 			
-			//kslee 커스텀  메소드 수정 ::: ▼▼▼ 
+			//::: Restored by DF: 커스텀  메소드 수정 ::: ▼▼▼ 
 			//IPresenter presenter = moduleFactory.createPresenter(module);
 			IPresenter presenter = moduleFactory.createPresenter(module, this.currentPage.getBaseURL());
 			
@@ -763,7 +763,7 @@ public class PageController implements ITextToSpeechController, IPageController 
 		}
 	}
 
-	//kslee 커스텀 추가  ::: getModules() 메소드 추가됨
+	//::: Restored by DF: 커스텀 추가  ::: getModules() 메소드 추가됨
 	public ModuleList getModules() {
 		return this.currentPage.getModules();
 	}

@@ -129,7 +129,7 @@ public class ContentDataLoader {
 		});
 	}
 
-// kslee 커스텀 메소드 수정됨	
+// ::: Restored by DF: 커스텀 메소드 수정됨	
 //	private void loadPage(Page page) {
 //		String url = URLUtils.resolveURL(baseUrl, page.getHref());
 //		page.setContentBaseURL(this.contentBaseURL);

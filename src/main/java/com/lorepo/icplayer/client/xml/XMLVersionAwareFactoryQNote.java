@@ -59,7 +59,7 @@ public abstract class XMLVersionAwareFactoryQNote implements IXMLFactory {
       Utils.consoleLog("::: XMLVersionAwareFactoryQNote load End :::");
    }
 
-   //kslee 수정 ::: ▼▼▼ 
+   //::: Restored by DF: 수정 ::: ▼▼▼ 
    protected RequestFinishedCallback getContentLoadCallback(final IProducingLoadingListener listener) {
 
        return new RequestFinishedCallback() {
@@ -96,7 +96,7 @@ public abstract class XMLVersionAwareFactoryQNote implements IXMLFactory {
             }
        };
    }
-   //kslee 수정 ::: ▲▲▲
+   //::: Restored by DF: 수정 ::: ▲▲▲
 
    public Object produce(String xmlString, String fetchUrl) {
       Utils.consoleLog("::: XMLVersionAwareFactoryQNote produce Start xmlString[" + xmlString + "]:::");

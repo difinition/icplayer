@@ -88,13 +88,13 @@ public class PageOpenActivitiesScore {
 		score.setAIData(aiGradedScore, aiRelevance);
 	}
 
-	//kslee 커스텀 추가  ::: setAIGradedScore(String moduleID, int aiGradedScore) 메소드 추가됨
+	//::: Restored by DF: 커스텀 추가  ::: setAIGradedScore(String moduleID, int aiGradedScore) 메소드 추가됨
 	public void setAIGradedScore(String moduleID, int aiGradedScore) {
 		ScoreInfo score = this.get(moduleID);
 		score.aiGradedScore = aiGradedScore;
 	}
 
-	//kslee 커스텀 추가  ::: hasScore(String moduleID) 메소드 추가됨
+	//::: Restored by DF: 커스텀 추가  ::: hasScore(String moduleID) 메소드 추가됨
 	public boolean hasScore(String moduleID) {
 		return this.scores.containsKey(moduleID);
 	}	

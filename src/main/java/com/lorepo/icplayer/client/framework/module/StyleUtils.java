@@ -16,7 +16,7 @@ public class StyleUtils {
 		}
 	};
 
-	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 추가 ::: ▼▼▼ 
 	public static void applyInlineStyle(Widget widget, String styles) {
 		DOMUtils.applyInlineStyle(widget.getElement(), styles);
 	}

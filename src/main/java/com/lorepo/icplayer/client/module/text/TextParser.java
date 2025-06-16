@@ -53,7 +53,7 @@ public class TextParser {
 	private HashMap<String, String> variables = new HashMap<String, String>();
 	private ParserResult parserResult;
 	
-	//kslee 커스텀 추가  ::: gapStyles ~ isQuestionNumber 6개 필드 추가됨
+	//::: Restored by DF: 커스텀 추가  ::: gapStyles ~ isQuestionNumber 6개 필드 추가됨
 	private String gapStyles = "";
 	private boolean multipleLines = false;
 	private int gapHeight = 0;
@@ -61,27 +61,27 @@ public class TextParser {
 	private boolean isIgnoreSpace = false;
 	private boolean isQuestionNumber = false;
 
-	//kslee 커스텀 추가  ::: setGapStyles() 메소드 추가됨
+	//::: Restored by DF: 커스텀 추가  ::: setGapStyles() 메소드 추가됨
 	public void setGapStyles(String styles) {
 		this.gapStyles = styles;
 	}
 
-	//kslee 커스텀 추가  ::: setMultipleLines() 메소드 추가됨
+	//::: Restored by DF: 커스텀 추가  ::: setMultipleLines() 메소드 추가됨
 	public void setMultipleLines(Boolean multipleLines) {
 		this.multipleLines = multipleLines;
 	}
 
-	//kslee 커스텀 추가  ::: setGapHeight() 메소드 추가됨
+	//::: Restored by DF: 커스텀 추가  ::: setGapHeight() 메소드 추가됨
 	public void setGapHeight(int gapHeight) {
 		this.gapHeight = gapHeight;
 	}
 	
-	//kslee 커스텀 추가  ::: setIsHandwritingInput() 메소드 추가됨
+	//::: Restored by DF: 커스텀 추가  ::: setIsHandwritingInput() 메소드 추가됨
 	public void setIsHandwritingInput(String isHandwritingInput) {
 		this.isHandwritingInput = isHandwritingInput;
 	}
 
-	//kslee 커스텀 추가  ::: setIsQuestionNumber() 메소드 추가됨
+	//::: Restored by DF: 커스텀 추가  ::: setIsQuestionNumber() 메소드 추가됨
 	public void setIsQuestionNumber(Boolean isQuestionNumber) {
 		this.isQuestionNumber = isQuestionNumber;
 	}	
@@ -125,13 +125,13 @@ public class TextParser {
 		return parse(srcText);
 	}
 
-//kslee 커스텀 parse(String srcText) 메소드 수정됨 ::: ▼▼▼
+//::: Restored by DF: 커스텀 parse(String srcText) 메소드 수정됨 ::: ▼▼▼
 	public ParserResult parse (String srcText) {
 		this.gapsOrder = calculateGapsOrder(srcText);
 
 		parserResult = new ParserResult();
 		parserResult.originalText = srcText;
-		//kslee 로직추가 ::: ▼▼▼
+		//::: Restored by DF: 로직추가 ::: ▼▼▼
 		//srcText = srcText.replaceAll("\\s+", " ");
 		if (!this.multipleLines) {
 			srcText = srcText.replaceAll("\\s+", " ");
@@ -150,7 +150,7 @@ public class TextParser {
 		if (Utils.isSafari() && srcText.indexOf("&nbsp;") > -1) {
 			srcText = Utils.parseNBSP(srcText);
 		}
-		//kslee 로직추가 ::: ▲▲▲
+		//::: Restored by DF: 로직추가 ::: ▲▲▲
 
 		hasSyntaxError = false;
 		try {
@@ -184,7 +184,7 @@ public class TextParser {
 		parserResult.hasSyntaxError = hasSyntaxError;
 		return parserResult;
 	}
-//kslee 커스텀 parse(String srcText) 메소드 수정됨 ::: ▲▲▲	
+//::: Restored by DF: 커스텀 parse(String srcText) 메소드 수정됨 ::: ▲▲▲	
 	
 
 	private List<String> calculateGapsOrder (String text) {
@@ -355,7 +355,7 @@ public class TextParser {
 
 		return replaceText;
 	}
-//kslee 커스텀 createGapInputElement(String id, String answer, Map<String,String> gapOptions) 메소드 수정됨 ::: ▼▼▼	
+//::: Restored by DF: 커스텀 createGapInputElement(String id, String answer, Map<String,String> gapOptions) 메소드 수정됨 ::: ▼▼▼	
 //	private DomElementManipulator createGapInputElement(String id, String answer, Map<String,String> gapOptions) {
 //		DomElementManipulator inputElement = new DomElementManipulator("input");
 //		inputElement.setHTMLAttribute("id", id);
@@ -402,7 +402,7 @@ public class TextParser {
 
 		return inputElement;
 	}
-//kslee 커스텀 createGapInputElement(String id, String answer, Map<String,String> gapOptions) 메소드 수정됨 ::: ▲▲▲	
+//::: Restored by DF: 커스텀 createGapInputElement(String id, String answer, Map<String,String> gapOptions) 메소드 수정됨 ::: ▲▲▲	
 	
 	private String createGapOptionString(Map<String,String> gapOptions) {
 		if(gapOptions==null) {
@@ -447,7 +447,7 @@ public class TextParser {
 		return replaceText;
 	}
 	
-//kslee 커스텀 createFilledGapInputElement(String placeholder, String answer, String id, int maxAnswerLength, Map<String,String> gapOptions) 메소드 수정됨 ::: ▼▼▼
+//::: Restored by DF: 커스텀 createFilledGapInputElement(String placeholder, String answer, String id, int maxAnswerLength, Map<String,String> gapOptions) 메소드 수정됨 ::: ▼▼▼
 //	private DomElementManipulator createFilledGapInputElement(String placeholder, String answer, String id, int maxAnswerLength, Map<String,String> gapOptions) {
 //		DomElementManipulator inputElement = new DomElementManipulator("input");
 //		inputElement.setHTMLAttribute("data-gap", "filled");
@@ -496,9 +496,9 @@ public class TextParser {
 
 		return inputElement;
 	}
-//kslee 커스텀 createFilledGapInputElement(String placeholder, String answer, String id, int maxAnswerLength, Map<String,String> gapOptions) 메소드 수정됨 ::: ▲▲▲
+//::: Restored by DF: 커스텀 createFilledGapInputElement(String placeholder, String answer, String id, int maxAnswerLength, Map<String,String> gapOptions) 메소드 수정됨 ::: ▲▲▲
 
-//kslee 커스텀 matchMathGap(String expression, Map<String,String> gapOptions) 메소드 수정됨 ::: ▼▼▼
+//::: Restored by DF: 커스텀 matchMathGap(String expression, Map<String,String> gapOptions) 메소드 수정됨 ::: ▼▼▼
 //	private String matchMathGap(String expression, Map<String,String> gapOptions) {
 //		String replaceText = null;
 //		String langTag = gapOptions!=null && gapOptions.containsKey("lang")? gapOptions.get("lang") : "";
@@ -584,7 +584,7 @@ public class TextParser {
 
 	    return replaceText;
 	}
-//kslee 커스텀 matchMathGap(String expression, Map<String,String> gapOptions) 메소드 수정됨 ::: ▲▲▲
+//::: Restored by DF: 커스텀 matchMathGap(String expression, Map<String,String> gapOptions) 메소드 수정됨 ::: ▲▲▲
 
 	private String matchDraggableFilledGap(String expression, Map<String,String> gapOptions) {
 		String langTag = getLangTagForGap(gapOptions);
@@ -902,7 +902,7 @@ public class TextParser {
 		return parsedText;
 	}
 
-//kslee 커스텀 isBetweenBrackets(String text) 메소드 수정됨 ::: ▼▼▼
+//::: Restored by DF: 커스텀 isBetweenBrackets(String text) 메소드 수정됨 ::: ▼▼▼
 //	private static boolean isBetweenBrackets(String text) {
 //		int endIndex = text.indexOf("\\)");
 //		if (endIndex > 0) {
@@ -927,7 +927,7 @@ public class TextParser {
 
 	    return false;
 	}
-//kslee 커스텀 isBetweenBrackets(String text) 메소드 수정됨 ::: ▲▲▲	
+//::: Restored by DF: 커스텀 isBetweenBrackets(String text) 메소드 수정됨 ::: ▲▲▲	
 	
 	private String parseGaps(String srcText) {
 		final String pattern = "\\\\gap\\{|\\\\filledGap\\{";
@@ -1148,7 +1148,7 @@ public class TextParser {
 		return output;
 	}
 
-//kslee 커스텀 parseAudio(String srcText) 메소드 수정됨 ::: ▼▼▼
+//::: Restored by DF: 커스텀 parseAudio(String srcText) 메소드 수정됨 ::: ▼▼▼
 //	private String parseAudio(String srcText) {
 //		final String patternString = "\\\\audio\\{(.+?)\\}";
 //		RegExp regexp = RegExp.compile(patternString);
@@ -1207,7 +1207,7 @@ public class TextParser {
 		output = output + input;
 		return output;
 	}
-//kslee 커스텀 parseAudio(String srcText) 메소드 수정됨 ::: ▲▲▲
+//::: Restored by DF: 커스텀 parseAudio(String srcText) 메소드 수정됨 ::: ▲▲▲
 
 	private String createAudio(String filePath) {
 		String id = UUID.uuid(8);

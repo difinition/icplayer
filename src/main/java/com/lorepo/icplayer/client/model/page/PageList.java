@@ -111,7 +111,7 @@ public class PageList extends BasicPropertyProvider implements IChapter{
 		return nodes;
 	}
 
-	//kslee 커스텀 추가  ::: getPageByHref(String href) 메소드 추가됨 
+	//::: Restored by DF: 커스텀 추가  ::: getPageByHref(String href) 메소드 추가됨 
 	public Page getPageByHref(String href) {
 
 		for(IContentNode node : nodes){
@@ -319,9 +319,9 @@ public class PageList extends BasicPropertyProvider implements IChapter{
 		return pageIndex;
 	}
 
-    //kslee 커스텀 변경 ::: ▼▼▼   private >> public
+    //::: Restored by DF: 커스텀 변경 ::: ▼▼▼   private >> public
 	public Page loadPage(Element node) {
-	//kslee 커스텀 변경 ::: ▲▲▲   private >> public
+	//::: Restored by DF: 커스텀 변경 ::: ▲▲▲   private >> public
 	    
 		final String name = StringUtils.unescapeXML(node.getAttribute("name"));
 		final String href = node.getAttribute("href");

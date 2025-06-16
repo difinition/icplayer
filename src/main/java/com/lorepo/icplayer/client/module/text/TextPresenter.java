@@ -42,7 +42,7 @@ public class TextPresenter implements IPresenter, IStateful, IActivity, ICommand
 		void reset();
 		void setText(String text);
 		
-		//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+		//::: Restored by DF: 커스텀  메소드 추가 ::: ▼▼▼ 
 		void setIndex(int index);
 		
 		String getTextValue();
@@ -123,7 +123,7 @@ public class TextPresenter implements IPresenter, IStateful, IActivity, ICommand
 	private IDisplay view;
 	private final HashMap<String, String> values = new HashMap<String, String>();
 	
-	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 추가 ::: ▼▼▼ 
 	private final HashMap<String, String> indexValues = new HashMap<String, String>();
 	
 	private HashMap<String, DraggableItem> consumedItems = new HashMap<String, DraggableItem>();
@@ -152,7 +152,7 @@ public class TextPresenter implements IPresenter, IStateful, IActivity, ICommand
 		isVisible = module.isVisible();
 		isDisabled = module.isDisabled();
 		
-		//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+		//::: Restored by DF: 커스텀  메소드 추가 ::: ▼▼▼ 
 		module.setPlayerSerivice(this.playerServices);
 		try {
 			// in editor services are null
@@ -238,7 +238,7 @@ public class TextPresenter implements IPresenter, IStateful, IActivity, ICommand
 		});
 	}
 	
-	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 추가 ::: ▼▼▼ 
 	private void setTextGroupID() {
 		IScoreService scoreService = this.playerServices.getScoreService();
 		scoreService.setTextGroupID(this.module.getId(),
@@ -615,7 +615,7 @@ public class TextPresenter implements IPresenter, IStateful, IActivity, ICommand
 		consumedItems.clear();
 		values.clear();
 		
-		//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+		//::: Restored by DF: 커스텀  메소드 추가 ::: ▼▼▼ 
 		this.indexValues.clear();
 		
 		updateScore();
@@ -957,7 +957,7 @@ public class TextPresenter implements IPresenter, IStateful, IActivity, ICommand
 		GapInfo gap = getGapInfoById(id);
 
 		
-		//kslee 커스텀  로직 추가 ::: ▼▼▼ 
+		//::: Restored by DF: 커스텀  로직 추가 ::: ▼▼▼ 
 		Utils.consoleLog("valueChangeLogic : " + id + ", " + newValue);
 		String selectedIndex = "0";
 		String tempNewValue = newValue;
@@ -1137,7 +1137,7 @@ public class TextPresenter implements IPresenter, IStateful, IActivity, ICommand
 
 		removeFromItems(gapId);
 		
-		//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+		//::: Restored by DF: 커스텀  메소드 추가 ::: ▼▼▼ 
 		this.indexValues.remove(gapId);
 		fireItemReturnedEvent(previouslyConsumedItem);
 
@@ -1278,7 +1278,7 @@ public class TextPresenter implements IPresenter, IStateful, IActivity, ICommand
 		scoreService.setScore(module.getId(), getScore(), getMaxScore());
 	}
 	
-	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 추가 ::: ▼▼▼ 
 	private void updateText() {
 		IScoreService scoreService = this.playerServices.getScoreService();
 		Iterator var2 = this.module.getGapInfos().iterator();
@@ -1677,7 +1677,7 @@ public class TextPresenter implements IPresenter, IStateful, IActivity, ICommand
 		}
 	}-*/;
 	
-	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 추가 ::: ▼▼▼ 
 	private void restoreGapMode() {
 		if (this.isShowErrorsMode) {
 			this.setShowErrorsMode();
@@ -1716,12 +1716,12 @@ public class TextPresenter implements IPresenter, IStateful, IActivity, ICommand
 		return "[error]";
 	}
 
-	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 추가 ::: ▼▼▼ 
 	private int getGapCnt() {
 		return this.view.getChildrenCount();
 	}
 	
-	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 추가 ::: ▼▼▼ 
 	private int getAttempedCount() {
 		int cnt = 0;
 
@@ -1755,7 +1755,7 @@ public class TextPresenter implements IPresenter, IStateful, IActivity, ICommand
 		isMathShowAnswersActive = false;
 	}
 
-	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 추가 ::: ▼▼▼ 
 	private void setUserValueWithScore(int index, String id, String value) {
 		if (this.view != null && index <= this.view.getChildrenCount()) {
 			Utils.consoleLog("setUserValueWithScore id : " + id);
@@ -1883,7 +1883,7 @@ public class TextPresenter implements IPresenter, IStateful, IActivity, ICommand
 		return true;
 	}
 	
-	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 추가 ::: ▼▼▼ 
 	private boolean isAttemptedAtLeastOne() {
 		if (this.isShowAnswers()) {
 			this.hideAnswers();
@@ -1900,7 +1900,7 @@ public class TextPresenter implements IPresenter, IStateful, IActivity, ICommand
 		return attemptedCnt > 0 && this.view.getChildrenCount() != 0;
 	}
 
-	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 추가 ::: ▼▼▼ 
 	private void setTextCommand(String text) {
 		setText(text);
 		view.refreshMath();

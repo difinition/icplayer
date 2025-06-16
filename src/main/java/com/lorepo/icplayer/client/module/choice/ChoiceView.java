@@ -68,7 +68,7 @@ public class ChoiceView extends AbsolutePanel implements ChoicePresenter.IDispla
 
 	private int position = -1;
 	
-	//kslee 커스텀  필드추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  필드추가 ::: ▼▼▼ 
 	private AbsolutePanel optionsPanelAbsolute;
 
 	
@@ -83,7 +83,7 @@ public class ChoiceView extends AbsolutePanel implements ChoicePresenter.IDispla
 	 * GWT głupieje.
 	 * @param isPreview 
 	 */
-	//kslee 커스텀  메소드 수정 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 수정 ::: ▼▼▼ 
 	//	private void createUI(boolean isPreview){
 	//
 	//		optionsPanel = new VerticalPanel();
@@ -393,7 +393,7 @@ public class ChoiceView extends AbsolutePanel implements ChoicePresenter.IDispla
 		setVisible(val);
 	}
 
-	//kslee 커스텀  메소드 수정 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 수정 ::: ▼▼▼ 
 //	@Override
 //	public void refreshMath() {
 //		MathJax.refreshMathJax(getElement());

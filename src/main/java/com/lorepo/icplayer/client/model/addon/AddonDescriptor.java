@@ -142,7 +142,7 @@ public class AddonDescriptor implements IAddonDescriptor, IXMLSerializable{
 	
 			Element element = (Element)optionNodes.item(i);
 			String src = XMLUtils.getAttributeAsString(element, "src");
-			//kslee 커스텀 디버그용 수정 ::: ▼▼▼ 
+			//::: Restored by DF: 커스텀 디버그용 수정 ::: ▼▼▼ 
 			Utils.consoleLog("::: AddonDescriptor loadResources src["+src+"] ::: ");
 
 			resources.add(src);

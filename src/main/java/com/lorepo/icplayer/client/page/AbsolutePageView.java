@@ -63,7 +63,7 @@ public class AbsolutePageView extends AbsolutePanel implements IPageDisplay {
 		this.createPageDimensions();
 	}
 
-	//kslee 커스텀  메소드 수정 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 수정 ::: ▼▼▼ 
 	@Override
 	public void refreshMathJax() {
 		//MathJax.refreshMathJax(this.getElement());

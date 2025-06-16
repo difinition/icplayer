@@ -371,7 +371,7 @@ public class GWTTextPresenterTestCase extends GwtTest{
 		widget3.setId("3");
 		Document.get().getBody().appendChild(widget3);
 		
-		//kslee GapWidget 인수추가에 따른 수정
+		//::: Restored by DF: GapWidget 인수추가에 따른 수정
 		//GapWidget answer2Widget = new GapWidget(gapInfo2, null);
 		//GapWidget answer1Widget = new GapWidget(gapInfo1, null);
 		//GapWidget answer3Widget = new GapWidget(gapInfo3, null);

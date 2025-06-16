@@ -40,10 +40,10 @@ public class OptionView extends ToggleButton implements IOptionDisplay{
 	
 	private boolean isTouched = false;
 	
-	//kslee 커스텀  필드추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  필드추가 ::: ▼▼▼ 
 	private String stylePrimaryName = "";
 
-	//kslee 커스텀 수정::: OptionView ▼▼▼ 
+	//::: Restored by DF: 커스텀 수정::: OptionView ▼▼▼ 
 	//public OptionView(ChoiceOption option, boolean isMulti){
 	//	super();
 	//	this.choiceOption = option;
@@ -55,9 +55,9 @@ public class OptionView extends ToggleButton implements IOptionDisplay{
 		initUI(isMulti, layoutStyle, order + 1, orderType);
 		setListener(this.getElement());
 	}
-	//kslee 커스텀 수정::: OptionView ▲▲▲ 
+	//::: Restored by DF: 커스텀 수정::: OptionView ▲▲▲ 
 
-	//kslee 커스텀 수정::: OptionView ▼▼▼ 
+	//::: Restored by DF: 커스텀 수정::: OptionView ▼▼▼ 
 	//	private void initUI(boolean isMulti) {
 	//		
 	//		TextParser parser = new TextParser();
@@ -115,7 +115,7 @@ public class OptionView extends ToggleButton implements IOptionDisplay{
 
 		setElementId();
 	}
-	//kslee 커스텀 수정::: OptionView ▲▲▲ 
+	//::: Restored by DF: 커스텀 수정::: OptionView ▲▲▲ 
 	
 	public boolean isEnable() {
 		return super.isEnabled(); 
@@ -139,7 +139,7 @@ public class OptionView extends ToggleButton implements IOptionDisplay{
 		});
 	}-*/;
 	
-	//kslee 커스텀  메소드 추가::: getStylePrimaryName ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 추가::: getStylePrimaryName ▼▼▼ 
 	private String getStylePrimaryName(String defaultStyle, int order, String orderType) {
 		String retVal;
 		if (orderType.equals("")) {

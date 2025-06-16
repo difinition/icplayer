@@ -347,7 +347,7 @@ public class PlayerServicesMockup implements IPlayerServices {
 	    return "";
 	};
 	
-	//kslee 커스텀 추가  ::: String getCurrentPageId() @Override 메소드 추가됨 
+	//::: Restored by DF: 커스텀 추가  ::: String getCurrentPageId() @Override 메소드 추가됨 
 	@Override
 	public String getCurrentPageId() {
 		// TODO Auto-generated method stub
@@ -355,7 +355,7 @@ public class PlayerServicesMockup implements IPlayerServices {
 	}
 
 
-	//kslee 커스텀 추가  ::: String setDisable(boolean isDisable) @Override 메소드 추가됨 
+	//::: Restored by DF: 커스텀 추가  ::: String setDisable(boolean isDisable) @Override 메소드 추가됨 
 	@Override
 	public void setDisable(boolean isDisable) {
 		// TODO Auto-generated method stub

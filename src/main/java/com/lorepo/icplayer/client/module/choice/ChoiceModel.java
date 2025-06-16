@@ -42,7 +42,7 @@ public class ChoiceModel extends BasicModuleModel implements IWCAGModuleModel, I
 	private PrintableController printableController = null;
 	private HashMap<String, String> printableState = null;
 	
-	// kslee 커스텀 필드추가 ::: ▼▼▼
+	// ::: Restored by DF: 커스텀 필드추가 ::: ▼▼▼
 	private String orderType = "";
 	private String layoutStyle = "vertical";
 
@@ -62,7 +62,7 @@ public class ChoiceModel extends BasicModuleModel implements IWCAGModuleModel, I
 		addPropertySpeechTexts();
 		addPropertyPrintable();
 		
-		// kslee 커스텀 필드 초기화 추가 ::: ▼▼▼
+		// ::: Restored by DF: 커스텀 필드 초기화 추가 ::: ▼▼▼
 		this.addPropertyOrderType();
 	}
 	
@@ -113,12 +113,12 @@ public class ChoiceModel extends BasicModuleModel implements IWCAGModuleModel, I
 		return isMulti;
 	}
 
-	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 추가 ::: ▼▼▼ 
 	public String getOrderType() {
 		return this.orderType;
 	}
 
-	//kslee 커스텀  메소드 수정 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 수정 ::: ▼▼▼ 
 	//	@Override
 	//	protected void parseModuleNode(Element node) {
 	//		options.clear();
@@ -239,7 +239,7 @@ public class ChoiceModel extends BasicModuleModel implements IWCAGModuleModel, I
 	/**
 	 * Convert module into XML
 	 */
-	//kslee 커스텀  메소드 수정 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 수정 ::: ▼▼▼ 
 	//@Override
 	//	public String toXML () {
 	//		Element choiceModule = XMLUtils.createElement("choiceModule");
@@ -371,7 +371,7 @@ public class ChoiceModel extends BasicModuleModel implements IWCAGModuleModel, I
 		addProperty(property);
 	}
 	
-	//kslee 커스텀  메소드 수정 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 수정 ::: ▼▼▼ 
 	//	public boolean isHorizontalLayout() {
 	//		return isHorizontal;
 	//	}
@@ -383,7 +383,7 @@ public class ChoiceModel extends BasicModuleModel implements IWCAGModuleModel, I
 		}
 	}
 	
-	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 추가 ::: ▼▼▼ 
 	public String getLayoutStyle() {
 		return this.layoutStyle;
 	}
@@ -673,7 +673,7 @@ public class ChoiceModel extends BasicModuleModel implements IWCAGModuleModel, I
 	}
 	
 	
-	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 추가 ::: ▼▼▼ 
 	private void addPropertyOrderType() {
 		IProperty property = new IProperty() {
 

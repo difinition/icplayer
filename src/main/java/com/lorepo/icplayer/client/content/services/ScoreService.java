@@ -24,9 +24,9 @@ public class ScoreService implements IScoreService {
 	private final ScoreType scoreType;
 	private IPlayerServices playerServices;
 	
-	//kslee 커스텀 추가  ::: groupids 필드 추가됨 
+	//::: Restored by DF: 커스텀 추가  ::: groupids 필드 추가됨 
 	private final HashMap<String, String> groupids;
-	//kslee 커스텀 추가  ::: groupTexts 필드 추가됨 
+	//::: Restored by DF: 커스텀 추가  ::: groupTexts 필드 추가됨 
 	private final HashMap<String, HashMap<String, String>> groupTexts;
 
 	public ScoreService(ScoreType scoreType){
@@ -37,13 +37,13 @@ public class ScoreService implements IScoreService {
 		pageScores = new HashMap<String, PageScore>();
 		pagesOpenActivitiesScores = new HashMap<String, PageOpenActivitiesScore>();
 		
-		//kslee 커스텀 추가  ::: groupids 필드 초기화 추가됨 
+		//::: Restored by DF: 커스텀 추가  ::: groupids 필드 초기화 추가됨 
 		this.groupids = new HashMap();
-		//kslee 커스텀 추가  ::: groupTexts 필드 초기화 추가됨 
+		//::: Restored by DF: 커스텀 추가  ::: groupTexts 필드 초기화 추가됨 
 		this.groupTexts = new HashMap();
 	}
 
-	//kslee 커스텀 추가  ::: setTextGroupID(String module, String groupID) 메소드 추가됨 
+	//::: Restored by DF: 커스텀 추가  ::: setTextGroupID(String module, String groupID) 메소드 추가됨 
 	@Override
 	public void setTextGroupID(String module, String groupID) {
 		this.groupids.remove(module);
@@ -54,13 +54,13 @@ public class ScoreService implements IScoreService {
 	
 	}
 
-	//kslee 커스텀 추가  ::: getTextGroupID() 메소드 추가됨 
+	//::: Restored by DF: 커스텀 추가  ::: getTextGroupID() 메소드 추가됨 
 	@Override
 	public HashMap<String, String> getTextGroupID() {
 		return this.groupids;
 	}
 	
-	//kslee 커스텀 추가  ::: setGroupTexts(String module, String text) 메소드 추가됨 
+	//::: Restored by DF: 커스텀 추가  ::: setGroupTexts(String module, String text) 메소드 추가됨 
 	@Override
 	public void setGroupTexts(String module, String text) {
 		String groupID = (String)this.groupids.get(module);
@@ -75,7 +75,7 @@ public class ScoreService implements IScoreService {
 		}
 	 }
 	
-	//kslee 커스텀 추가  ::: getGroupTexts() 메소드 추가됨 
+	//::: Restored by DF: 커스텀 추가  ::: getGroupTexts() 메소드 추가됨 
 	@Override
 	public HashMap<String, HashMap<String, String>> getGroupTexts() {
 		return this.groupTexts;

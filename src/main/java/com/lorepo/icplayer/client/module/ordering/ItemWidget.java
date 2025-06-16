@@ -32,7 +32,7 @@ public class ItemWidget extends HTML {
 	private final OrderingModule container; // safari fix
 	private List<AudioInfo> audioInfos = new ArrayList<AudioInfo>();
 	
-	//kslee 커스텀  필드추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  필드추가 ::: ▼▼▼ 
 	private Integer widthWithoutMargin; // safari fix
 
 	public ItemWidget(OrderingItem item, OrderingModule container) {
@@ -47,7 +47,7 @@ public class ItemWidget extends HTML {
 		setStyleName("ic_ordering-item");
 	}
 
-	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 추가 ::: ▼▼▼ 
 	public void setWidthWithoutMargin(Integer value) {
 		widthWithoutMargin = value;
 	}

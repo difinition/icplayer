@@ -136,7 +136,7 @@ public class ContentFactoryQNote extends XMLVersionAwareFactoryQNote {
 					if (loadedCount + 1 < pagesCount) {
 						loadedCount++;
 
-						// kslee fetchUrlPages >> fetchUrls 로 수정
+						// ::: Restored by DF: fetchUrlPages >> fetchUrls 로 수정
 						// send(fetchUrlPages[loadedCount], listener);
 						Utils.consoleLog("::: ContentFactoryQNote getContentLoadCallback onResponseReceived 06 : send loadedCount[" + fetchUrls[loadedCount] + "]");
 						send(fetchUrls[loadedCount], listener);

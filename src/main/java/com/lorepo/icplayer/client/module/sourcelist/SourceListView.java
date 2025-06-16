@@ -266,26 +266,26 @@ public class SourceListView extends FlowPanel implements IDisplay, IWCAG, IWCAGM
 	}
 
 	public void refreshMath(Element element) {
-		//kslee 커스텀  메소드수정 ::: ▼▼▼ 
+		//::: Restored by DF: 커스텀  메소드수정 ::: ▼▼▼ 
 		//MathJax.refreshMathJax(element);
 		MathJax.refreshMathJax(element, PlayerEntryPoint.subject, Utils.isQNote);
 	}
 	
 	@Override
 	public void refreshMath() {
-		//kslee 커스텀  메소드수정 ::: ▼▼▼ 
+		//::: Restored by DF: 커스텀  메소드수정 ::: ▼▼▼ 
 		//MathJax.refreshMathJax(getElement());
 		MathJax.refreshMathJax(this.getElement(), PlayerEntryPoint.subject, Utils.isQNote);
 	}
 
 	public void rerenderMath() {
-		//kslee 커스텀  메소드수정 ::: ▼▼▼ 
+		//::: Restored by DF: 커스텀  메소드수정 ::: ▼▼▼ 
 		//MathJax.rerenderMathJax(getElement());
 		MathJax.rerenderMathJax(this.getElement(), Utils.isQNote);
 	}
 
 	public void refreshMathJax() {
-		//kslee 커스텀  메소드수정 ::: ▼▼▼ 
+		//::: Restored by DF: 커스텀  메소드수정 ::: ▼▼▼ 
 		//MathJax.rerenderMathJax(getElement());
 		MathJax.rerenderMathJax(this.getElement(), Utils.isQNote);
 	}

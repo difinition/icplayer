@@ -27,7 +27,7 @@ public class PlayerEntryPoint implements EntryPoint {
 	private JavaScriptObject contextMetadata;
 	private JavaScriptObject externalVariables;
 
-//kslee 커스텀 추가  ::: Jimun, Answer, Solve 5셋트 15 및 subject, grade 총 17개 필드 추가됨  ::: ▼▼▼
+//::: Restored by DF: 커스텀 추가  ::: Jimun, Answer, Solve 5셋트 15 및 subject, grade 총 17개 필드 추가됨  ::: ▼▼▼
 	private PlayerApp theApplicationJimun;
 	private PlayerApp theApplicationAnswer;
 	private PlayerApp theApplicationSolve;
@@ -50,7 +50,7 @@ public class PlayerEntryPoint implements EntryPoint {
 
 	public static String subject = "SOSC";
 	public static String grade = "1";
-//kslee 커스텀 추가  ::: Jimun, Answer, Solve 5셋트 15 및 subject, grade 총 17개 필드 추가됨  ::: ▲▲▲
+//::: Restored by DF: 커스텀 추가  ::: Jimun, Answer, Solve 5셋트 15 및 subject, grade 총 17개 필드 추가됨  ::: ▲▲▲
 
 	/**
 	 * This is the entry point method.
@@ -70,7 +70,7 @@ public class PlayerEntryPoint implements EntryPoint {
 				entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::load(Ljava/lang/String;I)(url, index);
 			};
 			
-			// kslee 메소드 추가 ▼▼▼
+			// ::: Restored by DF: 메소드 추가 ▼▼▼
 			player.load2 = function(url, subject, grade, index, bQNote, bloadSeperate, isLoad2Val7) {
                 index = index || 0;
                 entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::load2(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IZZZ)(
@@ -270,7 +270,7 @@ public class PlayerEntryPoint implements EntryPoint {
             player.forceScoreUpdateSolve = function(listener) {
                 entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::forceScoreUpdateSolve()();
             };
-            // kslee native 메소드 추가  ::: player.load2 포함 45개 추가 ▲▲▲
+            // ::: Restored by DF: native 메소드 추가  ::: player.load2 포함 45개 추가 ▲▲▲
 
 			player.loadCommonPage = function(url, index) {
 				index = index || 0;
@@ -427,7 +427,7 @@ public class PlayerEntryPoint implements EntryPoint {
 			return player;
 		}
 
-        //kslee 추가 ::: icCreatePlayerJimun, Answer, Solve 3개추가됨 ▼▼▼
+        //::: Restored by DF: 추가 ::: icCreatePlayerJimun, Answer, Solve 3개추가됨 ▼▼▼
         $wnd.icCreatePlayerJimun = function(id) {
             var player = entryPoint.@com.lorepo.icplayer.client.PlayerEntryPoint::createAppPlayerJimun(Ljava/lang/String;)(id);
 
@@ -451,7 +451,7 @@ public class PlayerEntryPoint implements EntryPoint {
 
             return player;
         }        
-        //kslee 추가 ::: icCreatePlayerJimun, Answer, Solve 3개추가됨 ▲▲▲
+        //::: Restored by DF: 추가 ::: icCreatePlayerJimun, Answer, Solve 3개추가됨 ▲▲▲
  
 		// Create book
 		$wnd.icCreateBook = function(id, useCover) {
@@ -477,7 +477,7 @@ public class PlayerEntryPoint implements EntryPoint {
 	 *            wrap this node
 	 */
 	private JavaScriptObject createAppPlayer(String node_id) {
-		//kslee 커스텀 수정 ::: createAppPlayer 메소드 PlayerApp생성자 type 추가되어 인수 3개로 수정됨
+		//::: Restored by DF: 커스텀 수정 ::: createAppPlayer 메소드 PlayerApp생성자 type 추가되어 인수 3개로 수정됨
 		//this.theApplication = new PlayerApp(node_id, this);
 		
 		Utils.consoleLog("::: PlayerEntryPoint.java createAppPlayer : node_id[" + node_id + "]");
@@ -486,7 +486,7 @@ public class PlayerEntryPoint implements EntryPoint {
 		return JavaScriptObject.createFunction();
 	}
 
-	//kslee 커스텀 추가 ::: createAppPlayerJimun 메소드 추가됨
+	//::: Restored by DF: 커스텀 추가 ::: createAppPlayerJimun 메소드 추가됨
 	private JavaScriptObject createAppPlayerJimun(String node_id) {
 		
 		Utils.consoleLog("::: PlayerEntryPoint.java createAppPlayerJimun : node_id[" + node_id + "]");
@@ -495,7 +495,7 @@ public class PlayerEntryPoint implements EntryPoint {
 		return JavaScriptObject.createFunction();
 	}
 
-	//kslee 커스텀 추가 ::: createAppPlayerAnswer 메소드 추가됨
+	//::: Restored by DF: 커스텀 추가 ::: createAppPlayerAnswer 메소드 추가됨
 	private JavaScriptObject createAppPlayerAnswer(String node_id) {
 		
 		Utils.consoleLog("::: PlayerEntryPoint.java createAppPlayerAnswer : node_id[" + node_id + "]");
@@ -504,7 +504,7 @@ public class PlayerEntryPoint implements EntryPoint {
 		return JavaScriptObject.createFunction();
 	}
 
-	//kslee 커스텀 추가 ::: createAppPlayerSolve 메소드 추가됨
+	//::: Restored by DF: 커스텀 추가 ::: createAppPlayerSolve 메소드 추가됨
 	private JavaScriptObject createAppPlayerSolve(String node_id) {
 		
 		Utils.consoleLog("::: PlayerEntryPoint.java createAppPlayerSolve : node_id[" + node_id + "]");
@@ -516,7 +516,7 @@ public class PlayerEntryPoint implements EntryPoint {
 	private JavaScriptObject createBookPlayer(String node_id, boolean useCover) {
 		Utils.consoleLog("::: PlayerEntryPoint createBookPlayer Start node_id["+node_id+"] useCover["+useCover+"]::: ");
 		
-		//kslee 커스텀 수정 ::: createBookPlayer 메소드 PlayerApp생성자 type 추가되어 인수 3개로 수정됨
+		//::: Restored by DF: 커스텀 수정 ::: createBookPlayer 메소드 PlayerApp생성자 type 추가되어 인수 3개로 수정됨
 		//this.theApplication = new PlayerApp(node_id, this);
 		this.theApplication = new PlayerApp(node_id, this, "question");
 		this.theApplication.setBookMode();
@@ -539,7 +539,7 @@ public class PlayerEntryPoint implements EntryPoint {
 		this.theApplication.load(url, pageIndex);
 	}
 
-    //kslee 추가 ::: ▼▼▼ 
+    //::: Restored by DF: 추가 ::: ▼▼▼ 
     private void load2(String url, String subject, String grade, int pageIndex, boolean bQNote, boolean bloadSeperate, boolean isLoad2Val7) {
     	
     	Utils.consoleLog("::: PlayerEntryPoint.java load2 01 : url           [" + url + "]");
@@ -623,7 +623,7 @@ public class PlayerEntryPoint implements EntryPoint {
         Utils.consoleLog("::: PlayerEntryPoint unloadSolve Start ::: ");
         this.theApplicationSolve.unload();
      }
-     //kslee 커스텀 추가 ::: load2메소드 포함 10개 메소드 추가됨 ▲▲▲  
+     //::: Restored by DF: 커스텀 추가 ::: load2메소드 포함 10개 메소드 추가됨 ▲▲▲  
 	
 
 	private void loadCommonPage(String url, int pageIndex) {
@@ -634,7 +634,7 @@ public class PlayerEntryPoint implements EntryPoint {
 		this.theApplication.loadCommonPage(url, pageIndex);
 	}
 
-    //kslee 커스텀 추가 ::: loadCommonPageJimun, Answer, Solve 3개 메소드 추가됨▼▼▼
+    //::: Restored by DF: 커스텀 추가 ::: loadCommonPageJimun, Answer, Solve 3개 메소드 추가됨▼▼▼
     private void loadCommonPageJimun(String url, int pageIndex) {
     	Utils.consoleLog("::: PlayerEntryPoint loadCommonPageJimun Start url["+url+"] pageIndex["+pageIndex+"]::: ");
         if (pageIndex < 0) {
@@ -658,14 +658,14 @@ public class PlayerEntryPoint implements EntryPoint {
         }
         this.theApplicationSolve.loadCommonPage(url, pageIndex);
      }	
-    //kslee 커스텀 추가 ::: loadCommonPageJimun, Answer, Solve 3개 메소드 추가됨▲▲▲
+    //::: Restored by DF: 커스텀 추가 ::: loadCommonPageJimun, Answer, Solve 3개 메소드 추가됨▲▲▲
 	
 	private void setConfig(JavaScriptObject config) {
        	Utils.consoleLog("::: PlayerEntryPoint setConfig Start ::: ");
 		this.theApplication.setConfig(config);
 	}
 	
-    //kslee 커스텀 추가 ::: setConfigJimun, Answer, Solve 3개 메소드 추가됨▼▼▼
+    //::: Restored by DF: 커스텀 추가 ::: setConfigJimun, Answer, Solve 3개 메소드 추가됨▼▼▼
     private void setConfigJimun(JavaScriptObject config) {
        this.theApplicationJimun.setConfig(config);
     }
@@ -677,14 +677,14 @@ public class PlayerEntryPoint implements EntryPoint {
     private void setConfigSolve(JavaScriptObject config) {
        this.theApplicationSolve.setConfig(config);
     }	
-    //kslee 커스텀 추가 ::: setConfigJimun, Answer, Solve 3개 메소드 추가됨▲▲▲
+    //::: Restored by DF: 커스텀 추가 ::: setConfigJimun, Answer, Solve 3개 메소드 추가됨▲▲▲
 
 	private void forceScoreUpdate() {
 		Utils.consoleLog("::: PlayerEntryPoint forceScoreUpdate Start ::: ");
 		this.theApplication.updateScore();
 	}
 
-    //kslee 커스텀 추가 ::: forceScoreUpdateJimun, Answer, Solve 3개 메소드 추가됨▼▼▼
+    //::: Restored by DF: 커스텀 추가 ::: forceScoreUpdateJimun, Answer, Solve 3개 메소드 추가됨▼▼▼
     private void forceScoreUpdateJimun() {
        this.theApplicationJimun.updateScore();
     }
@@ -696,13 +696,13 @@ public class PlayerEntryPoint implements EntryPoint {
     private void forceScoreUpdateSolve() {
        this.theApplicationSolve.updateScore();
     }	
-    //kslee 커스텀 추가 ::: forceScoreUpdateJimun, Answer, Solve 3개 메소드 추가됨▲▲▲  
+    //::: Restored by DF: 커스텀 추가 ::: forceScoreUpdateJimun, Answer, Solve 3개 메소드 추가됨▲▲▲  
 	
 	private void setAnalytics(String id) {
 		this.theApplication.setAnalytics(id);
 	}
 
-    //kslee 커스텀 추가 ::: setAnalyticsJimun, Answer, Solve 3개 메소드 추가됨▼▼▼
+    //::: Restored by DF: 커스텀 추가 ::: setAnalyticsJimun, Answer, Solve 3개 메소드 추가됨▼▼▼
     private void setAnalyticsJimun(String id) {
        this.theApplicationJimun.setAnalytics(id);
     }
@@ -714,14 +714,14 @@ public class PlayerEntryPoint implements EntryPoint {
     private void setAnalyticsSolve(String id) {
        this.theApplicationSolve.setAnalytics(id);
     }	
-    //kslee 커스텀 추가 ::: setAnalyticsJimun, Answer, Solve 3개 메소드 추가됨▲▲▲  	
+    //::: Restored by DF: 커스텀 추가 ::: setAnalyticsJimun, Answer, Solve 3개 메소드 추가됨▲▲▲  	
 	
 	private void setState(String state) {
 		Utils.consoleLog("::: PlayerEntryPoint setState Start state["+state+"]::: ");
 		this.theApplication.setState(state);
 	}
 
-    //kslee 커스텀 추가 ::: setStateJimun, Answer, Solve 3개 메소드 추가됨▼▼▼
+    //::: Restored by DF: 커스텀 추가 ::: setStateJimun, Answer, Solve 3개 메소드 추가됨▼▼▼
     private void setStateJimun(String state) {
        this.theApplicationJimun.setState(state);
     }
@@ -733,14 +733,14 @@ public class PlayerEntryPoint implements EntryPoint {
     private void setStateSolve(String state) {
        this.theApplicationSolve.setState(state);
     }
-    //kslee 커스텀 추가 ::: setStateJimun, Answer, Solve 3개 메소드 추가됨▲▲▲  	
+    //::: Restored by DF: 커스텀 추가 ::: setStateJimun, Answer, Solve 3개 메소드 추가됨▲▲▲  	
 	
 	private void setPages(String pagesSub) {
 		Utils.consoleLog("::: PlayerEntryPoint setPages Start pagesSub["+pagesSub+"]::: ");
 		this.theApplication.setPages(pagesSub);
 	}
 	
-    //kslee 커스텀 추가 ::: setPagesJimun, Answer, Solve 3개 메소드 추가됨▼▼▼
+    //::: Restored by DF: 커스텀 추가 ::: setPagesJimun, Answer, Solve 3개 메소드 추가됨▼▼▼
     private void setPagesJimun(String pagesSub) {
        this.theApplicationJimun.setPages(pagesSub);
     }
@@ -752,14 +752,14 @@ public class PlayerEntryPoint implements EntryPoint {
     private void setPagesSolve(String pagesSub) {
        this.theApplicationSolve.setPages(pagesSub);
     }	
-    //kslee 커스텀 추가 ::: setPagesJimun, Answer, Solve 3개 메소드 추가됨▲▲▲  
+    //::: Restored by DF: 커스텀 추가 ::: setPagesJimun, Answer, Solve 3개 메소드 추가됨▲▲▲  
 
 	private String getState() {
 		Utils.consoleLog("::: PlayerEntryPoint getState Start getState["+this.theApplication.getState()+"]::: ");
 		return this.theApplication.getState();
 	}
 	
-    //kslee 커스텀 추가 ::: getStateJimun, Answer, Solve 3개 메소드 추가됨▼▼▼
+    //::: Restored by DF: 커스텀 추가 ::: getStateJimun, Answer, Solve 3개 메소드 추가됨▼▼▼
     private String getStateJimun() {
        return this.theApplicationJimun.getState();
     }
@@ -771,7 +771,7 @@ public class PlayerEntryPoint implements EntryPoint {
     private String getStateSolve() {
        return this.theApplicationSolve.getState();
     }	
-    //kslee 커스텀 추가 ::: getStateJimun, Answer, Solve 3개 메소드 추가됨▲▲▲  
+    //::: Restored by DF: 커스텀 추가 ::: getStateJimun, Answer, Solve 3개 메소드 추가됨▲▲▲  
 	
 
 	private JavaScriptObject getSemiResponsiveLayouts() {
@@ -779,7 +779,7 @@ public class PlayerEntryPoint implements EntryPoint {
 		return this.theApplication.getSemiResponsiveLayouts();
 	}
 
-    //kslee 커스텀 추가 ::: getSemiResponsiveLayoutsJimun, Answer, Solve 3개 메소드 추가됨▼▼▼
+    //::: Restored by DF: 커스텀 추가 ::: getSemiResponsiveLayoutsJimun, Answer, Solve 3개 메소드 추가됨▼▼▼
     private JavaScriptObject getSemiResponsiveLayoutsJimun() {
        return this.theApplicationJimun.getSemiResponsiveLayouts();
     }
@@ -791,7 +791,7 @@ public class PlayerEntryPoint implements EntryPoint {
     private JavaScriptObject getSemiResponsiveLayoutsSolve() {
        return this.theApplicationSolve.getSemiResponsiveLayouts();
     }	
-    //kslee 커스텀 추가 ::: getSemiResponsiveLayoutsJimun, Answer, Solve 3개 메소드 추가됨▲▲▲  	
+    //::: Restored by DF: 커스텀 추가 ::: getSemiResponsiveLayoutsJimun, Answer, Solve 3개 메소드 추가됨▲▲▲  	
 	
 	
 	private JavaScriptObject getPlayerServices() {
@@ -799,7 +799,7 @@ public class PlayerEntryPoint implements EntryPoint {
 		return this.theApplication.getPlayerServices().getAsJSObject();
 	}
 	
-    //kslee 커스텀 추가 ::: getPlayerServicesJimun, Answer, Solve 3개 메소드 추가됨▼▼▼
+    //::: Restored by DF: 커스텀 추가 ::: getPlayerServicesJimun, Answer, Solve 3개 메소드 추가됨▼▼▼
     private JavaScriptObject getPlayerServicesJimun() {
        return this.theApplicationJimun.getPlayerServices().getAsJSObject();
     }
@@ -811,14 +811,14 @@ public class PlayerEntryPoint implements EntryPoint {
     private JavaScriptObject getPlayerServicesSolve() {
        return this.theApplicationSolve.getPlayerServices().getAsJSObject();
     }	
-    //kslee 커스텀 추가 ::: getPlayerServicesJimun, Answer, Solve 3개 메소드 추가됨▲▲▲  	
+    //::: Restored by DF: 커스텀 추가 ::: getPlayerServicesJimun, Answer, Solve 3개 메소드 추가됨▲▲▲  	
 	
 	private boolean changeLayout(String layoutID) {
     	Utils.consoleLog("::: PlayerEntryPoint changeLayout Start layoutID[" + layoutID + "]::: ");
 		return this.theApplication.changeLayout(layoutID);
 	}
 
-    //kslee 커스텀 추가 ::: changeLayoutJimun, Answer, Solve 3개 메소드 추가됨▼▼▼
+    //::: Restored by DF: 커스텀 추가 ::: changeLayoutJimun, Answer, Solve 3개 메소드 추가됨▼▼▼
     private boolean changeLayoutJimun(String layoutID) {
        return this.theApplicationJimun.changeLayout(layoutID);
     }
@@ -830,7 +830,7 @@ public class PlayerEntryPoint implements EntryPoint {
     private boolean changeLayoutSolve(String layoutID) {
        return this.theApplicationSolve.changeLayout(layoutID);
     }	
-    //kslee 커스텀 추가 ::: changeLayoutJimun, Answer, Solve 3개 메소드 추가됨▲▲▲
+    //::: Restored by DF: 커스텀 추가 ::: changeLayoutJimun, Answer, Solve 3개 메소드 추가됨▲▲▲
 	    
 	    
 	private void sendLayoutChangedEvent(String value) {
@@ -869,7 +869,7 @@ public class PlayerEntryPoint implements EntryPoint {
 		fireStatusChanged(this.statusChangedListener, "PageLoaded", source, "");
 	}
 
-    //kslee 커스텀 추가 ::: onPageLoadedJimun, Answer, Solve 3개 메소드 추가됨▼▼▼
+    //::: Restored by DF: 커스텀 추가 ::: onPageLoadedJimun, Answer, Solve 3개 메소드 추가됨▼▼▼
     public void onPageLoadedJimun() {
        fireCallback(this.pageLoadedListenerJimun);
        int currentPageIndex = this.theApplicationJimun.getPlayerServices().getCurrentPageIndex();
@@ -890,7 +890,7 @@ public class PlayerEntryPoint implements EntryPoint {
        String source = Integer.toString(currentPageIndex + 1);
        fireStatusChanged(this.statusChangedListenerSolve, "PageLoaded", source, "");
     }	
-    //kslee 커스텀 추가 ::: onPageLoadedJimun, Answer, Solve 3개 메소드 추가됨▲▲▲
+    //::: Restored by DF: 커스텀 추가 ::: onPageLoadedJimun, Answer, Solve 3개 메소드 추가됨▲▲▲
 
 	// js에 없음
 	public void onScrollTo(int top) {
@@ -898,7 +898,7 @@ public class PlayerEntryPoint implements EntryPoint {
 		fireScrollTo(this.pageScrollToListener, top);
 	}
 	
-    //kslee 커스텀 추가 ::: onScrollToJimun, Answer, Solve 3개 메소드 추가됨▼▼▼
+    //::: Restored by DF: 커스텀 추가 ::: onScrollToJimun, Answer, Solve 3개 메소드 추가됨▼▼▼
     public void onScrollToJimun(int top) {
        fireScrollTo(this.pageScrollToListenerJimun, top);
     }
@@ -910,7 +910,7 @@ public class PlayerEntryPoint implements EntryPoint {
     public void onScrollToSolve(int top) {
        fireScrollTo(this.pageScrollToListenerSolve, top);
     }	
-    //kslee 커스텀 추가 ::: onScrollToJimun, Answer, Solve 3개 메소드 추가됨▲▲▲
+    //::: Restored by DF: 커스텀 추가 ::: onScrollToJimun, Answer, Solve 3개 메소드 추가됨▲▲▲
 	
 	private static native void fireExternalEvent(JavaScriptObject callback, String eventType, String data)/*-{
 		if (callback != null) {
@@ -923,12 +923,12 @@ public class PlayerEntryPoint implements EntryPoint {
 		fireExternalEvent(this.externalEventListener, eventType, data);
 	}
 
-	//kslee js에 없음
+	//::: Restored by DF: js에 없음
 	public JavaScriptObject getPageScrollToObject() {
 		return this.pageScrollToListener;
 	}
 
-    //kslee 커스텀 추가 ::: getPageScrollToObjectJimun, Answer, Solve 3개 메소드 추가됨▼▼▼
+    //::: Restored by DF: 커스텀 추가 ::: getPageScrollToObjectJimun, Answer, Solve 3개 메소드 추가됨▼▼▼
     public JavaScriptObject getPageScrollToObjectJimun() {
        return this.pageScrollToListenerJimun;
     }
@@ -940,16 +940,16 @@ public class PlayerEntryPoint implements EntryPoint {
     public JavaScriptObject getPageScrollToObjectSolve() {
        return this.pageScrollToListenerSolve;
     }	
-    //kslee 커스텀 추가 ::: getPageScrollToObjectJimun, Answer, Solve 3개 메소드 추가됨▲▲▲
+    //::: Restored by DF: 커스텀 추가 ::: getPageScrollToObjectJimun, Answer, Solve 3개 메소드 추가됨▲▲▲
 	
-	//kslee js에 없음
+	//::: Restored by DF: js에 없음
 	public void fireOutstretchHeightEvent() {
 	    Utils.consoleLog("::: PlayerEntryPoint fireOutstretchHeightEvent Start:::");
 		fireCallback(this.outstretchHeightListener);
 	}
 
 	
-    //kslee 커스텀 추가 ::: fireOutstretchHeightEventJimun, Answer, Solve 3개 메소드 추가됨▼▼▼
+    //::: Restored by DF: 커스텀 추가 ::: fireOutstretchHeightEventJimun, Answer, Solve 3개 메소드 추가됨▼▼▼
     public void fireOutstretchHeightEventJimun() {
        fireCallback(this.outstretchHeightListenerJimun);
     }
@@ -961,7 +961,7 @@ public class PlayerEntryPoint implements EntryPoint {
     public void fireOutstretchHeightEventSolve() {
        fireCallback(this.outstretchHeightListenerSolve);
     }	
-    //kslee 커스텀 추가 ::: fireOutstretchHeightEventJimun, Answer, Solve 3개 메소드 추가됨▲▲▲  	
+    //::: Restored by DF: 커스텀 추가 ::: fireOutstretchHeightEventJimun, Answer, Solve 3개 메소드 추가됨▲▲▲  	
 
 	public JavaScriptObject getContextMetadata() {
 	    Utils.consoleLog("::: PlayerEntryPoint getContextMetadata Start:::");

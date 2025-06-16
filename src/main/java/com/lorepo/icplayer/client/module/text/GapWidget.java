@@ -46,13 +46,13 @@ public class GapWidget extends TextBox implements TextElementDisplay, Navigation
 	
 	protected final GapInfo gapInfo;
 	
-	//kslee 커스텀  필드추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  필드추가 ::: ▼▼▼ 
 	@SuppressWarnings("unused")
 	private String moduleID;
 	@SuppressWarnings("unused")
 	private IPlayerServices playerService;
 	
-	//kslee 커스텀  생성자 수정 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  생성자 수정 ::: ▼▼▼ 
 	//public GapWidget(GapInfo gi, ITextViewListener listener){
 	//	super(DOM.getElementById(gi.getId()));
 	//	gapInfo = gi;
@@ -119,7 +119,7 @@ public class GapWidget extends TextBox implements TextElementDisplay, Navigation
 	    return this.gapHasBeenAccessed;
 	}
 
-	//kslee 커스텀  메소드 수정 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 수정 ::: ▼▼▼ 
 	//	private final void initialize (ITextViewListener listener) {
 	//
 	//		setStylePrimaryName("ic_gap");
@@ -353,7 +353,7 @@ public class GapWidget extends TextBox implements TextElementDisplay, Navigation
 		removeStyleDependentName("correct-answer");
 	}
 	
-	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 추가 ::: ▼▼▼ 
 	public void setIndex(int index) {
 	}
 

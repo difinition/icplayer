@@ -14,7 +14,7 @@ import com.lorepo.icplayer.client.module.text.TextPresenter.TextElementDisplay;
 public class FilledGapWidget extends GapWidget implements TextElementDisplay {
 	private ArrayList<HandlerRegistration> filledGapHandlers = new ArrayList<HandlerRegistration>();
 	
-	//kslee 커스텀  생성자 수정 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  생성자 수정 ::: ▼▼▼ 
 	//public FilledGapWidget(GapInfo gi, final ITextViewListener listener){
 	//	super(gi, listener);
 	//	this.initialize(listener);

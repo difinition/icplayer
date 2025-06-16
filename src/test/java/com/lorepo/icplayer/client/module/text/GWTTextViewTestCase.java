@@ -46,7 +46,7 @@ public class GWTTextViewTestCase extends GwtTest {
 		InlineChoiceInfo gapInfo2 = new InlineChoiceInfo("sddsf2", "12", 0);
 		GapInfo gapInfo3 = new GapInfo("sddsf3", 12, false, true, 0, false);
 		
-		//kslee GapWidget 인수추가에 따른 수정
+		//::: Restored by DF: GapWidget 인수추가에 따른 수정
 		//this.gapWidget1 = new GapWidget(gapInfo1, null);
 		this.gapWidget1 = new GapWidget(gapInfo1, null, null, null, null);
 		this.gapWidget2 = new InlineChoiceWidget(gapInfo2, null, this.textView);

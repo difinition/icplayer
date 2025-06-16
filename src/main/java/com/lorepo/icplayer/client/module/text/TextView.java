@@ -39,7 +39,7 @@ public class TextView extends HTML implements IDisplay, IWCAG, MathJaxElement, I
 	private final ArrayList<String> mathGapIds = new ArrayList<String>();
 	private boolean moduleHasFocus = false;
 	
-	//kslee 커스텀  필드추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  필드추가 ::: ▼▼▼ 
 	private int clicks = -1;
 	
 	private PageController pageController;
@@ -68,7 +68,7 @@ public class TextView extends HTML implements IDisplay, IWCAG, MathJaxElement, I
 		createUI(isPreview);
 		mathJaxLoaded();
 		
-		//kslee 커스텀  필드 초기화 추가 ::: ▼▼▼ 
+		//::: Restored by DF: 커스텀  필드 초기화 추가 ::: ▼▼▼ 
 		this.changetLayout();
 		
 	}
@@ -98,7 +98,7 @@ public class TextView extends HTML implements IDisplay, IWCAG, MathJaxElement, I
 
 		getElement().setAttribute("lang", this.module.getLangAttribute());
 		
-		//kslee 커스텀  로직 추가 ::: ▼▼▼ 
+		//::: Restored by DF: 커스텀  로직 추가 ::: ▼▼▼ 
 		try {
 			this.getElement().setAttribute("isQuestionNumber", this.module.getIsQuestionNumber() + "");
 		} catch (Exception var3) {
@@ -130,7 +130,7 @@ public class TextView extends HTML implements IDisplay, IWCAG, MathJaxElement, I
 	@Override
 	public void connectInlineChoices (List<InlineChoiceInfo> InlineChoiceList) {
 		final int gapWidth = module.getGapWidth();
-		//kslee 커스텀  메소드 추가 ::: ▼▼▼
+		//::: Restored by DF: 커스텀  메소드 추가 ::: ▼▼▼
 		final int gapHeight = this.module.getGapHeight();
 
 		for (InlineChoiceInfo ic: InlineChoiceList) {
@@ -142,7 +142,7 @@ public class TextView extends HTML implements IDisplay, IWCAG, MathJaxElement, I
 			gap.setLang(this.module.getLangAttribute());
 			if (gapWidth > 0) {
 				gap.setWidth(gapWidth + "px");
-				//kslee 커스텀  메소드 추가 ::: ▼▼▼
+				//::: Restored by DF: 커스텀  메소드 추가 ::: ▼▼▼
 				if (gapHeight > 0) {
 					gap.setHeight(gapHeight + "px");
 				}
@@ -176,7 +176,7 @@ public class TextView extends HTML implements IDisplay, IWCAG, MathJaxElement, I
 				
 				Utils.consoleLog("TextView.java connectDraggableGaps Utils.isQNote [" + Utils.isQNote + "] :::");
 				
-				//kslee 커스텀  메소드 수정 ::: ▼▼▼ 
+				//::: Restored by DF: 커스텀  메소드 수정 ::: ▼▼▼ 
 				//int calculatedGapWidth = getCalculatedGapWidth(longestAnswer, fontSize);
 				int calculatedGapWidth;
 				if (Utils.isQNote) {
@@ -210,7 +210,7 @@ public class TextView extends HTML implements IDisplay, IWCAG, MathJaxElement, I
 	public void connectGaps(Iterator<GapInfo> giIterator) {
 		int gapWidth = module.getGapWidth();
 		
-		//kslee 커스텀  추가 ::: ▼▼▼ 
+		//::: Restored by DF: 커스텀  추가 ::: ▼▼▼ 
 		int gapHeight = this.module.getGapHeight();
 		boolean isMultipleLines = this.module.getMultipleLines();
 		
@@ -267,7 +267,7 @@ public class TextView extends HTML implements IDisplay, IWCAG, MathJaxElement, I
 	@Override
 	public void connectFilledGaps(Iterator<GapInfo> giIterator) {
 		int gapWidth = module.getGapWidth();
-		//kslee 커스텀  추가 ::: ▼▼▼ 
+		//::: Restored by DF: 커스텀  추가 ::: ▼▼▼ 
 		int gapHeight = this.module.getGapHeight();
 		
 		while (giIterator.hasNext()) {
@@ -278,7 +278,7 @@ public class TextView extends HTML implements IDisplay, IWCAG, MathJaxElement, I
 			}
 			try {
 
-				// kslee 커스텀 수정 ::: ▼▼▼
+				// ::: Restored by DF: 커스텀 수정 ::: ▼▼▼
 				// FilledGapWidget gap = new FilledGapWidget(gi, listener);
 				FilledGapWidget gap = new FilledGapWidget(gi, this.module.gapStyles(), this.listener, this.module.getId(), this.module.getPlayerSerivice());
 
@@ -287,7 +287,7 @@ public class TextView extends HTML implements IDisplay, IWCAG, MathJaxElement, I
 				} else {
 					String longestAnswer = gi.getLongestAnswer();
 					String fontSize = getFontSize(gap.getId());
-					// kslee 커스텀 수정 ::: ▼▼▼
+					// ::: Restored by DF: 커스텀 수정 ::: ▼▼▼
 					// int calculatedGapWidth = getCalculatedGapWidth(longestAnswer, fontSize);
 					Utils.consoleLog("Utils.isQNote " + Utils.isQNote);
 					int calculatedGapWidth;
@@ -318,7 +318,7 @@ public class TextView extends HTML implements IDisplay, IWCAG, MathJaxElement, I
 	private void changeGapMinWidth(GapWidget gap, int width) {
 		String minWidth = Double.toString(1.1 * width) + "px";
 		
-		// kslee 커스텀 메소드 추가 ::: ▼▼▼
+		// ::: Restored by DF: 커스텀 메소드 추가 ::: ▼▼▼
 		if (Utils.isQNote) {
 			minWidth = width + "px";
 		}	
@@ -339,7 +339,7 @@ public class TextView extends HTML implements IDisplay, IWCAG, MathJaxElement, I
 		this.updateParentProperty(gapElement);
 	}
 
-	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 추가 ::: ▼▼▼ 
 	private void changeGapStyleMinimum(GapWidget gap, int gapWidth) {
 		if (Utils.isQNote) {
 			Element gapElement = gap.getElement();
@@ -351,7 +351,7 @@ public class TextView extends HTML implements IDisplay, IWCAG, MathJaxElement, I
 		}
 	}
 	
-	//kslee 커스텀  메소드 수정 ::: 알수 없어서 예전으로 원복 !!▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 수정  :::▼▼▼ 
 	private void updateParentProperty(Element child) {
 		com.google.gwt.dom.client.Element parentElement = child.getParentElement();
 
@@ -390,7 +390,7 @@ public class TextView extends HTML implements IDisplay, IWCAG, MathJaxElement, I
 		return unwrappedWidth;
 	}-*/;
 	
-	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 추가 ::: ▼▼▼ 
 	private void setMathGapMaxlength(GapWidget gap, String answer, boolean bMax) {
 		if (Utils.isQNote) {
 			Element gapElement = gap.getElement();
@@ -408,7 +408,7 @@ public class TextView extends HTML implements IDisplay, IWCAG, MathJaxElement, I
 		}
 	}
 	
-	//kslee 커스텀  메소드 수정::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 수정::: ▼▼▼ 
 	@Override
 	public void connectMathGap(Iterator<GapInfo> giIterator, String id, ArrayList<Boolean> savedDisabledState) {
 		// Stop if Text view is no longer part of the DOM
@@ -419,7 +419,7 @@ public class TextView extends HTML implements IDisplay, IWCAG, MathJaxElement, I
 				try {
 					int counter = Integer.parseInt(id.split("-")[1]) - 1;
 					
-					Utils.consoleLog("Restored by DF: TextView connectMathGap id : [" + id + "]");
+					Utils.consoleLog("::: Restored by DF: TextView connectMathGap id : [" + id + "]");
 					String longestAnswer = gi.getLongestAnswer();
 					int gapWidth = this.module.getGapWidth();
 					GapWidget gap;
@@ -673,7 +673,7 @@ public class TextView extends HTML implements IDisplay, IWCAG, MathJaxElement, I
 		}
 	}
 	
-	//kslee 커스텀  메소드 추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 추가 ::: ▼▼▼ 
 	public void setIndexValue (String id, String index) {
 		Utils.consoleLog("TextView setIndexValue");
 		
@@ -740,7 +740,7 @@ public class TextView extends HTML implements IDisplay, IWCAG, MathJaxElement, I
 		this.module.setText(text);
 	}
 
-	//kslee 커스텀  메소드 수정 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 수정 ::: ▼▼▼ 
 	@Override
 	public void refreshMath () {
 		Utils.consoleLog("::: TextView.java refreshMath : subject[" + PlayerEntryPoint.subject + "]  isQNote[" + Utils.isQNote + "]");
@@ -748,7 +748,7 @@ public class TextView extends HTML implements IDisplay, IWCAG, MathJaxElement, I
 		MathJax.refreshMathJax(this.getElement(), PlayerEntryPoint.subject, Utils.isQNote);
 	}
 
-	//kslee 커스텀  메소드 수정 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 수정 ::: ▼▼▼ 
 	@Override
 	public void refreshGapMath(String id) {
 		Utils.consoleLog("::: TextView.java refreshGapMath : id[" + id + "] ::: ");
@@ -763,7 +763,7 @@ public class TextView extends HTML implements IDisplay, IWCAG, MathJaxElement, I
 		this.addDisplayStyleToMathJaxElements();
 	}
 
-	//kslee 커스텀  메소드 수정 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  메소드 수정 ::: ▼▼▼ 
 	public void rerenderMathJax () {
 		//MathJax.rerenderMathJax(getElement());
 		MathJax.rerenderMathJax(this.getElement(), Utils.isQNote);

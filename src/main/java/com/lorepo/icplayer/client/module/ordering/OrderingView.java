@@ -805,7 +805,7 @@ public class OrderingView extends Composite implements IDisplay, IWCAG, IWCAGMod
 		this.listener = listener;
 	}
 
-	//kslee 커스텀 메소드 수정 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀 메소드 수정 ::: ▼▼▼ 
 	@Override
 	public void refreshMath() {
 		//MathJax.rerenderMathJax(getElement());

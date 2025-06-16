@@ -75,9 +75,9 @@ public interface IPlayerServices {
 	public String getCurrentWCAGPresenterId();
 	public String getCurrentWCAGPresenterArea();
 	
-	//kslee 커스텀 추가 ::: 
+	//::: Restored by DF: 커스텀 추가 ::: 
 	public String getCurrentPageId();
-	//kslee 커스텀 추가 ::: 
+	//::: Restored by DF: 커스텀 추가 ::: 
 	void setDisable(boolean isDisable);
 	
 }

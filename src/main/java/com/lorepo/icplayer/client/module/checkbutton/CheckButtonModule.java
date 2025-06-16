@@ -23,7 +23,7 @@ public class CheckButtonModule extends BasicModuleModel implements IWCAGModuleMo
 	private String title = "";
 	private ArrayList<SpeechTextsStaticListItem> speechTextItems = new ArrayList<SpeechTextsStaticListItem>();
 	
-	//kslee 커스텀  필드추가 ::: ▼▼▼ 
+	//::: Restored by DF: 커스텀  필드추가 ::: ▼▼▼ 
 	private boolean disableScoreUpdate = false;
 	
 	public static final int SELECTED_INDEX = 0;
@@ -39,7 +39,7 @@ public class CheckButtonModule extends BasicModuleModel implements IWCAGModuleMo
 		addPropertyUnCheckTitle();
 		addPropertySpeechTexts();
 		
-		//kslee 커스텀  메소드 수정 ::: ▼▼▼ 
+		//::: Restored by DF: 커스텀  메소드 수정 ::: ▼▼▼ 
 		this.addPropertyDisableScoreUpdate();
 		
 	}
