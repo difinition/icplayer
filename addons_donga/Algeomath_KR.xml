@@ -1,0 +1,373 @@
+<?xml version='1.0' encoding='UTF-8' ?><addon id='Algeomath_KR'><metadata></metadata><model><property name='{library}' displayName='Algeomath' type='script' isLocalized='false' isDefault='false' value='/file/serve/7979327348718776'/><property name='Exercise type' displayName='' type='{Algeo 2D, Algeo 3D, Kids 2D, Kids 3D}, Exercise type' isLocalized='false' isDefault='false'/><property name='Initial file' displayName='Initial file' type='file' isLocalized='false' isDefault='false'/></model><resources></resources><css>.algeomath-wrapper { 
+    width: 100%; 
+    height: 100%; 
+}
+
+.algeomath-container { 
+    display: flex; 
+    width: 100%; 
+    height: 100%; 
+    background-color: lightgrey;
+}
+
+.algeomath-exercise { 
+    width: 100%; 
+    height: 100%; 
+}
+
+.algeomath-fullscreen-button {
+    position: absolute;
+    top: 3px;
+    right: 4px;
+    left: auto;
+    bottom: auto;
+    width: 36px;
+    height: 36px;
+    background-image: url(&quot;data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iNDBweCIgdmlld0JveD0iMCAtOTYwIDk2MCA5NjAiIHdpZHRoPSI0MHB4IiBmaWxsPSIjRkZGRkZGIj48cGF0aCBkPSJNMTIwLTEyMHYtMTk1LjMzaDY2LjY3djEyOC42NmgxMjguNjZWLTEyMEgxMjBabTUyNC42NyAwdi02Ni42N2gxMjguNjZ2LTEyOC42Nkg4NDBWLTEyMEg2NDQuNjdaTTEyMC02NDQuNjdWLTg0MGgxOTUuMzN2NjYuNjdIMTg2LjY3djEyOC42NkgxMjBabTY1My4zMyAwdi0xMjguNjZINjQ0LjY3Vi04NDBIODQwdjE5NS4zM2gtNjYuNjdaIi8+PC9zdmc+&quot;);
+    background-position: center center;
+    background-size: 100%;
+}
+
+.algeomath-fullscreen-button.opened {
+    background-image: url(&quot;data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iNDBweCIgdmlld0JveD0iMCAtOTYwIDk2MCA5NjAiIHdpZHRoPSI0MHB4IiBmaWxsPSIjRkZGRkZGIj48cGF0aCBkPSJNMjQ4LjY3LTEyMHYtMTI4LjY3SDEyMHYtNjYuNjZoMTk1LjMzVi0xMjBoLTY2LjY2Wm0zOTYgMHYtMTk1LjMzSDg0MHY2Ni42Nkg3MTEuMzNWLTEyMGgtNjYuNjZaTTEyMC02NDQuNjd2LTY2LjY2aDEyOC42N1YtODQwaDY2LjY2djE5NS4zM0gxMjBabTUyNC42NyAwVi04NDBoNjYuNjZ2MTI4LjY3SDg0MHY2Ni42Nkg2NDQuNjdaIi8+PC9zdmc+&quot;);
+}
+
+.algeomath-fullscreen-button:hover {
+    cursor: pointer;
+    opacity: 0.5;
+}</css><view>&lt;div class=&quot;algeomath-wrapper&quot;&gt;
+    &lt;div class=&quot;algeomath-container&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;algeomath-fullscreen-button&quot;&gt;&lt;/div&gt;
+&lt;/div&gt;</view><preview>&lt;div class=&quot;algeomath-container&quot;&gt;&lt;/div&gt;
+&lt;div class=&quot;algeomath-fullscreen-button&quot;&gt;&lt;/div&gt;</preview><presenter>function AddonAlgeomath_KR_create(){
+
+    var presenter = function () { };
+   
+    presenter.setPlayerController = function (controller) {
+        presenter.playerController = controller;
+        presenter.eventBus = controller.getEventBus();
+        presenter.eventBus.addEventListener(&apos;ValueChanged&apos;, this);
+        presenter.eventBus.addEventListener(&apos;ShowAnswers&apos;, this);
+        presenter.eventBus.addEventListener(&apos;HideAnswers&apos;, this);
+        presenter.eventBus.addEventListener(&apos;PageLoaded&apos;, this);
+        presenter.eventBus.addEventListener(&apos;LimitedCheck&apos;, this);
+        presenter.eventBus.addEventListener(&apos;ResizeWindow&apos;, this);
+    };
+   
+    presenter.run = function (view, model) {
+        console.log(&apos;Algeomath KR v1.15&apos;);
+        presenter.view = view;
+        presenter.model = model;
+  
+        presenter.defaultVisibility = ModelValidationUtils.validateBoolean(model[&apos;Is Visible&apos;]);
+        presenter.isVisible = presenter.defaultVisibility;
+        presenter.setVisibility(presenter.defaultVisibility);
+        presenter.exercise = model[&apos;Exercise type&apos;] !== undefined &amp;&amp; model[&apos;Exercise type&apos;] !== &apos;&apos; ? model[&apos;Exercise type&apos;] : &apos;Algeo 2D&apos;;
+        presenter.initialFile = model[&apos;Initial file&apos;] !== undefined &amp;&amp; model[&apos;Initial file&apos;] !== &apos;&apos; ? model[&apos;Initial file&apos;] : false;
+        presenter.hasFullscreen = presenter.checkFullscreen();
+        presenter.isFullscreen = false;
+  
+        presenter.initiate(view, model, false);
+    };
+  
+    presenter.createPreview = function (view, model) {
+        presenter.view = view;
+        presenter.model = model;
+  
+        presenter.initiate(view, model, true);
+    };
+  
+    presenter.initiate = function (view, model, isPreview) {
+        presenter.createExercise(presenter.exercise);
+        presenter.enableFullScreenFunctions();
+    };
+  
+    presenter.createExercise = function (type) {
+        let container = presenter.view.querySelector(&apos;.algeomath-container&apos;);
+        let components = {
+            &apos;Algeo 2D&apos;: &apos;algeo-2d&apos;,
+            &apos;Algeo 3D&apos;: &apos;algeo-3d&apos;,
+            &apos;Kids 2D&apos;: &apos;kids-2d&apos;,
+            &apos;Kids 3D&apos;: &apos;kids-3d&apos;
+        };
+        let element = document.createElement(`${components[type]}`);
+        element.className = &apos;algeomath-exercise&apos;;
+        container.innerHTML = &apos;&apos;
+        container.appendChild(element);
+        if (presenter.initialFile) element.setAttribute(&apos;initialdata&apos;, presenter.initialFile);
+    };
+  
+    presenter.setVisibility = function (boolean) {
+        $(presenter.view).css(&apos;visibility&apos;, boolean ? &apos;visible&apos; : &apos;hidden&apos;);
+        presenter.isVisible = boolean;
+    };
+  
+    presenter.show = function() {
+        presenter.setVisibility(true);
+    };
+  
+    presenter.hide = function() {
+        presenter.setVisibility(false);
+    };
+ 
+    presenter.checkFullscreen = function() {
+        if (presenter.view.requestFullscreen || presenter.view.webkitRequestFullscreen || presenter.view.mozRequestFullScreen || presenter.view.msRequestFullscreen) {
+            return true;
+        } else {
+            return false;
+        };
+    };
+  
+    presenter.goFullscreen = function() {
+        if (presenter.hasFullscreen) {
+            let target = presenter.view;
+            if (target.requestFullscreen) {
+                target.requestFullscreen();
+            } else if (target.webkitRequestFullscreen) {
+                target.webkitRequestFullscreen();
+            } else if (target.mozRequestFullScreen) {
+                target.mozRequestFullScreen();
+            } else if (target.msRequestFullscreen) {
+                target.msRequestFullscreen();
+            }
+        } else {
+            presenter.goFallbackFullscreen();
+        };
+    };
+  
+    presenter.exitFullscreen = function() {
+        if (presenter.hasFullscreen) {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+        } else {
+            presenter.exitFallbackFullscreen();
+        }
+    };
+ 
+    presenter.originalViewStyles = {};
+ 
+    presenter.goFallbackFullscreen = function() {
+        let $container = $(presenter.view).find(&apos;.algeomath-wrapper&apos;);
+ 
+        if(presenter.isFullscreen) return;
+        presenter.isFullscreen = true;
+ 
+        presenter.disableUserScaling();
+        presenter.disableScrolling();
+ 
+        let $button = $(presenter.view).find(&apos;.algeomath-fullscreen-button&apos;);
+        $button.addClass(&apos;opened&apos;);
+        if (presenter.originalViewStyles.width === undefined) {
+            presenter.originalViewStyles.width = $container.css(&apos;width&apos;);
+            presenter.originalViewStyles.height = $container.css(&apos;height&apos;);
+            presenter.originalViewStyles.top = $container.css(&apos;top&apos;);
+            presenter.originalViewStyles.left = $container.css(&apos;left&apos;);
+            presenter.originalViewStyles.zIndex = $container.css(&apos;z-index&apos;);
+            presenter.originalViewStyles.position = $container.css(&apos;position&apos;);
+            presenter.originalViewStyles.contentViewOverflow = $(&apos;#content-view&apos;).css(&apos;overflow&apos;);
+        }
+        $container.css(&apos;position&apos;, &apos;fixed&apos;);
+        presenter.resizeFallbackFullscreen();
+        $container.css(&apos;left&apos;, &apos;0px&apos;);
+        $container.css(&apos;z-index&apos;, &apos;3000&apos;);
+ 
+    }
+ 
+    presenter.resizeFallbackFullscreen = function() {
+        let $container = $(presenter.view).find(&apos;.algeomath-wrapper&apos;);
+        if (!presenter.isFullscreen) return;
+        let scaleX = 1.0;
+        let iframeScroll = 0;
+        if (presenter.playerController) {
+            scaleX = presenter.playerController.getScaleInformation().scaleX;
+            iframeScroll = presenter.playerController.iframeScroll() / scaleX;
+        }
+        let topContainer = $(&apos;header#header&apos;).length &amp;&amp; $(&apos;#content-view&apos;).length ? $(&apos;#content-view&apos;)[0] : $(&apos;body&apos;)[0];
+        let rect = topContainer.getBoundingClientRect();
+        let vh = window.innerHeight || 9999999;
+        let vw = window.innerWidth || 9999999;
+        if (rect.height &lt; vh) {
+            $container.css(&apos;height&apos;, rect.height / scaleX + &apos;px&apos;);
+        } else {
+            $container.css(&apos;height&apos;, vh / scaleX + &apos;px&apos;);
+        }
+        if (rect.width &lt; vw) {
+            $container.css(&apos;width&apos;, rect.width / scaleX + &apos;px&apos;);
+        } else {
+            $container.css(&apos;width&apos;, vw / scaleX + &apos;px&apos;);
+        }
+        $container.css(&apos;top&apos;, &apos;0px&apos;);
+        $(&apos;#content-view&apos;).css(&apos;overflow&apos;, &apos;visible&apos;);
+    }
+ 
+    presenter.exitFallbackFullscreen = function() {
+        let $container = $(presenter.view).find(&apos;.algeomath-wrapper&apos;);
+        if (!presenter.isFullscreen) return;
+        presenter.isFullscreen = false;
+        let $button = $(presenter.view).find(&apos;.algeomath-fullscreen-button&apos;);
+        $button.removeClass(&apos;opened&apos;);
+ 
+        if (presenter.originalViewStyles.width !== undefined) {
+            $container.css(&apos;width&apos;, presenter.originalViewStyles.width);
+            $container.css(&apos;height&apos;, presenter.originalViewStyles.height);
+            $container.css(&apos;top&apos;, presenter.originalViewStyles.top);
+            $container.css(&apos;left&apos;, presenter.originalViewStyles.left);
+            $container.css(&apos;z-index&apos;, presenter.originalViewStyles.zIndex);
+            $container.css(&apos;position&apos;, presenter.originalViewStyles.position);
+            presenter.originalViewStyles = {};
+        }
+ 
+        presenter.enableUserScaling();
+        presenter.enableScrolling();
+    }
+ 
+    presenter.disableUserScaling = function() {
+        let metaViewport = $(&apos;meta[name=&quot;viewport&quot;]&apos;);
+        let metaViewportContent = metaViewport.attr(&apos;content&apos;);
+        let userScalableOption = &quot;user-scalable=0&quot;;
+        if (metaViewportContent.trim().length != 0) userScalableOption = &quot;, &quot; + userScalableOption;
+        if (metaViewportContent.indexOf(&apos;user-scalable&apos;) == -1) {
+            metaViewport.attr(&apos;content&apos;, metaViewportContent + userScalableOption);
+        }
+    }
+ 
+    presenter.enableUserScaling = function() {
+        let metaViewport = $(&apos;meta[name=&quot;viewport&quot;]&apos;);
+        let metaViewportContent = metaViewport.attr(&apos;content&apos;);
+        if (metaViewportContent.indexOf(&apos;, user-scalable=0&apos;) != -1) {
+            metaViewport.attr(&apos;content&apos;, metaViewportContent.replace(&quot;, user-scalable=0&quot;, &quot;&quot;));
+        } else if (metaViewportContent.indexOf(&apos;user-scalable=0&apos;) != -1) {
+            metaViewport.attr(&apos;content&apos;, metaViewportContent.replace(&quot;user-scalable=0&quot;, &quot;&quot;));
+        }
+    }
+ 
+    function findScrollElements() {
+        const $defaultScrollElement = $(window.parent.document);
+        const $bodyScrollElement = $(&apos;body&apos;);
+        const $mCourserScrollElement = $defaultScrollElement.find(&apos;#lesson-view &gt; div &gt; div&apos;);
+        const $mAuthorMobileScrollElement = $(window);
+        const $mCourserMobileScrollElement = $(&quot;#content-view&quot;);
+        const $mLibroDesktopScrollElement = $($(&quot;#_icplayerContent&quot;)[0]?.shadowRoot.querySelector(&quot;.inner-scroll&quot;));
+        return [
+            $defaultScrollElement, $bodyScrollElement, $mCourserScrollElement, $mAuthorMobileScrollElement,
+            $mCourserMobileScrollElement, $mLibroDesktopScrollElement
+        ];
+    }
+ 
+    presenter.resetScrollPosition = function() {
+        if (presenter.originalScroll == null) return;
+        console.log(&quot;resetScrollPosition&quot;);
+        $(this).scrollTop(0);
+        $(this).scrollLeft(0);
+    }
+ 
+    presenter.disableScrolling = function() {
+        if (presenter.originalScroll != null) return;
+        presenter.originalScroll = {left: 0, top: 0};
+        let scrollElements = findScrollElements();
+        for (var i = 0; i &lt; scrollElements.length; i++) {
+            let scrollElement = scrollElements[i];
+            if (scrollElement.length == 0) continue;
+            if (scrollElement.scrollTop() != 0 || scrollElement.scrollLeft() != 0) {
+                presenter.originalScroll.top = scrollElement.scrollTop();
+                presenter.originalScroll.left = scrollElement.scrollLeft();
+                console.log(presenter.originalScroll);
+                scrollElement.scrollTop(0);
+                scrollElement.scrollLeft(0);
+            }
+            scrollElement.on(&apos;scroll&apos;, presenter.resetScrollPosition);
+        }
+    }
+ 
+    presenter.enableScrolling = function() {
+        if (presenter.originalScroll == null) return;
+        let scrollElements = findScrollElements();
+        for (var i = 0; i &lt; scrollElements.length; i++) {
+            let scrollElement = scrollElements[i];
+            if (scrollElement.length == 0) continue;
+            scrollElement.scrollTop(presenter.originalScroll.top);
+            scrollElement.scrollLeft(presenter.originalScroll.left);
+            scrollElement.off(&apos;scroll&apos;, presenter.resetScrollPosition);
+        }
+        presenter.originalScroll = null;
+    }
+ 
+    presenter.onResize = function(event) {
+        presenter.resizeFallbackFullscreen();
+    }
+  
+    presenter.enableFullScreenFunctions = function() {
+        let button = presenter.view.querySelector(&apos;.algeomath-fullscreen-button&apos;);
+        button.addEventListener(&apos;click&apos;, () =&gt; {
+            if (!button.classList.contains(&apos;opened&apos;)) {
+                presenter.goFullscreen();
+            } else {
+                presenter.exitFullscreen();
+            };
+        });
+        presenter.view.addEventListener(&apos;fullscreenchange&apos;, () =&gt; {
+            if (document.fullscreenElement) {
+                button.classList.add(&apos;opened&apos;);
+            } else {
+                button.classList.remove(&apos;opened&apos;);
+            };
+        });
+        if (!presenter.hasFullscreen) {
+            window.addEventListener(&apos;resize&apos;, presenter.onResize);
+            window.addEventListener(&apos;changeorientation&apos;, presenter.onResize);
+        }
+    };
+   
+    // === EVENTS ===
+    presenter.onEventReceived = function (eventName, eventData) {
+        if (eventData.source == undefined) return;
+    };
+   
+    // === RESET ===
+    presenter.reset = function () {
+          
+    };
+   
+    presenter.setState = function (state) {
+        let parsedState = JSON.parse(state);
+  
+        presenter.isVisible = parsedState.isVisible;
+        presenter.setVisibility(presenter.isVisible);
+    };
+  
+    presenter.getState = function () {
+        return JSON.stringify({
+            isVisible: presenter.isVisible
+        });
+    };
+   
+    presenter.executeCommand = function (name, params) {
+        let commands = {
+            &apos;show&apos;: presenter.show,
+            &apos;hide&apos;: presenter.hide
+        };
+        Commands.dispatch(commands, name, params, presenter);
+    };
+ 
+    presenter.onDestroy = function() {
+        if (!presenter.hasFullscreen) {
+            window.removeEventListener(&apos;resize&apos;, presenter.onResize);
+            window.removeEventListener(&apos;changeorientation&apos;, presenter.onResize);
+            presenter.enableUserScaling();
+            presenter.enableScrolling();
+        }
+    }
+   
+    return presenter;
+}
+ 
+AddonAlgeomath_KR_create.__supported_player_options__ = {
+    interfaceVersion: 2
+};</presenter></addon>
