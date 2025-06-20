@@ -1111,11 +1111,51 @@ public class PlayerApp {
 				if (Utils.isLoadSeperate) {
 					Utils.consoleLog("::: PlayerApp preloadAllPages 01  new PageFactoryQNote ::: ");
 					PageFactoryQNote factory = new PageFactoryQNote(page);
-					factory.load(url, new PagePreloadListener(listener));
+					factory.load(url, new IProducingLoadingListener(){
+						@Override
+						public void onFinishedLoading(Object producedItem) {
+							List<Page> pages = contentModel.getPages().getAllPages();
+							boolean allPagesLoaded = true;
+							for(Page p: pages) {
+								if (!p.isLoaded()) {
+									allPagesLoaded = false;
+									break;
+								}
+							}
+							if (allPagesLoaded) {
+								listener.onFinishedLoading("All pages have been loaded!");
+							}
+						}
+
+						@Override
+						public void onError(String error) {
+							listener.onError(error);
+						}
+					});
 				} else {
 					Utils.consoleLog("::: PlayerApp preloadAllPages 02  new PageFactory ::: ");
 					PageFactory factory = new PageFactory(page);
-					factory.load(url, new PagePreloadListener(listener));
+					factory.load(url, new IProducingLoadingListener(){
+						@Override
+						public void onFinishedLoading(Object producedItem) {
+							List<Page> pages = contentModel.getPages().getAllPages();
+							boolean allPagesLoaded = true;
+							for(Page p: pages) {
+								if (!p.isLoaded()) {
+									allPagesLoaded = false;
+									break;
+								}
+							}
+							if (allPagesLoaded) {
+								listener.onFinishedLoading("All pages have been loaded!");
+							}
+						}
+
+						@Override
+						public void onError(String error) {
+							listener.onError(error);
+						}
+					});
 				}
 			}
 		}

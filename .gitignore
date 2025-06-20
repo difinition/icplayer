@@ -1,7 +1,7 @@
 /test.log
 /.gwt
 /.settings
-/dist
+/dist/build/**
 /gwt-unitCache
 /reports
 /target
