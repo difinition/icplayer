@@ -265,10 +265,13 @@ public class Page extends BasicPropertyProvider implements IStyledModule, IPage,
 
 
 	public void setBaseURL(String fetchUrl) {
+		
+		Utils.consoleLog("::: Page setBaseURL Start fetchUrl[" + fetchUrl + "]::: ");
+		
 		this.baseURL = fetchUrl.substring(0, fetchUrl.lastIndexOf("/") + 1);
 		// ::: Restored by DF: 커스텀 메소드 수정 ::: ▼▼▼
 		Utils.baseURL = this.baseURL;
-		Utils.consoleLog("Utils.baseURL : " + Utils.baseURL);
+		Utils.consoleLog("::: Page setBaseURL Utils.baseURL[" + Utils.baseURL + "]::: ");
 	}
 
 	@Override

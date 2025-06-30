@@ -66,6 +66,7 @@ import com.lorepo.icplayer.client.module.text.TextModel;
 import com.lorepo.icplayer.client.module.text.TextPresenter;
 import com.lorepo.icplayer.client.module.text.TextView;
 import com.lorepo.icplayer.client.utils.ModuleFactoryUtils;
+import com.lorepo.icplayer.client.utils.Utils;
 
 public class ModuleFactory implements IModuleFactory{
 
@@ -145,6 +146,7 @@ public class ModuleFactory implements IModuleFactory{
 		}
 		else if(xmlNodeName.compareTo("textModule") == 0){
 			module = new TextModel();
+			Utils.consoleLog("::: ■■ Goal A01 ModuleFactory createModel xmlNodeName.compareTo(textModule) - module.isTabindexEnabled["+ module.isTabindexEnabled()+"] module hash["+System.identityHashCode(module)+"] ::: ");
 		}
 		else if(xmlNodeName.compareTo("addonModule") == 0){
 			module = new AddonModel();
@@ -162,6 +164,9 @@ public class ModuleFactory implements IModuleFactory{
 	
 	@Override
 	public IModuleView createView(IModuleModel module){
+		
+		Utils.consoleLog("::: ModuleFactory createView Start :::");
+		
 		boolean isPreview = (services == null);
 		
 		if(module instanceof AddonModel){
@@ -216,6 +221,7 @@ public class ModuleFactory implements IModuleFactory{
 			return new SourceListView((SourceListModule) module, isPreview);
 		}
 		else if(module instanceof TextModel){
+			Utils.consoleLog("::: ■■ Goal 04 ModuleFactory createView instanceof TextModel - (TextModel)module.isTabindexEnabled["+ module.isTabindexEnabled()+"] module hash["+System.identityHashCode(module)+"]::: ");
 			return new TextView((TextModel) module, isPreview);
 		}
 		else if(module instanceof SkipLinkModule){

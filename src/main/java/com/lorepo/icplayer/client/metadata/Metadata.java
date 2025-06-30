@@ -11,6 +11,7 @@ import com.google.gwt.xml.client.NodeList;
 import com.lorepo.icf.utils.JavaScriptUtils;
 import com.lorepo.icf.utils.StringUtils;
 import com.lorepo.icf.utils.XMLUtils;
+import com.lorepo.icplayer.client.utils.Utils;
 
 public class Metadata implements IMetadata {
 	private HashMap<String, String> metadata = new HashMap<String, String>();
@@ -56,12 +57,17 @@ public class Metadata implements IMetadata {
 	}
 	
 	public void parse(Element rootElement) {
+		
+	      Utils.consoleLog("::: ■▲ Metadata parse Start ::: ");
+		
 		NodeList entries = rootElement.getElementsByTagName("entry");
 		
 		for(int i = 0; i < entries.getLength(); i++){
 			Element node = (Element)entries.item(i);
 			String key = StringUtils.unescapeXML(node.getAttribute("key"));
 			String value = StringUtils.unescapeXML(node.getAttribute("value"));
+
+		      Utils.consoleLog("::: ■▲ Metadata parse 01 key["+key+"] value["+value+"]::: ");
 			
 			if(value == null || value.length() == 0){
 				this.remove(key);

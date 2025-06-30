@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import com.google.gwt.xml.client.Element;
+import com.lorepo.icplayer.client.utils.Utils;
 import com.lorepo.icplayer.client.xml.module.parsers.IModuleModelBuilder;
 import com.lorepo.icplayer.client.xml.module.parsers.IModuleModelParser;
 import com.lorepo.icplayer.client.xml.module.parsers.ModuleParser_v0;
@@ -46,6 +47,8 @@ public class ModuleXMLParsersFactory {
 	}
 	
 	public void produce(Element node, String version) {
+		Utils.consoleLog("::: ■■ Goal -13 ModuleXMLParsersFactory produce Start NodeName["+node.getNodeName()+"]:::");
+		
 		this.parsersMap.get(version).parse(node);
 	}
 }

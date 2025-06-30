@@ -57,6 +57,9 @@ public class Content implements IContentBuilder, IContent {
 	private int maxPagesCount = 100;
 
 	public Content(){
+		
+		Utils.consoleLog("::: ■▲■ Content 생성자  metadata hashCode["+ System.identityHashCode(metadata)  +"]::: ");
+		
 		this.pages = new PageList("root");
 		this.commonPages = new PageList("commons");
 	}
@@ -197,12 +200,11 @@ public class Content implements IContentBuilder, IContent {
 
 	@Override
 	public String getMetadataValue(String key) {
-		Utils.consoleLog("::: Content getMetadataValue 01 : key[" + key + "]");
+		Utils.consoleLog("::: ■▲ Content getMetadataValue 01 : key[" + key + "] Content hashCode["+ System.identityHashCode(this)  +"] metadata hashCode["+ System.identityHashCode(metadata)  +"]:::");
 		String returnVal = metadata.getValue(key); 
-		Utils.consoleLog("::: Content getMetadataValue 02 : returnVal[" + returnVal + "]");
+		Utils.consoleLog("::: ■▲ Content getMetadataValue 02 : returnVal[" + returnVal + "] Content hashCode["+ System.identityHashCode(this)  +"] metadata hashCode["+ System.identityHashCode(metadata)  +"]:::");
 		return returnVal;
 	}
-
 
 	public HashMap<String,CssStyle> getStyles() {
 		return new HashMap<String, CssStyle>(this.styles);
@@ -213,13 +215,17 @@ public class Content implements IContentBuilder, IContent {
 	}
 
     public void setMetadataValue(String key, String value){
+		Utils.consoleLog("::: ■▲ Content setMetadataValue 01 : key[" + key + "] value[" + value + "] Content hashCode["+ System.identityHashCode(this)  +"]metadata hashCode["+ System.identityHashCode(metadata)  +"]:::");
 
 		if(value == null || value.length() == 0){
 			metadata.remove(key);
 		}
 		else{
+			Utils.consoleLog("::: ■▲ Content setMetadataValue 02 : key[" + key + "] value[" + value + "] :::");
 			metadata.put(key, value);
 		}
+		
+		Utils.consoleLog("::: ■▲ Content setMetadataValue 01 : enableTabindex val["+ metadata.getValue("enableTabindex")  +"] Content hashCode["+ System.identityHashCode(this)  +"] metadata hashCode["+ System.identityHashCode(metadata)  +"]:::");
 	}
 
 	/**
@@ -241,6 +247,9 @@ public class Content implements IContentBuilder, IContent {
 		Element metadata = this.metadata.toXML();
 		xml += metadata.toString();
 
+		
+		Utils.consoleLog("::: ■▲ Content toXML 01 metadata.toString()["+metadata.toString()+"]::: ");
+		
 		// Addons
 		xml += "<addons>";
 		for(AddonDescriptor descriptor : addonDescriptors.values()){
@@ -483,6 +492,9 @@ public class Content implements IContentBuilder, IContent {
 
 	@Override
 	public void setMetadata(HashMap<String, String> metadata) {
+		
+		Utils.consoleLog("::: ■▲ Content setMetadata 01 : this.metadata hashCode["+ System.identityHashCode(this.metadata)  +"] 입력 metadata hashCode["+ System.identityHashCode(metadata)  +"]:::");
+		
 		this.metadata.clear();
 		for (String key : metadata.keySet()) {
 			String value = metadata.get(key);

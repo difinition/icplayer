@@ -25,7 +25,8 @@
     <script src="build/dist/libs.math.min.js"/>
     <script src="build/dist/libs.RecordRTC.min.js"/>
     <script src="build/dist/libs.lame.min.js"/>
-    <script src="build/dist/libs.google-swiffy-7.4.min.js"/>
+    <!-- octoplayer 에서 임포트 하고 있음-->
+    <!-- <script src="build/dist/libs.google-swiffy-7.4.min.js"/>-->
     <script src="build/dist/libs.jison.min.js"/>
 
     <!--Tiny mce have to be loaded separatly, due to URL finding of themes, if we change the location it will wrongly download themes-->

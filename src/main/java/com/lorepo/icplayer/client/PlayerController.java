@@ -31,6 +31,7 @@ import com.lorepo.icplayer.client.model.Content;
 import com.lorepo.icplayer.client.model.page.Page;
 import com.lorepo.icplayer.client.model.page.PageList;
 import com.lorepo.icplayer.client.model.page.PopupPage;
+import com.lorepo.icplayer.client.module.api.IModuleModel;
 import com.lorepo.icplayer.client.module.api.IPresenter;
 import com.lorepo.icplayer.client.module.api.player.IAdaptiveLearningService;
 import com.lorepo.icplayer.client.module.api.player.IAssetsService;
@@ -41,6 +42,7 @@ import com.lorepo.icplayer.client.module.api.player.IScoreService;
 import com.lorepo.icplayer.client.module.api.player.IStateService;
 import com.lorepo.icplayer.client.module.api.player.ITimeService;
 import com.lorepo.icplayer.client.module.api.player.PageScore;
+import com.lorepo.icplayer.client.module.text.TextModel;
 import com.lorepo.icplayer.client.page.KeyboardNavigationController;
 import com.lorepo.icplayer.client.page.PageController;
 import com.lorepo.icplayer.client.page.PagePopupPanel;
@@ -302,6 +304,9 @@ public class PlayerController implements IPlayerController {
 	 */
 	@Override
 	public void switchToPage(int index) {
+		
+		Utils.consoleLog("::: PlayerController 01 switchToPage switchToPage(int index) Start ::: ");
+		
 		if (this.lastVisitedPageIndex == -1) { //if player was started for the first time
 			this.lastVisitedPageIndex = index;
 			this.currentMainPageIndex = index;
@@ -329,10 +334,14 @@ public class PlayerController implements IPlayerController {
 		}
 
 		if(this.showCover && index == 0){
+			Utils.consoleLog("::: PlayerController 01 switchToPage switchToPage(int index) 01  ::: ");
+
 			this.playerView.showSinglePage();
 			this.switchToPage(page, closedPages.get(0), this.pageController1);
 		}
 		else{
+			Utils.consoleLog("::: PlayerController 01 switchToPage switchToPage(int index) 02  ::: ");
+			
 			this.switchToPage(page, closedPages.get(0), this.pageController1);
 			if(this.pageController2 != null && index+1 < this.contentModel.getPages().getTotalPageCount()){
 				this.playerView.showTwoPages();
@@ -375,6 +384,9 @@ public class PlayerController implements IPlayerController {
 	}
 
 	private void switchToPage(IPage page, IPage previousPage, final PageController pageController){
+		
+		Utils.consoleLog("::: PlayerController 02 switchToPage Strat :: ");
+		
 		page.setContentBaseURL(getContentBaseURL());
 		pageController.getGradualShowAnswersService().hideAll();
 		//::: Restored by DF: 커스텀 로직 추가 ::: switchToPage메소드 visitedPages.add(page);
@@ -387,19 +399,33 @@ public class PlayerController implements IPlayerController {
 		// Load new page
 		String baseUrl = this.contentModel.getBaseUrl();
 		String url = URLUtils.resolveURL(baseUrl, page.getHref());
-
+		
         this.playerView.showWaitDialog();
 		
-		Utils.consoleLog("switchToPage : " + url);
+		//Utils.consoleLog("switchToPage : " + url);
 		if (previousPage != null && previousPage.getHref() == page.getHref()) {
 			onPageFinishedLoading((Object) previousPage, pageController);
 		
 		//::: Restored by DF: 커스텀 로직 추가 ::: switchToPage메소드 PageFactoryQNote 관련 조건분기 추가 ▼▼▼
 		} else if (Utils.isLoadSeperate) {
 			PageFactoryQNote factory = new PageFactoryQNote((Page) page);
+			
+			Utils.consoleLog("::: ■■ Goal 11 PlayerController 02 switchToPage 06 url["+url+"]::: ");
+			
 			factory.load(url, new IProducingLoadingListener() {
 				@Override
 				public void onFinishedLoading(Object producedItem) {
+					
+					Utils.consoleLog("::: ■■ Goal 10 PlayerController 02 switchToPage 07 ::: ");
+					
+					int index = 1;
+					for (IModuleModel module : ((Page) producedItem).getModules() ) {
+						if(module instanceof TextModel){
+							Utils.consoleLog("::: ■■ Goal 09 PlayerController onPageFinishedLoading index[" + index + "] id["+((TextModel)module).getId()+"] (TextModel)module.isTabindexEnabled["+ ((TextModel)module).isTabindexEnabled()+"] module hash["+System.identityHashCode(((TextModel)module))+"]::: ");
+						}			
+						index ++;
+					}					
+					
 					onPageFinishedLoading(producedItem, pageController);
 				}
 				
@@ -412,9 +438,15 @@ public class PlayerController implements IPlayerController {
 		//::: Restored by DF: 커스텀 로직 추가 ::: switchToPage메소드 PageFactoryQNote 관련 조건분기 추가 ▲▲▲
 		} else {
 			PageFactory factory = new PageFactory((Page) page);
+			
+			Utils.consoleLog("::: ■■ Goal 11-2 PlayerController 02 switchToPage 09 url["+url+"]::: ");
+			
 			factory.load(url, new IProducingLoadingListener() {
 				@Override
 				public void onFinishedLoading(Object producedItem) {
+					
+					Utils.consoleLog("::: ■■ Goal 10-2 PlayerController 02 switchToPage 10 ::: ");
+					
 					onPageFinishedLoading(producedItem, pageController);
 				}
 				
@@ -430,6 +462,15 @@ public class PlayerController implements IPlayerController {
 	private void onPageFinishedLoading(Object producedItem, PageController pageController) {
 		Utils.consoleLog("::: PlayerController onPageFinishedLoading 01 producedItem["+producedItem+"] pageController["+pageController+"]");
 		Page page = (Page) producedItem;
+		
+		int index = 1;
+		for (IModuleModel module : page.getModules()) {
+			if(module instanceof TextModel){
+				Utils.consoleLog("::: ■■ Goal 08 PlayerController onPageFinishedLoading index[" + index + "] id["+((TextModel)module).getId()+"] (TextModel)module.isTabindexEnabled["+ ((TextModel)module).isTabindexEnabled()+"] module hash["+System.identityHashCode(((TextModel)module))+"]::: ");
+			}			
+			index ++;
+		}
+		
 		String isReportable = getReportableService().getStates().get(page.getId());
 		if (isReportable != null) {
 			if (isReportable.toLowerCase() == "true") {
@@ -439,7 +480,6 @@ public class PlayerController implements IPlayerController {
 			}
 		}
 		
-		Utils.consoleLog("::: PlayerController onPageFinishedLoading 02 go pageLoaded >> page["+page+"] pageController["+pageController+"]");
 		pageLoaded(page, pageController);
 		visitedPages.add(page);
 		if (pageLoadListener != null){
@@ -471,6 +511,14 @@ public class PlayerController implements IPlayerController {
 			pageController.setPageIdx(this.mContentsIndex);
 		}
 		//::: Restored by DF: 커스텀 로직 추가 ::: pageLoaded메소드 isLoadSeperate 관련 조건분기 추가 ▲▲▲
+		 
+		int index = 1;
+		for (IModuleModel module : page.getModules()) {
+			if(module instanceof TextModel){
+				Utils.consoleLog("::: ■■ Goal 07 PageController initModules index[" + index + "] id["+((TextModel)module).getId()+"] (TextModel)module.isTabindexEnabled["+ ((TextModel)module).isTabindexEnabled()+"] module hash["+System.identityHashCode(((TextModel)module))+"]::: ");
+			}			
+			index ++;
+		}
 
 		pageController.setPage(page);
 		if (this.headerController != null && pageController != this.pageController2) {

@@ -13,6 +13,7 @@ import com.lorepo.icplayer.client.metadata.IMetadata;
 import com.lorepo.icplayer.client.metadata.Metadata;
 import com.lorepo.icplayer.client.module.api.IModuleModel;
 import com.lorepo.icplayer.client.module.api.INameValidator;
+import com.lorepo.icplayer.client.utils.Utils;
 import com.lorepo.icplayer.client.xml.module.ModuleXMLParsersFactory;
 import com.lorepo.icplayer.client.xml.module.parsers.IModuleModelBuilder;
 
@@ -94,13 +95,24 @@ public abstract class BasicModuleModel extends StyledModule implements IModuleMo
 	 */
 	@Override
 	public void load(Element element, String baseUrl, String version) {
+		
+		Utils.consoleLog("::: ◆◆◆■■ Goal -12 BasicModuleModel load Start moduleName["+this.moduleName+"] id["+id+"] moduleTypeName["+moduleTypeName+"] isTabindexEnabled["+this.isTabindexEnabled+"]:::");
+		
 		this.baseURL = baseUrl;
+		
+		Utils.consoleLog("::: ■■ Goal -12 BasicModuleModel load 01 baseUrl["+baseUrl+"]:::");
+		
 		ModuleXMLParsersFactory factory = new ModuleXMLParsersFactory(this);
 		if (this.contentDefaultLayoutID != null) {
 			factory.setDefaultLayoutID(contentDefaultLayoutID);
 		}
+		
+		Utils.consoleLog("::: ■■ Goal -12 BasicModuleModel load 02 version["+version+"]:::");
 		factory.produce(element, version);
+		Utils.consoleLog("::: ■■ Goal -12 BasicModuleModel load 03 :::");
 		this.parseModuleNode(element);
+		Utils.consoleLog("::: ◆◆◆■■ Goal -12 BasicModuleModel load 04 moduleName["+this.moduleName+"] id["+id+"] moduleTypeName["+moduleTypeName+"] isTabindexEnabled["+this.isTabindexEnabled+"] module hash["+System.identityHashCode(this)+"]:::");
+		
 	}
 
 	protected abstract void parseModuleNode(Element element);
@@ -425,4 +437,11 @@ public abstract class BasicModuleModel extends StyledModule implements IModuleMo
 	public void setTTSTitle(String title) {
 		this.ttsTitle = title;
 	}
+	
+	//kslee 삭제 tabindex문제 오류해결되어서 여긴 필요없음 삭제해도 무방함
+	//@Override
+	//public boolean getIsTabindexEnabled() {
+	//	return this.isTabindexEnabled;
+	//}
+	
 }

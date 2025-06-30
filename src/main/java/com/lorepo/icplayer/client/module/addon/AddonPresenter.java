@@ -79,7 +79,7 @@ public class AddonPresenter implements IPresenter, IActivity, IStateful, IComman
 		//::: Restored by DF: 커스텀  메소드 수정 ::: ▼▼▼
 		this.pageURL = pageURL;
 		connectHandlers();
-		Utils.consoleLog("AddonPresenter.java AddonPresenter() model.getId[" + model.getId() + "] pageURL[" + pageURL + "]");
+		Utils.consoleLog("AddonPresenter.java AddonPresenter() model.getId[" + model.getId() + "]");
 	}
 
 	private void connectHandlers() {

@@ -9,6 +9,8 @@ import com.lorepo.icf.utils.XMLUtils;
 import com.lorepo.icplayer.client.dimensions.ModuleDimensions;
 import com.lorepo.icplayer.client.metadata.IMetadata;
 import com.lorepo.icplayer.client.metadata.Metadata;
+import com.lorepo.icplayer.client.module.text.TextModel;
+import com.lorepo.icplayer.client.utils.Utils;
 
 public abstract class ModuleModelParser_base implements IModuleModelParser {
 
@@ -35,6 +37,9 @@ public abstract class ModuleModelParser_base implements IModuleModelParser {
 	
 	@Override
 	public Object parse(Element xml) {
+		
+		Utils.consoleLog("::: ■■ Goal -14 ModuleModelParser_base parse Start :::");
+		
 		this.parsePosition(xml);
 		this.parseModuleAttributes(xml);
 		this.parseModuleStyleAttributes(xml);
@@ -82,16 +87,28 @@ public abstract class ModuleModelParser_base implements IModuleModelParser {
 	}
 	
 	protected void parseModuleAttributes(Element xml) {
+		
+		Utils.consoleLog("::: ◆◆◆■■ Goal -15 ModuleModelParser_base parseModuleAttributes Start Parser module hash["+System.identityHashCode(this.module)+"]:::");
+		
 		String id = parseModuleID(xml);
+		
+		Utils.consoleLog("::: ■■ Goal -15 ModuleModelParser_base parseModuleAttributes 01 id["+id+"] :::");
+		
+		
 		this.module.setID(id);
 		this.module.setIsVisible(XMLUtils.getAttributeAsBoolean(xml, "isVisible", true));
 		this.module.setIsLocked(XMLUtils.getAttributeAsBoolean(xml, "isLocked", false));
 		this.module.setModuleInEditorVisibility(XMLUtils.getAttributeAsBoolean(xml, "isModuleVisibleInEditor", true));
+		
+		Utils.consoleLog("::: ■■ Goal -15 ModuleModelParser_base parseModuleAttributes 02 isTabindexEnabled["+XMLUtils.getAttributeAsBoolean(xml, "isTabindexEnabled", false)+"] :::");
+		
 		this.module.setIsTabindexEnabled(XMLUtils.getAttributeAsBoolean(xml, "isTabindexEnabled", false));
 		this.module.setOmitInKeyboardNavigation(XMLUtils.getAttributeAsBoolean(xml, "shouldOmitInKeyboardNavigation", false));
 		this.module.setOmitInTTS(XMLUtils.getAttributeAsBoolean(xml, "shouldOmitInTTS", false));
 		String title = parseModuleTitle(xml);
 		this.module.setTTSTitle(title);
+		
+		Utils.consoleLog("::: ◆◆◆■■ Goal -15 ModuleModelParser_base parseModuleAttributes 04 Parser module hash["+System.identityHashCode(this.module)+"]:::");
 	}
 	
 	protected void parseModuleStyleAttributes(Element xml) {

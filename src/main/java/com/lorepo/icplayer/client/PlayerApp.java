@@ -152,11 +152,13 @@ public class PlayerApp {
 	private void loadPage(final String url, int pageIndex, final boolean isCommonPage, boolean isQNote) {
 		Utils.consoleLog("::: PlayerApp loadPage Start ::: ");
 		
+		//처음페이지 설정
 		this.startPageIndex = pageIndex;
 		Utils.consoleLog("::: PlayerApp loadPage loadPage url 2 :" + url);
 		Utils.consoleLog("::: PlayerApp loadPage isQNote :" + isQNote);
 		Utils.consoleLog("::: PlayerApp loadPage isCommonPage :" + isCommonPage);
-		Utils.consoleLog("::: PlayerApp loadPage isLoadSeperate :" + Utils.isLoadSeperate);
+		Utils.consoleLog("::: ■▲ PlayerApp loadPage isLoadSeperate :" + Utils.isLoadSeperate);
+		//Utils.isLoadSeperate 는 시스템 죽을 때까지 false : 결국 ContentFactoryQNote를 쓴다는이야기 임 
 		IXMLFactory contentFactory = Utils.isLoadSeperate ? ContentFactoryQNote.getInstance(this.pagesSubset) : ContentFactory.getInstance(this.pagesSubset);
 		Utils.consoleLog("::: PlayerApp loadPage contentFactory :" + contentFactory);
 		int toCnt = Utils.getUrlCount(url);
@@ -164,9 +166,10 @@ public class PlayerApp {
 		this.isContentModelLoaded = false;
 		contentFactory.load(url, new IProducingLoadingListener() {
 			public void onFinishedLoading(Object content) {
-				Utils.consoleLog("::: PlayerApp loadPage loadPage onFinishedLoading url: " + url);
+				Utils.consoleLog("::: ■▲■ PlayerApp loadPage load onFinishedLoading 01 Content hashCode["+ System.identityHashCode(contentModel)  +"] 입력 content hashCode["+ System.identityHashCode(content)  +"] :::" );
 				// PlayerApp.this.contentModel = (Content) content; 와 같은 방식으로 필요한 필드에 직접 접근해야 함
 				contentModel = (Content) content;
+				Utils.consoleLog("::: ■▲■ PlayerApp loadPage load onFinishedLoading 02 Content hashCode["+ System.identityHashCode(contentModel)  +"] :::" );
 				isContentModelLoaded = true;
 				initPlayer(isCommonPage); // 예시 메서드, 실제 구현에 맞게 수정 필요
 			}
@@ -673,12 +676,18 @@ public class PlayerApp {
 	private void _initPlayer(final boolean isCommonPage) {
 		Utils.consoleLog("::: PlayerApp _initPlayer Start isCommonPage["+isCommonPage+"]::: ");
 		
+		Utils.consoleLog("::: ▶▶▶■ PlayerApp _initPlayer Start 00 Content hashCode["+ System.identityHashCode(contentModel)  +"] enableTabindex["+(contentModel.getMetadataValue("enableTabindex").compareTo("true") == 0)+"]::: ");
+		
 		PlayerView playerView = new PlayerView();
 		playerController = new PlayerController(this.contentModel, playerView, bookMode, entryPoint);
 		playerController.setPlayerConfig(playerConfig);
 		playerController.setFirstPageAsCover(showCover);
 		playerController.setAnalytics(analyticsId);
 		playerController.getPlayerServices().setApplication(this);
+		
+		Utils.consoleLog("::: ▶▶▶■ PlayerApp _initPlayer Start 01 Content hashCode["+ System.identityHashCode(contentModel)  +"] enableTabindex["+contentModel.getMetadataValue("enableTabindex").toString()+"]::: ");
+		
+		
 		EnableTabindex.getInstance().create(contentModel.getMetadataValue("enableTabindex").compareTo("true") == 0);
 
 		final PlayerView finalPlayerView = playerView;

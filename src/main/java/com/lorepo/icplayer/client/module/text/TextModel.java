@@ -277,14 +277,13 @@ public class TextModel extends BasicModuleModel implements IWCAGModuleModel, IPr
 				rawText = XMLUtils.getCharacterDataFromElement(textElement);
 				
 				//::: Restored by DF: 커스텀  추가 ::: ▼▼▼ 
-	            this.rawText = XMLUtils.getCharacterDataFromElement(textElement);
 	            this.gapStyles = XMLUtils.getAttributeAsString(textElement, "gapStyles", "");
 	            this.groupID = XMLUtils.getAttributeAsString(textElement, "group", "");
 	            this.multipleLines = XMLUtils.getAttributeAsBoolean(textElement, "multipleLines", false);
 	            this.isHandwritingInput = XMLUtils.getAttributeAsString(textElement, "isHandwritingInput", "");
 	            this.isQuestionNumber = XMLUtils.getAttributeAsBoolean(textElement, "isQuestionNumber", false);
 	            this.isActivity = this.setIsActivity(node.getAttribute("id"), this.isActivity);
-	            Utils.consoleLog("multipleLines 2: " + XMLUtils.getAttributeAsBoolean(textElement, "multipleLines", false));
+	            Utils.consoleLog("::: TextModel parseModuleNode multipleLines 2: " + XMLUtils.getAttributeAsBoolean(textElement, "multipleLines", false));
 
 				valueType = XMLUtils.getAttributeAsString(textElement, "valueType");
 				blockWrongAnswers = XMLUtils.getAttributeAsBoolean(textElement, "blockWrongAnswers", false);

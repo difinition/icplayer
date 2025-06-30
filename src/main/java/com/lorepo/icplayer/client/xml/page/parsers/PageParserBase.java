@@ -13,7 +13,9 @@ import com.lorepo.icplayer.client.model.page.Page.PageScoreWeight;
 import com.lorepo.icplayer.client.model.page.group.Group;
 import com.lorepo.icplayer.client.module.ModuleFactory;
 import com.lorepo.icplayer.client.module.api.IModuleModel;
+import com.lorepo.icplayer.client.module.text.TextModel;
 import com.lorepo.icplayer.client.ui.Ruler;
+import com.lorepo.icplayer.client.utils.Utils;
 import com.lorepo.icplayer.client.xml.page.IPageBuilder;
 import com.google.gwt.xml.client.Element;
 import com.google.gwt.xml.client.Node;
@@ -138,6 +140,9 @@ public abstract class PageParserBase implements IPageParser{
 	}
 
 	protected IPageBuilder loadModules(IPageBuilder page, Element xml, int pageVersion) {
+		Utils.consoleLog("::: PageParserBase loadModules Start page.getBaseURL()["+page.getBaseURL()+"]:::");
+		Utils.consoleLog("::: PageParserBase loadModules 01    pageVersion      ["+pageVersion+"]:::");
+		
 		ModuleFactory moduleFactory = new ModuleFactory(null);
 		NodeList moduleNodeList = xml.getChildNodes();
 
@@ -145,14 +150,25 @@ public abstract class PageParserBase implements IPageParser{
 			Node node = moduleNodeList.item(i);
 
 			if (node instanceof Element) {
+				
+				
 				IModuleModel module = moduleFactory.createModel(node.getNodeName());
+				Utils.consoleLog("::: ◆★■■ Goal -10 PageParserBase loadModules 02    node.getNodeName()["+node.getNodeName()+"] module hash["+System.identityHashCode(module)+"]:::");
 
 				if (module != null) {
 					if (defaultLayoutID != null) {
 						module.setContentDefaultLayoutID(defaultLayoutID);
 					}
 					module.setContentBaseURL(page.getContentBaseURL());
+					
+					Utils.consoleLog("::: ■■ Goal -11 PageParserBase loadModules 03    node.getNodeName()["+node.getNodeName()+"]:::");
+					
 					module.load((Element) node, page.getBaseURL(), Integer.toString(pageVersion));
+					
+					if(module instanceof TextModel){
+						Utils.consoleLog("::: ■■ Goal -11 PageParserBase loadModules 04   i["+i+"] module["+module.getId()+"]                        isTabindexEnabled   ["+module.isTabindexEnabled()+"] module hash["+System.identityHashCode(module)+"]:::");
+						Utils.consoleLog("::: ■■ Goal -11 PageParserBase loadModules 04-1 i["+i+"] getModuleTypeName["+module.getModuleTypeName()+"] isTabindexEnabled   ["+module.isTabindexEnabled()+"] module hash["+System.identityHashCode(module)+"]:::");
+					}
 					page.addModule(module);
 				}
 			}

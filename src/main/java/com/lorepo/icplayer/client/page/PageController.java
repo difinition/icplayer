@@ -29,6 +29,8 @@ import com.lorepo.icplayer.client.module.addon.AddonPresenter;
 import com.lorepo.icplayer.client.module.api.*;
 import com.lorepo.icplayer.client.module.api.event.*;
 import com.lorepo.icplayer.client.module.api.player.*;
+import com.lorepo.icplayer.client.module.text.TextModel;
+import com.lorepo.icplayer.client.module.text.TextView;
 import com.lorepo.icplayer.client.page.Score.Result;
 import com.lorepo.icplayer.client.utils.Utils;
 
@@ -124,10 +126,17 @@ public class PageController implements ITextToSpeechController, IPageController 
 	}
 
 	public void setPage(Page page) {
-		Utils.consoleLog("::: PlayerController setPage 01 page[" + page + "] ::: ");
 		
 		if (playerServiceImpl != null) {
 			playerServiceImpl.resetEventBus();
+		}
+		
+		int index = 1;
+		for (IModuleModel module : page.getModules()) {
+			if(module instanceof TextModel){
+				Utils.consoleLog("::: ■■ Goal 06 PageController setPage index[" + index + "] id["+((TextModel)module).getId()+"] (TextModel)module.isTabindexEnabled["+ ((TextModel)module).isTabindexEnabled()+"] module hash["+System.identityHashCode(((TextModel)module))+"]::: ");
+			}
+			index ++;
 		}
 
 		currentPage = page;
@@ -142,7 +151,7 @@ public class PageController implements ITextToSpeechController, IPageController 
 			setPageState(state);
 		}
 		
-		Utils.consoleLog("::: PlayerController setPage 02 currentPage[" + currentPage + "] ::: ");
+		//Utils.consoleLog("::: PageController setPage 02 currentPage[" + currentPage + "] ::: ");
 		ensureOpenActivitiesScoresExist();
 
 		pageView.refreshMathJax();
@@ -227,6 +236,9 @@ public class PageController implements ITextToSpeechController, IPageController 
 	}
 
 	private void initModules() {
+		
+		Utils.consoleLog("::: PageController initModules Start ::: ");
+		
 		groupPresenters.clear();
 		presenters.clear();
 		pageView.removeAllModules();
@@ -238,7 +250,14 @@ public class PageController implements ITextToSpeechController, IPageController 
 			groupPresenters.add(presenter);
 		}
 		
+		int index = 1;
 		for (IModuleModel module : currentPage.getModules()) {
+			
+			if(module instanceof TextModel){
+				Utils.consoleLog("::: ■■ Goal 05 PageController initModules index[" + index + "] id["+((TextModel)module).getId()+"] (TextModel)module.isTabindexEnabled["+ ((TextModel)module).isTabindexEnabled()+"] module hash["+System.identityHashCode(((TextModel)module))+"]::: ");
+			}
+			index++;
+			
 			String newInlineStyle = deletePositionImportantStyles(module.getInlineStyle());
 			module.setInlineStyle(newInlineStyle);
 			IModuleView moduleView = moduleFactory.createView(module);
@@ -246,6 +265,7 @@ public class PageController implements ITextToSpeechController, IPageController 
 			//::: Restored by DF: 커스텀  메소드 수정 ::: ▼▼▼ 
 			//IPresenter presenter = moduleFactory.createPresenter(module);
 			IPresenter presenter = moduleFactory.createPresenter(module, this.currentPage.getBaseURL());
+			
 			
 			GroupPresenter groupPresenter = findGroupPresenter(module); 
 			

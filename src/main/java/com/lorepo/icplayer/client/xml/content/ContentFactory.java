@@ -60,7 +60,7 @@ public class ContentFactory extends XMLVersionAwareFactory {
 		return new RequestFinishedCallback() {
 			@Override
 			public void onResponseReceived(String fetchURL, Request request, Response response) {
-				Utils.consoleLog("::: ContentFactory getContentLoadCallback onResponseReceived Start  ::: ");
+				Utils.consoleLog("::: ■▲ ContentFactory getContentLoadCallback onResponseReceived Start  response.getText()["+response.getText()+"]::: ");
 				if (response.getStatusCode() == 200 || response.getStatusCode() == 0) {
 					Content content = produce(response.getText(), fetchURL);
 					listener.onFinishedLoading(content);
@@ -81,6 +81,7 @@ public class ContentFactory extends XMLVersionAwareFactory {
 	public Content produce(String xmlString, String fetchUrl) {
 		Utils.consoleLog("::: ContentFactory produce Start  ::: ");
 		Utils.consoleLog("::: ContentFactory produce 01 fetchUrl["+fetchUrl+"]  ::: ");
+		Utils.consoleLog("::: ■▲ ContentFactory produce 01-1 response.xmlString["+xmlString+"]  ::: ");
 		
 		Element xml = XMLParser.parse(xmlString).getDocumentElement();
 		String version = XMLUtils.getAttributeAsString(xml, "version", "1");

@@ -138,7 +138,7 @@ public class MathJax {
 	//public static native void rerenderMathJax (Element e) /*-{
 	public static native void rerenderMathJax (Element e, boolean var1) /*-{
 		console.log("::: Restored by DF: com.lorepo.icplayer.client.utils.MathJax rerenderMathJax");
-		console.log("boolean var1 ["+var1+"] 는 무엇?");
+		console.log("boolean var1 ["+var1+"]");
 		$wnd.MathJax.Hub.Rerender(e);
 	}-*/;
 

@@ -36,7 +36,7 @@ public class ContentFactoryQNote extends XMLVersionAwareFactoryQNote {
 
    protected ContentFactoryQNote(ArrayList<Integer> pagesSubset) {
 	   
-      Utils.consoleLog("::: ContentFactoryQNote ContentFactoryQNote Start 생성자 ::: ");
+      Utils.consoleLog("::: ■▲ ContentFactoryQNote ContentFactoryQNote Start 생성자 ::: ");
 
       this.setPagesSubset(pagesSubset);
       this.addParser(new ContentParser_v0());
@@ -58,7 +58,7 @@ public class ContentFactoryQNote extends XMLVersionAwareFactoryQNote {
    }
 
    public static IXMLFactory getInstance(ArrayList<Integer> pagesSubset) {
-   Utils.consoleLog("::: ContentFactoryQNote getInstance Start ::: ");
+   Utils.consoleLog("::: ■▲ ContentFactoryQNote getInstance Start ::: ");
       return new ContentFactoryQNote(pagesSubset);
    }
 
@@ -94,54 +94,81 @@ public class ContentFactoryQNote extends XMLVersionAwareFactoryQNote {
 
 			@Override
 			public void onResponseReceived(String fetchURL, Request request, Response response) {
+				//첫번째는 eng.xml
+				//두번째는 main.xml
 				Utils.consoleLog("::: ContentFactoryQNote getContentLoadCallback onResponseReceived 01 : fetchURL[" + fetchURL + "] StatusCode[" + response.getStatusCode() + "]");
 
 				if (response.getStatusCode() != 200 && response.getStatusCode() != 0) {
+					//첫번째는 eng.xml
 					Utils.consoleLog( "::: ContentFactoryQNote getContentLoadCallback onResponseReceived 02 : Wrong status[" + response.getText() + "]");
 					listener.onError("Wrong status: " + response.getText());
 				} else {
 
 					Content content;
 					if (loadedCount == 0) {
+						//첫번째는 eng.xml
 						mContent = produce(response.getText(), fetchURL);
 						mainFetchURL = fetchURL;
 
-						Utils.consoleLog("::: ContentFactoryQNote getContentLoadCallback onResponseReceived 03 : main xml [" + response.getText() + "]");
+						//로그내용 : eng.xml가 들어있는 Content를 만들어냄
+						Utils.consoleLog("::: ContentFactoryQNote getContentLoadCallback onResponseReceived 03 : mContent.xml["+mContent.toXML()+"]:::");
 					} else {
+						//두번째는 main.xml
 						Utils.consoleLog("::: ContentFactoryQNote getContentLoadCallback onResponseReceived 04 : mContent1[" + response.getText() + "]");
 
 						try {
+							//로그내용 : main.xml가 들어있는 Content를 만들어냄 :: 오호 여기서 메타를...
+							//TODO: 흠 여기에서 메타가 아직 안들어 왔네 확인하자 아니다 여기는 mContent아니라 content이지!!
 							content = produce(response.getText(), fetchURL);
-
+							
+							//여기는 loadedCount == 1 이면서 Utils.isQNote가 false이니 무조건 true
 							if (loadedCount == 1 && !Utils.isQNote) {
+								
+								// 결국 여기서 하는일은 mContent(eng.xml내용)에  main.xml에 있는 <metadata>를 추가함 
+								setMetadataFromContent(response.getText(), fetchURL);
+								
+								// main.xml 내용과 main.xml url을 가지고 들어감  
+								// 결국 여기서 하는일은 mContent(eng.xml내용)에 애드온을 main.xml에 있는 애드온만 및 필수애드온을 추려서 빼고 갱신 하고 있음 
 								setAddonsFromContent(response.getText(), fetchURL);
 							}
 
 							if (!Utils.isQNote) {
+								// main.xml 내용과 main.xml url을 가지고 들어감 
+								// 결국 여기서 하는일은 mContent(eng.xml내용)에  main.xml에 있는 <asset>를 추가하고 있음 
 								setAssetsFromContent(response.getText(), fetchURL);
+								
+								// main.xml 내용과 main.xml url을 가지고 들어감 
+								// 처음에 저장한 eng.xml인 mainXML의 <styles>노드에 입력:main.xml으로 contentMainXML의 <styles> 내용으로 교체(replace)
 								setCSSFromContent(response.getText(), fetchURL);
 							}
 
 							// addPage(content.getTableOfContents(), content.getCommonTableOfContents(),
 							// pagesSubset);
 							addPage(content.getTableOfContents(), content.getCommonTableOfContents(), loadedCount);
+							
+						   //  mContent(eng.xml내용) 내용 <page>노드가 거의 끝에 있는데 로그값에 잘 들어가는것 확인함
+							Utils.consoleLog("::: ContentFactoryQNote getContentLoadCallback onResponseReceived 04-1 mContent.xml["+mContent.toXML()+"]:::");
+							
 						} catch (Exception e) {
-							Utils.consoleLog("trace e : " + e);
 							listener.onFinishedLoading(null);
 						}
 					}
 
+					//첫번째는 eng.xml
+					//두번째는 main.xml
 					Utils.consoleLog("::: ContentFactoryQNote getContentLoadCallback onResponseReceived 05 : fetchURL[" + fetchURL + "] StatusCode[" + response.getStatusCode() + "]");
 
 					if (loadedCount + 1 < pagesCount) {
+						//첫번째는 eng.xml
 						loadedCount++;
 
 						// ::: Restored by DF: fetchUrlPages >> fetchUrls 로 수정
 						// send(fetchUrlPages[loadedCount], listener);
-						Utils.consoleLog("::: ContentFactoryQNote getContentLoadCallback onResponseReceived 06 : send loadedCount[" + fetchUrls[loadedCount] + "]");
+						Utils.consoleLog("::: ContentFactoryQNote getContentLoadCallback onResponseReceived 06 : send loadedCount[" + loadedCount + "]");
 						send(fetchUrls[loadedCount], listener);
 					} else if (loadedCount + 1 == pagesCount) {
-						content = produce(response.getText(), fetchURL);
+						//두번째는 main.xml 마지막
+						//content = produce(response.getText(), fetchURL);
 						
 						Utils.consoleLog( "::: ContentFactoryQNote getContentLoadCallback onResponseReceived 07 : 왜?? fetchUrls[0][" + fetchUrls[0] + "]");
 						
@@ -160,16 +187,66 @@ public class ContentFactoryQNote extends XMLVersionAwareFactoryQNote {
 		};
 	}
 
+   // 결국 여기서 하는일은 mContent(eng.xml내용)에  main.xml에 있는 <asset>를 추가하고 있음 
+   private void setMetadataFromContent(String sContentMainXML, String sContentURL) {
+
+    // main.xml 내용과 main.xml url을 가지고 들어옮  
+    Utils.consoleLog("::: ContentFactoryQNote setMetadataFromContent Start ::: ");
+
+	try {
+         // 처음에 저장한 eng.xml 콘텐츠가 들어있는 내용
+         Document mainXML = XMLParser.parse(this.mContent.toXML());
+         
+         // 입력 : main.xml 내용이 들어가 있음
+         Document contentMainXML = XMLParser.parse(sContentMainXML);
+         
+         NodeList metaDatas = mainXML.getElementsByTagName("metadata");
+         NodeList contentMetaDatas = contentMainXML.getElementsByTagName("metadata");
+
+         Utils.consoleLog("::: ContentFactoryQNote setMetadataFromContent 01 assets[" + metaDatas.toString() + "]");
+         Utils.consoleLog("::: ContentFactoryQNote setMetadataFromContent 02 contentAssets[" + contentMetaDatas.toString() + "]");
+         Node node = metaDatas.item(0);
+         Utils.consoleLog("::: ContentFactoryQNote setMetadataFromContent 03 newNode.getChildNodes().getLength()[" + contentMetaDatas.getLength() + "]");
+         Utils.consoleLog("::: ContentFactoryQNote setMetadataFromContent 04 newNode.getChildNodes().toString()[" + contentMetaDatas + "]");
+
+         // 처음에 저장한 eng.xml인 mainXML의 빈<metadata/>노드에 입력:main.xml으로 contentMainXML의 <metadata> 내용을 추가(빈노드에 추가)
+         for (int i = 0; i < contentMetaDatas.getLength(); i++) {
+             Node metadata = contentMetaDatas.item(i);
+             Node importedNode = mainXML.importNode(metadata, true);
+             Utils.consoleLog("::: ContentFactoryQNote setMetadataFromContent 05 newNode.getChildNodes().item(i) asset[" + metadata + " : " + contentMetaDatas.getLength() + "]");
+             node.appendChild(importedNode);
+         }
+
+          String xmlString = mainXML.toString();
+
+          this.mContent = this.produce(xmlString, mainFetchURL);
+          // <asset>노드가 거의 끝에 있는데 로그값에 잘 들어가는것 확인함
+          Utils.consoleLog("::: ContentFactoryQNote setMetadataFromContent 06 mainXML [" + mainXML.toString() + "]");
+      } catch (Exception var10) {
+      }
+
+   }   
+   
+   // 결국 여기서 하는일은 mContent(eng.xml내용)에 애드온을 main.xml에 있는 애드온만 및 필수애드온을 추려서 빼고 갱신 하고 있음 
    private void setAddonsFromContent(String sContentMainXML, String sContentURL) {
+      // main.xml 내용과 main.xml url을 가지고 들어옮  
       Utils.consoleLog("::: ContentFactoryQNote setAddonsFromContent 01 : sContentMainXML[" + sContentMainXML + "] sContentURL[" + sContentURL + "]");
 
+      // 처음에 저장한 eng.xml 콘텐츠가 들어있는 내용
       Document mainXML = XMLParser.parse(this.mContent.toXML());
+      
+      // 입력 : main.xml 내용이 들어가 있음
       Document contentMainXML = XMLParser.parse(sContentMainXML);
+      
+      //필수 애드온 준비
       HashMap<String, Boolean> essentialAddon = new HashMap();
       essentialAddon.put("Completion_Progress", true);
       essentialAddon.put("Controller_KR", true);
+      
+      // 입력 : main.xml의 addon-descriptor 처리 처리
       NodeList addonDescriptor = contentMainXML.getElementsByTagName("addon-descriptor");
 
+      // 입력 : main.xml 
       for(int i = 0; i < addonDescriptor.getLength(); ++i) {
          Node node = addonDescriptor.item(i);
          Element ele = (Element)node;
@@ -177,24 +254,29 @@ public class ContentFactoryQNote extends XMLVersionAwareFactoryQNote {
 
          Utils.consoleLog("::: ContentFactoryQNote setAddonsFromContent 02 : i[" + i + "] addonId[" + addonId + "]");
 
+         // 필수 애드온에 포함되어 있으면 false로 변경 (이미 존재함을 표시)
          if (essentialAddon.containsKey(addonId)) {
             essentialAddon.put(addonId, false);
          }
 
+         // ※애초 파일로부터의 eng.xml에는 아래와 같이 기본으로 되어있는데 같은걸 갈아끼우고 있었네
          String tmpHref = "../icplayer/addons/" + addonId + ".xml";
 
          Utils.consoleLog("::: ContentFactoryQNote setAddonsFromContent 03 : i[" + i + "] href[" + tmpHref + "]");
 
+         // href 속성을 ../icplayer/addons/{addonId}.xml 로 수정
          ele.setAttribute("href", tmpHref);
       }
 
       try {
-    	  Iterator<String> it = essentialAddon.keySet().iterator();
+         // 필수 addon 누락 시 추가
+         Iterator<String> it = essentialAddon.keySet().iterator();
 
          while(it.hasNext()) {
             String addonID = (String)it.next();
             Document xmlDocument = XMLParser.createDocument();
             Element xmlElement = xmlDocument.createElement("addon-descriptor");
+            // 필수 addon 중 누락된 것은 새 addon-descriptor 노드를 생성해 XML에 추가
             if ((Boolean)essentialAddon.get(addonID)) {
                xmlElement.setAttribute("addonId", addonID);
                xmlElement.setAttribute("href", "../icplayer/addons/" + addonID + ".xml");
@@ -204,10 +286,13 @@ public class ContentFactoryQNote extends XMLVersionAwareFactoryQNote {
       } catch (Exception ignored) {
       }
 
+      // 처음에 저장한 eng.xml인 mainXML의 addons
       NodeList addons = mainXML.getElementsByTagName("addons");
+      // 입력 : main.xml으로 들어온 addons
       NodeList contentAddons = contentMainXML.getElementsByTagName("addons");
 
       try {
+         // 처음에 저장한 eng.xml인 mainXML의 <addons>노드를 입력:main.xml으로 contentMainXML의 <addons> 노드로 교체
          addons.item(0).getParentNode().replaceChild(contentAddons.item(0), addons.item(0));
          Utils.consoleLog("::: ContentFactoryQNote setAddonsFromContent 04 : addonsStr[" + addons.toString() + "]");
       } catch (Exception var11) {
@@ -218,17 +303,24 @@ public class ContentFactoryQNote extends XMLVersionAwareFactoryQNote {
       Utils.consoleLog("::: ContentFactoryQNote setAddonsFromContent 06 : xmlString[" + xmlString + "]");
       this.mContent = this.produce(xmlString, mainFetchURL);
       
+      // 
       Utils.consoleLog("::: ContentFactoryQNote setAddonsFromContent End ::: ");
       
    }
 
+   // 결국 여기서 하는일은 mContent(eng.xml내용)에  main.xml에 있는 <asset>를 추가하고 있음 
    private void setAssetsFromContent(String sContentMainXML, String sContentURL) {
 
+    // main.xml 내용과 main.xml url을 가지고 들어옮  
     Utils.consoleLog("::: ContentFactoryQNote setAssetsFromContent Start ::: ");
 
 	try {
+         // 처음에 저장한 eng.xml 콘텐츠가 들어있는 내용
          Document mainXML = XMLParser.parse(this.mContent.toXML());
+         
+         // 입력 : main.xml 내용이 들어가 있음
          Document contentMainXML = XMLParser.parse(sContentMainXML);
+         
          NodeList assets = mainXML.getElementsByTagName("assets");
          NodeList contentAssets = contentMainXML.getElementsByTagName("asset");
          String prefixURL = sContentURL.split("/pages/")[0];
@@ -238,25 +330,36 @@ public class ContentFactoryQNote extends XMLVersionAwareFactoryQNote {
          Utils.consoleLog("::: ContentFactoryQNote setAssetsFromContent 03 newNode.getChildNodes().getLength()[" + contentAssets.getLength() + "]");
          Utils.consoleLog("::: ContentFactoryQNote setAssetsFromContent 04 newNode.getChildNodes().toString()[" + contentAssets + "]");
 
-         while(contentAssets.getLength() > 0) {
-            Node asset = contentAssets.item(0);
-            Utils.consoleLog("::: ContentFactoryQNote setAssetsFromContent 05 newNode.getChildNodes().item(i) asset[" + asset + " : " + contentAssets.getLength() + "]");
-            node.appendChild(asset);
+         // 처음에 저장한 eng.xml인 mainXML의 빈<asset/>노드에 입력:main.xml으로 contentMainXML의 <asset> 내용을 추가(빈노드에 추가)
+         for (int i = 0; i < contentAssets.getLength(); i++) {
+             Node asset = contentAssets.item(i);
+             Node importedNode = mainXML.importNode(asset, true);
+             Utils.consoleLog("::: ContentFactoryQNote setAssetsFromContent 05 newNode.getChildNodes().item(i) asset[" + asset + " : " + contentAssets.getLength() + "]");
+             node.appendChild(importedNode);
          }
 
-         String xmlString = mainXML.toString();
-         this.mContent = this.produce(xmlString, mainFetchURL);
-         Utils.consoleLog("::: ContentFactoryQNote setAssetsFromContent 06 mainXML [" + mainXML.toString() + "]");
+          String xmlString = mainXML.toString();
+
+          this.mContent = this.produce(xmlString, mainFetchURL);
+          // <asset>노드가 거의 끝에 있는데 로그값에 잘 들어가는것 확인함
+          Utils.consoleLog("::: ContentFactoryQNote setAssetsFromContent 06 mainXML [" + mainXML.toString() + "]");
       } catch (Exception var10) {
       }
 
    }
 
+   // 처음에 저장한 eng.xml인 mainXML의 <styles>노드에 입력:main.xml으로 contentMainXML의 <styles> 내용으로 교체(replace)
    private void setCSSFromContent(String sContentMainXML, String sContentURL) {
-	  Utils.consoleLog("::: ContentFactoryQNote setCSSFromContent Start ::: ");
 
+      // main.xml 내용과 main.xml url을 가지고 들어옮  
+	  Utils.consoleLog("::: ContentFactoryQNote setCSSFromContent Start ::: ");
+	  
+      // 처음에 저장한 eng.xml 콘텐츠가 들어있는 내용
       Document mainXML = XMLParser.parse(this.mContent.toXML());
+      
+      // 입력 : main.xml 내용이 들어가 있음
       Document contentMainXML = XMLParser.parse(sContentMainXML);
+      
       NodeList styles = mainXML.getElementsByTagName("styles");
       NodeList contentStyles = contentMainXML.getElementsByTagName("styles");
       String prefixURL = sContentURL.split("/pages/")[0];
@@ -264,10 +367,21 @@ public class ContentFactoryQNote extends XMLVersionAwareFactoryQNote {
       Utils.consoleLog("::: ContentFactoryQNote setCSSFromContent 02 prefixURL[" + prefixURL + "]");
       Utils.consoleLog("::: ContentFactoryQNote setCSSFromContent 03 styles[" + styles.toString() + "]");
 
-      for(int i = 0; i < styles.getLength(); ++i) {
-         Node node = styles.item(i);
-         Node newNode = contentStyles.item(0);
-         node.getParentNode().replaceChild(newNode, node);
+//      for(int i = 0; i < styles.getLength(); ++i) {
+//         Node node = styles.item(i);
+//         Node newNode = contentStyles.item(0);
+//         node.getParentNode().replaceChild(newNode, node);
+//      }
+      // 처음에 저장한 eng.xml인 mainXML의 <styles>노드에 입력:main.xml으로 contentMainXML의 <styles> 내용으로 교체(replace)
+      for (int i = 0; i < styles.getLength(); ++i) {
+          Node oldNode = styles.item(i);
+          Node newNode = contentStyles.item(0);
+
+          if (newNode != null) {
+              // 반드시 같은 Document로 가져오기
+              Node importedNode = mainXML.importNode(newNode, true);
+              oldNode.getParentNode().replaceChild(importedNode, oldNode);
+          }
       }
 
       String xmlString = mainXML.toString().replaceAll("\\.\\./resources/", prefixURL + "/resources/");
@@ -292,7 +406,8 @@ public class ContentFactoryQNote extends XMLVersionAwareFactoryQNote {
 
          for(int i = 0; i < nodeList.getLength(); ++i) {
             Element page = (Element)nodeList.item(i);
-            if (page.getAttribute("href") == this.fetchUrlPages[this.loadedCount]) {
+            if (page.getAttribute("href").equals(this.fetchUrlPages[this.loadedCount])) {
+            //if (page.getAttribute("href") == this.fetchUrlPages[this.loadedCount]) {
                Utils.consoleLog("::: ContentFactoryQNote addPage 06 page[" + page.toString() + "]");
                Utils.consoleLog("::: ContentFactoryQNote addPage 07 href[" + page.getAttribute("href") + "]");
                xml = XMLParser.parse(page.toString()).getDocumentElement();
@@ -305,6 +420,8 @@ public class ContentFactoryQNote extends XMLVersionAwareFactoryQNote {
          Utils.consoleLog("::: ContentFactoryQNote addPage 08 addPage page[" + page.toString() + "]");
          Utils.consoleLog("::: ContentFactoryQNote addPage 09 addPage href[" + page.getAttribute("href") + "]");
          xml = XMLParser.parse(page.toString()).getDocumentElement();
+         
+         
       }
 
       Utils.consoleLog("::: ContentFactoryQNote addPage 11 xml[" + xml + "]");
@@ -344,11 +461,14 @@ public class ContentFactoryQNote extends XMLVersionAwareFactoryQNote {
       }
 
       this.mContent.addPage(p);
-      
-      Utils.consoleLog("::: ContentFactoryQNote addPage End :::");
+      //  mContent(eng.xml내용) 내용 확인하자
+      Utils.consoleLog("::: ContentFactoryQNote addPage 16 End :::");
    }
 
+   //
    public Content produce(String xmlString, String fetchUrl) {
+		//첫번째는 eng.xml
+		//두번째는 main.xml
       Utils.consoleLog("::: ContentFactoryQNote produce Start :::");
       Utils.consoleLog("::: ContentFactoryQNote produce 01 fetchUrl["+fetchUrl+"] :::");
       Utils.consoleLog("::: ContentFactoryQNote produce 02 xmlString["+xmlString+"] :::");
@@ -357,15 +477,23 @@ public class ContentFactoryQNote extends XMLVersionAwareFactoryQNote {
          Element xml = XMLParser.parse(xmlString).getDocumentElement();
          String version = XMLUtils.getAttributeAsString(xml, "version", "1");
          Utils.consoleLog("::: ContentFactoryQNote produce 03 version[" + version+"] :::");
+         
+         //두번째는 main.xml이 들어올때는  Metadata parse를 수정하고 있음
          Content producedContent = (Content)((IParser)this.parsersMap.get(version)).parse(xml);
          producedContent.setBaseUrl(fetchUrl);
-         Utils.consoleLog("::: ContentFactoryQNote produce End 01 :::");
+         
+         Utils.consoleLog("::: ContentFactoryQNote produce 04 결과 ▼▼▼:::");
+         Utils.consoleLog("::: ContentFactoryQNote produce 05 fetchUrl["+fetchUrl+"] :::");
+         Utils.consoleLog("::: ContentFactoryQNote produce 06 producedContent["+producedContent+"] :::");
+         Utils.consoleLog("::: ContentFactoryQNote produce 07 결과 ▲▲▲ End :::");
+         
+         
          return producedContent;
       } catch (Exception e) {
-         Utils.consoleLog("::: ContentFactoryQNote produce 04 produce xmlString[" + xmlString+"] :::");
-         Utils.consoleLog("::: ContentFactoryQNote produce 05 produce fetchUrl[" + fetchUrl+"] :::");
-         Utils.consoleLog("::: ContentFactoryQNote produce 06 produce e[" + e +"] :::");
-         Utils.consoleLog("::: ContentFactoryQNote produce End 02 :::");
+         Utils.consoleLog("::: ContentFactoryQNote produce 08 produce xmlString[" + xmlString+"] :::");
+         Utils.consoleLog("::: ContentFactoryQNote produce 09 produce fetchUrl[" + fetchUrl+"] :::");
+         Utils.consoleLog("::: ContentFactoryQNote produce 10 produce e[" + e +"] :::");
+         Utils.consoleLog("::: ContentFactoryQNote produce 11 End :::");
          return null;
       }
    }

@@ -20,8 +20,8 @@ public abstract class XMLVersionAwareFactoryQNote implements IXMLFactory {
    protected String[] fetchUrlPages;
    protected IProducingLoadingListener listener;
 
-   public XMLVersionAwareFactoryQNote() {
-   }
+//   public XMLVersionAwareFactoryQNote() {
+//   }
 
    protected void addParser(IParser parser) {
       Utils.consoleLog("::: XMLVersionAwareFactoryQNote addParser Start 생성자 :::");
@@ -30,17 +30,12 @@ public abstract class XMLVersionAwareFactoryQNote implements IXMLFactory {
    }
 
    public void load(String fetchUrl, IProducingLoadingListener listener) {
-      Utils.consoleLog("::: XMLVersionAwareFactoryQNote load Start :::");
       Utils.consoleLog("::: XMLVersionAwareFactoryQNote load 01 fetchUrs[" + fetchUrl + "] :::");
       this.loadedCount = 0;
       this.listener = listener;
-      Utils.consoleLog("::: XMLVersionAwareFactoryQNote load 02 fetchUrl[" + fetchUrl + "] :::");
       this.fetchUrls = Utils.getUrls(fetchUrl);
       this.fetchUrlPages = Utils.getUrlPages(fetchUrl);
-      Utils.consoleLog("::: XMLVersionAwareFactoryQNote load 03 fetchUrlPages[" + this.fetchUrlPages + "] :::");
       this.pagesCount = this.fetchUrls.length;
-      
-      Utils.consoleLog("::: XMLVersionAwareFactoryQNote load 04 fetchUrls[" + this.loadedCount+"][" + fetchUrls[this.loadedCount] + "] :::");
       this.send(this.fetchUrls[this.loadedCount], listener);
       Utils.consoleLog("::: XMLVersionAwareFactoryQNote load End :::");
    }
@@ -49,14 +44,13 @@ public abstract class XMLVersionAwareFactoryQNote implements IXMLFactory {
    }
 
    protected void send(String fetchUrl, IProducingLoadingListener listener) {
-      Utils.consoleLog("::: XMLVersionAwareFactoryQNote send Start :::");
       try {
          Utils.consoleLog("::: XMLVersionAwareFactoryQNote send 01 fetchUrl(send)[" + fetchUrl + "] :::");
          RequestsUtils.get(fetchUrl, this.getContentLoadCallback(listener));
       } catch (RequestException e) {
          JavaScriptUtils.log("::: XMLVersionAwareFactoryQNote send 02 Fetching main data content from server has failed: " + e.toString());
       }
-      Utils.consoleLog("::: XMLVersionAwareFactoryQNote load End :::");
+      Utils.consoleLog("::: XMLVersionAwareFactoryQNote send End :::");
    }
 
    //::: Restored by DF: 수정 ::: ▼▼▼ 
@@ -65,35 +59,33 @@ public abstract class XMLVersionAwareFactoryQNote implements IXMLFactory {
        return new RequestFinishedCallback() {
            @Override
            public void onResponseReceived(String fetchURL, Request request, Response response) {
-               Utils.consoleLog("::: XMLVersionAwareFactoryQNote getContentLoadCallback onResponseReceived Start :::");
-               Utils.consoleLog("::: XMLVersionAwareFactoryQNote getContentLoadCallback onResponseReceived 01 : fetchURL[" + fetchURL + "] StatusCode[" + response.getStatusCode() + "]");
-               
+               Utils.consoleLog("::: XMLVersionAwareFactoryQNote getContentLoadCallback onResponseReceived Start    loadedCount[" + loadedCount + "] :::");
+               Utils.consoleLog("::: XMLVersionAwareFactoryQNote getContentLoadCallback onResponseReceived 01    :     fetchURL[" + fetchURL + "] StatusCode[" + response.getStatusCode() + "]");
                if (response.getStatusCode() != 200 && response.getStatusCode() != 0) {
-                  Utils.consoleLog("::: XMLVersionAwareFactoryQNote getContentLoadCallback onResponseReceived 02 : Wrong status: getText[" + response.getText() + "]");
-                  listener.onError("Wrong status: " + response.getText());
+                   Utils.consoleLog("::: XMLVersionAwareFactoryQNote getContentLoadCallback onResponseReceived 02 : Wrong status: getText[" + response.getText() + "]");
+                   listener.onError("Wrong status: " + response.getText());
                } else {
-                   Utils.consoleLog("::: XMLVersionAwareFactoryQNote getContentLoadCallback onResponseReceived 03 : loadedCount[" + fetchUrls[loadedCount] + "]");
-                   Utils.consoleLog("::: XMLVersionAwareFactoryQNote getContentLoadCallback onResponseReceived 04 : getContentLoadCallback [" + response.getText() + "]");
-                  Object producedItem = produce(response.getText(), fetchURL);
-                  if (loadedCount + 1 < pagesCount) {
-                     ++loadedCount;
-                     
-                     Utils.consoleLog("::: XMLVersionAwareFactoryQNote getContentLoadCallback onResponseReceived 05 : send loadedCount[" + fetchUrls[loadedCount] + "]");
-                     send(fetchUrls[loadedCount], listener);
-                  } else {
-                     Utils.consoleLog("::: XMLVersionAwareFactoryQNote getContentLoadCallback onResponseReceived 06 : end loadedCount[" + loadedCount + "] pagesCount[" + pagesCount + "]");
-                     listener.onFinishedLoading(producedItem);
-                     ++loadedCount;
-                  }
+            	   Utils.consoleLog("::: XMLVersionAwareFactoryQNote getContentLoadCallback onResponseReceived 03 : loadedCount          [" + loadedCount + "]");
+            	   Utils.consoleLog("::: XMLVersionAwareFactoryQNote getContentLoadCallback onResponseReceived 04 : response.getText()   [" + response.getText() + "]");
+                   Object producedItem = produce(response.getText(), fetchURL);
+                   if (loadedCount + 1 < pagesCount) {
+                       loadedCount++;
+                       Utils.consoleLog("::: XMLVersionAwareFactoryQNote getContentLoadCallback onResponseReceived 05 : send loadedCount     [" + loadedCount + "]");
+                       send(fetchUrls[loadedCount], listener);
+                   } else {
+                	   Utils.consoleLog("::: XMLVersionAwareFactoryQNote getContentLoadCallback onResponseReceived 06 : end loadedCount      [" + loadedCount + "] pagesCount[" + pagesCount + "]");
+                       listener.onFinishedLoading(producedItem);
+                       loadedCount++;
+                   }
                }
-               Utils.consoleLog("::: XMLVersionAwareFactoryQNote getContentLoadCallback onResponseReceived Start :::");
-            }
-           
-            @Override
-            public void onError(Request request, Throwable exception) {
-               Utils.consoleLog("::: XMLVersionAwareFactoryQNote getContentLoadCallback onResponseReceived onError : " + exception);
-               listener.onFinishedLoading((Object)null);
-            }
+               Utils.consoleLog("::: XMLVersionAwareFactoryQNote getContentLoadCallback onResponseReceived 07       loadedCount[" + loadedCount + "] :::");
+           }
+
+           @Override
+           public void onError(Request request, Throwable exception) {
+        	   Utils.consoleLog("::: XMLVersionAwareFactoryQNote getContentLoadCallback onResponseReceived onError : " + exception);
+               listener.onFinishedLoading(null);
+           }
        };
    }
    //::: Restored by DF: 수정 ::: ▲▲▲
@@ -103,21 +95,19 @@ public abstract class XMLVersionAwareFactoryQNote implements IXMLFactory {
       
       if (!Utils.isQNote && xmlString.indexOf("Completion_Progress1") < 0) {
          xmlString = this.addCompletionProgress1(xmlString);
-         Utils.consoleLog("::: XMLVersionAwareFactoryQNote produce 01 produce[" + xmlString + "]");
+         Utils.consoleLog("::: XMLVersionAwareFactoryQNote produce 01 ::: ");
       }
 
       if (Utils.isQNote) {
          xmlString = this.addIntroTTSText(xmlString);
-         Utils.consoleLog("::: XMLVersionAwareFactoryQNote produce 02 produce[" + xmlString + "]");
+         Utils.consoleLog("::: XMLVersionAwareFactoryQNote produce 02 :::");
       }
 
       Element xml = XMLParser.parse(xmlString).getDocumentElement();
       String version = XMLUtils.getAttributeAsString(xml, "version", "1");
       
       Utils.consoleLog("::: XMLVersionAwareFactoryQNote produce 03 version[" + version + "]");
-      
       Object producedContent = ((IParser)this.parsersMap.get(version)).parse(xml);
-      Utils.consoleLog("::: XMLVersionAwareFactoryQNote produce End :::");
       return producedContent;
    }
 

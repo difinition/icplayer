@@ -14,6 +14,7 @@ import com.lorepo.icplayer.client.model.Content.ScoreType;
 import com.lorepo.icplayer.client.model.addon.AddonDescriptor;
 import com.lorepo.icplayer.client.model.asset.AssetFactory;
 import com.lorepo.icplayer.client.model.layout.PageLayout;
+import com.lorepo.icplayer.client.utils.Utils;
 import com.lorepo.icplayer.client.xml.content.IContentBuilder;
 
 public abstract class ContentParserBase implements IContentParser {
@@ -40,6 +41,9 @@ public abstract class ContentParserBase implements IContentParser {
 		content.setScoreType(scoreType);
 		content.setName(contentName);
 		this.setContentDefaultStyle(content);
+		
+		Utils.consoleLog("::: ■▲■ ContentParserBase parse Start 01 contentName["+ contentName  +"] new Content hashCode["+ System.identityHashCode(content)  +"]::: ");
+		Utils.consoleLog("::: ■▲■ ContentParserBase parse Start 02 contentName["+ content.getMetadataValue("enableTabindex")  +"] metadata hashCode["+ System.identityHashCode(content.metadata)  +"]::: ");
 
 		NodeList children = rootNode.getChildNodes();
 		for(int i = 0; i < children.getLength(); i++){
@@ -49,6 +53,8 @@ public abstract class ContentParserBase implements IContentParser {
 				String name = child.getNodeName(); 
 				
 				if(name.compareTo("metadata") == 0){
+					Utils.consoleLog("::: ■▲ ContentParserBase parse Start ::: ");
+					
 					content.metadata.parse(child);
 				}
 				else if(name.compareTo("addons") == 0){
