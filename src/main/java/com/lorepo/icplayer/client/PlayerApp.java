@@ -776,7 +776,18 @@ public class PlayerApp {
 		String baseUrl = contentModel.getBaseUrl();
 		String contentBaseURL = getContentBaseURL();
 		for (ScriptAsset libraryAsset : attachedLibraries.values()) {
+			
+			Utils.consoleLog("::: PlayerApp loadAttachedLibraries 01 libraryAsset.getHref()["+libraryAsset.getHref()+"]::: ");
+			
 			String href = ExtendedRequestBuilder.signURL(libraryAsset.getHref());
+			
+			Utils.consoleLog("::: PlayerApp loadAttachedLibraries 02 href["+href+"]::: ");
+			
+			if (href.endsWith("resources/5350926942339072.js")) {
+				baseUrl = "viewers/aidt_viewer/core/";
+				href = "resources/5350926942339072.js";
+			} 
+			
 			DOMInjector.injectLibrary(
 				URLUtils.resolveURL(baseUrl, href, contentBaseURL),
 				libraryAsset.getFileName(),
