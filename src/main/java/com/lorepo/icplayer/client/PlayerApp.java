@@ -1227,7 +1227,7 @@ public class PlayerApp {
 	}
 
 	public void clearBeforeReload() {
-    	Utils.consoleLog("::: PlayerApp clearBeforeReload Start ::: ");
+    	Utils.consoleLog("::: ●●■ PlayerApp clearBeforeReload Start ::: ");
 		clearGlobalAddonVariables();
 		removeStaticFooter();
 		clearMediaRecorders();
@@ -1237,7 +1237,21 @@ public class PlayerApp {
 		playerController.clearKeyboardNavigationListeners();
 		playerController.getView().hideNavigationPanels();
 		clearIframeHandlers();
+		Utils.consoleLog("::: ●●■ PlayerApp clearBeforeReload 01 ::: ");
+		this.destroyAddonCust();
 	}
+	
+	public void destroyAddonCust() {
+    	Utils.consoleLog("::: ●●■ PlayerApp destroyAddonCust Start contentModel["+contentModel+"]::: ");
+		try {
+	      if (contentModel == null) {
+	      	return;
+	      }
+	      playerController.destroyAddonCust();
+		} catch (Exception e) {
+		}
+	}
+	
 
 	public void setNVDAAvailability(boolean shouldUseNVDA) {
 		Utils.consoleLog("::: PlayerApp setNVDAAvailability Start ::: ");

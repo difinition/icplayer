@@ -297,6 +297,10 @@ public class AddonPresenter implements IPresenter, IActivity, IStateful, IComman
 	}
 	
 	public void destroy() {
+		Utils.consoleLog("::: ●●■ AddonPresenter destroy Start ["+(this.interfaceVersion.version >= InterfaceVersion.DESTROY_LIFE_CYCLE.version)+"]::: ");
+		Utils.consoleLog("::: ●●■ AddonPresenter destroy 01 ["+this.interfaceVersion.version+"]::: ");
+		Utils.consoleLog("::: ●●■ AddonPresenter destroy 02 ["+InterfaceVersion.DESTROY_LIFE_CYCLE.version+"]::: ");
+		
 		if (this.interfaceVersion.version >= InterfaceVersion.DESTROY_LIFE_CYCLE.version) {
 			this.destroyAddon(jsObject, addonDescriptor.getAddonId());
 		}
@@ -313,6 +317,31 @@ public class AddonPresenter implements IPresenter, IActivity, IStateful, IComman
 			console.error(err);
 		}
 	}-*/;
+	
+	public void destroyCust() {
+		Utils.consoleLog("::: ●●■ AddonPresenter destroyCust Start addonId["+addonDescriptor.getAddonId()+"]::: ");
+		this.destroyAddonCust(jsObject, addonDescriptor.getAddonId());
+	}
+	public native void destroyAddonCust(JavaScriptObject obj, String addonId) /*-{
+		try {
+			if(obj.destroy) {
+				try {
+					console.log("::: ●●■ AddonPresenter native destroyAddonCust addonId["+ addonId +"] ::: ");
+				    obj.destroy()
+				} catch (b) {
+				    console.error(b);
+				    try {
+				        obj.destroy(null)
+				    } catch (a) {
+				        console.error(a)
+				    }
+				}
+			}
+		} catch (err) {
+			alert("[" + addonId + "] Exception in onDestroy(): \n" + err + addonId);
+			console.error(err);
+		}
+	}-*/;	
 
 	private JavaScriptObject createModel(IPropertyProvider provider) {
 		return model.createJsModel(provider);

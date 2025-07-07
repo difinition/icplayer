@@ -305,7 +305,7 @@ public class PlayerController implements IPlayerController {
 	@Override
 	public void switchToPage(int index) {
 		
-		Utils.consoleLog("::: PlayerController 01 switchToPage switchToPage(int index) Start ::: ");
+		Utils.consoleLog("::: ●●■ PlayerController 01 switchToPage switchToPage(index["+index+"]) Start ::: ");
 		
 		if (this.lastVisitedPageIndex == -1) { //if player was started for the first time
 			this.lastVisitedPageIndex = index;
@@ -1066,5 +1066,17 @@ public class PlayerController implements IPlayerController {
     @Override
 	public String getCurrentWCAGPresenterArea() {
 	    return this.keyboardController.getCurrentPresenterArea();
+	}
+    
+	public void destroyAddonCust() {
+		Utils.consoleLog("::: ●●■ PlayerController destroyAddonCust Start ["+this.pageController1+"]::: ");
+		if(this.pageController1 != null) {
+			pageController1.destroyAddonCust();
+		}
+		
+		Utils.consoleLog("::: ●●■ PlayerController destroyAddonCust 01 mBookMode["+this.mBookMode+"] pageController2["+this.pageController2+"]::: ");
+		if(this.mBookMode && this.pageController2 != null) {
+			pageController2.destroyAddonCust();
+		}
 	}
 }

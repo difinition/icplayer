@@ -787,4 +787,30 @@ public class PageController implements ITextToSpeechController, IPageController 
 	public ModuleList getModules() {
 		return this.currentPage.getModules();
 	}
+	
+	//::: Restored by DF: 커스텀 추가  ::: destroyAddonCust() 메소드 추가됨
+	public void destroyAddonCust() {
+		Utils.consoleLog("::: ●●■ PageController destroyAddonCust Start presenters["+presenters+"]::: ");
+		if(presenters != null) {
+			Utils.consoleLog("::: ●●■ PageController destroyAddonCust 01 presenters size["+presenters.size()+"]::: ");
+			for (IPresenter presenter : presenters) {
+				Utils.consoleLog("::: ●●■ PageController destroyAddonCust 02 presenter["+presenter+"]::: ");
+				if (presenter instanceof IStateful) {
+					
+					try {
+						AddonPresenter tmpAddonPresenter = (AddonPresenter)presenter;
+						
+						Utils.consoleLog("::: ●●■ PageController destroyAddonCust 03 currentPage.getId()["+currentPage.getId()+"]::: ");
+						Utils.consoleLog("::: ●●■ PageController destroyAddonCust 04 tmpAddonPresenter.getSerialId()["+tmpAddonPresenter.getSerialId()+"]::: ");
+
+						tmpAddonPresenter.destroyCust();
+						
+					} catch (Exception e) {
+						IStateful statefulObj = (IStateful)presenter;
+						Utils.consoleLog("::: ●●■ PageController destroyAddonCust 06 currentPage.getId()["+currentPage.getId()+"] statefulObj.getSerialId()["+statefulObj.getSerialId()+"]::: ");
+					}
+				}
+			}
+		}
+	}	
 }
